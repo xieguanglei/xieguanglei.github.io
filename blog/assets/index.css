@@ -51,6 +51,10 @@ body{
   text-decoration: none;
   color: #ecf0f1;
 }
+#header .links{
+  margin-top: 10px;
+}
+
 
 #main{
   margin-left: 75px;
@@ -132,5 +136,6 @@ body{
   margin-bottom: 10px;
   font-style:normal;
 }
-.icon-github:before { content: "\e735"; }
-.icon-rss:before { content: "\e609"; }
+.icon-author:before { content: "\e602"; }
+.icon-rss:before { content: "\e600"; }
+.icon-github:before { content: "\e601"; }

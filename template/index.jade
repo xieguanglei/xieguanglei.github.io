@@ -14,10 +14,11 @@ block header
     #header
         h1#title
             a(href='./index.html')= blog.title
-        a(href=blog.github_url target='_blank')
-            .iconfont.icon-github
-        a(href=blog.feed_url target='_blank')
-            .iconfont.icon-rss
+        .links
+            a(href=blog.feed_url target='_blank')
+                .iconfont.icon-rss
+            a(href=blog.github_url target='_blank')
+                .iconfont.icon-github
 
 block main
     div#posts
@@ -26,7 +27,3 @@ block main
                 span.date= post.date.getUTCFullYear()+'/'+(post.date.getUTCMonth()+1)+'/'+post.date.getUTCDate()
                 span.title
                     a(href='post/'+post.key+'.html')= post.title
-
-//block footer
-//    #footer
-//        p#copyright= 'Copyright '+blog.title

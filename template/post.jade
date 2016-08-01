@@ -5,7 +5,7 @@ block siteinfo
         meta(name='author' content=blog.author)
     if blog.keywords
         meta(name='keywords' content=blog.keywords)
-    title= blog.title | post.title
+    title= blog.title+'|'+post.title
 
 block style
     link(href='../assets/index.css' rel='stylesheet')
@@ -14,6 +14,11 @@ block header
     #header
         h1#title
             a(href='../index.html')= blog.title
+        .links
+            a(href=blog.feed_url target='_blank')
+                .iconfont.icon-rss
+            a(href=blog.github_url target='_blank')
+                .iconfont.icon-github
 
 block main
     div#post
