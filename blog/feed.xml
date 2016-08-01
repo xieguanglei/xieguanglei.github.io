@@ -1,0 +1,1193 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[一叶斋]]></title>
+        <description><![CDATA[一叶障目 一叶知秋]]></description>
+        <link>http://xieguanglei.github.io/blog/index.html</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Mon, 01 Aug 2016 10:25:33 GMT</lastBuildDate>
+        <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Canvas 最佳实践（性能篇）]]></title>
+            <description><![CDATA[<h1 id="canvas-">Canvas 最佳实践（性能篇）</h1>
+<p>Canvas 想必前端同学们都不陌生，它是 HTML5 新增的「画布」元素，允许我们使用 JavaScript 来绘制图形。目前，所有的主流浏览器都支持 Canvas。</p>
+<p><img src="http://img.alicdn.com/tps/TB1YgYILpXXXXcXXFXXXXXXXXXX-764-261.jpg" alt="Canvas兼容性"></p>
+<p>Canvas 最常见的用途是渲染动画。渲染动画的基本原理，无非是反复地擦除和重绘。为了动画的流畅，留给我渲染一帧的时间，只有短短的 16ms。在这 16ms 中，我不仅需要处理一些游戏逻辑，计算每个对象的位置、状态，还需要把它们都画出来。如果消耗的时间稍稍多了一些，用户就会感受到「卡顿」。所以，在编写动画（和游戏）的时候，我无时无刻不担忧着动画的性能，唯恐对某个 API 的调用过于频繁，导致渲染的耗时延长。</p>
+<p>为此，我做了一些实验，查阅了一些资料，整理了平时使用 Canvas 的若干心得体会，总结出这一片所谓的「最佳实践」。如果你和我有类似的困扰，希望本文对你有一些价值。</p>
+<blockquote>
+<p>本文仅讨论 Canvas 2D 相关问题。</p>
+</blockquote>
+<h1 id="-">计算与渲染</h1>
+<p>把动画的一帧渲染出来，需要经过以下步骤：</p>
+<ol>
+<li>计算：处理游戏逻辑，计算每个对象的状态，不涉及 DOM 操作（当然也包含对 Canvas 上下文的操作）。</li>
+<li>渲染：真正把对象绘制出来。
+2.1. JavaScript 调用 DOM API（包括 Canvas API）以进行渲染。
+2.2. 浏览器（通常是另一个渲染线程）把渲染后的结果呈现在屏幕上的过程。</li>
+</ol>
+<p><img src="http://img.alicdn.com/tps/TB1i6rMLpXXXXaZXFXXXXXXXXXX-593-323.png" alt=""></p>
+<blockquote>
+<p>之前曾说过，留给我们渲染每一帧的时间只有 16ms。然而，其实我们所做的只是上述的步骤中的 1 和 2.1，而步骤 2.2 则是浏览器在另一个线程（至少几乎所有现代浏览器是这样的）里完成的。动画流畅的真实前提是，以上所有工作都在 16ms 中完成，所以 JavaScript 层面消耗的时间最好控制在 10ms 以内。</p>
+</blockquote>
+<p>虽然我们知道，通常情况下，渲染比计算的开销大很多（3~4个量级）。除非我们用到了一些时间复杂度很高的算法（这一点在本文最后一节讨论），计算环节的优化没有必要深究。</p>
+<p>我们需要深入研究的，是如何优化渲染的性能。而优化渲染性能的总体思路很简单，归纳为以下几点：</p>
+<ol>
+<li>在每一帧中，尽可能减少调用渲染相关 API 的次数（通常是以计算的复杂化为代价的）。</li>
+<li>在每一帧中，尽可能调用那些渲染开销较低的 API。</li>
+<li>在每一帧中，尽可能以「导致渲染开销较低」的方式调用渲染相关 API。</li>
+</ol>
+<h1 id="canvas-">Canvas 上下文是状态机</h1>
+<p>Canvas API 都在其上下文对象 <code>context</code> 上调用。</p>
+<pre><code class="lang-javascript">var context = canvasElement.getContext(&#39;2d&#39;);
+</code></pre>
+<p>我们需要知道的第一件事就是，<code>context</code> 是一个状态机。你可以改变 <code>context</code> 的若干状态，而几乎所有的渲染操作，最终的效果与 <code>context</code> 本身的状态有关系。比如，调用 <code>strokeRect</code> 绘制的矩形边框，边框宽度取决于 <code>context</code> 的状态 <code>lineWidth</code>，而后者是之前设置的。</p>
+<pre><code class="lang-javascript">context.lineWidth = 5;
+context.strokeColor = &#39;rgba(1, 0.5, 0.5, 1)&#39;;
+
+context.strokeRect(100, 100, 80, 80);
+</code></pre>
+<p><img src="http://img.alicdn.com/tps/TB1M4vNLpXXXXarXFXXXXXXXXXX-407-348.png" alt=""></p>
+<p>说到这里，和性能貌似还扯不上什么关系。那我现在就要告诉你，对 <code>context.lineWidth</code> 赋值的开销远远大于对一个普通对象赋值的开销，你会作如何感想。</p>
+<p>当然，这很容易理解。Canvas 上下文不是一个普通的对象，当你调用了 <code>context.lineWidth = 5</code> 时，浏览器会需要立刻地做一些事情，这样你下次调用诸如 <code>stroke</code> 或 <code>strokeRect</code> 等 API 时，画出来的线就正好是 5 个像素宽了（不难想象，这也是一种优化，否则，这些事情就要等到下次 <code>stroke</code> 之前做，更加会影响性能）。</p>
+<p>我尝试执行以下赋值操作 10<sup>6</sup> 次，得到的结果是：对一个普通对象的属性赋值只消耗了 3ms，而对 <code>context</code> 的属性赋值则消耗了 40ms。值得注意的是，如果你赋的值是非法的，浏览器还需要一些额外时间来处理非法输入，正如第三/四种情形所示，消耗了 140ms 甚至更多。</p>
+<pre><code>somePlainObject.lineWidth = 5;  // 3ms (10^6 times)
+context.lineWidth = 5;  // 40ms
+context.lineWidth = &#39;Hello World!&#39;; // 140ms
+context.lineWidth = {}; // 600ms
+</code></pre><p>对 <code>context</code> 而言，对不同属性的赋值开销也是不同的。<code>lineWidth</code> 只是开销较小的一类。下面整理了为 <code>context</code> 的一些其他的属性赋值的开销，如下所示。</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>开销</th>
+<th>开销（非法赋值）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> <code>line[Width/Join/Cap]</code></td>
+<td>40+</td>
+<td>100+</td>
+</tr>
+<tr>
+<td> <code>[fill/stroke]Style</code></td>
+<td>100+</td>
+<td>200+</td>
+</tr>
+<tr>
+<td> <code>font</code></td>
+<td>1000+</td>
+<td>1000+</td>
+</tr>
+<tr>
+<td> <code>text[Align/Baseline]</code></td>
+<td>60+</td>
+<td>100+</td>
+</tr>
+<tr>
+<td> <code>shadow[Blur/OffsetX]</code></td>
+<td>40+</td>
+<td>100+</td>
+</tr>
+<tr>
+<td> <code>shadowColor</code></td>
+<td>280+</td>
+<td>400+</td>
+</tr>
+</tbody>
+</table>
+<p>与真正的绘制操作相比，改变 <code>context</code> 状态的开销已经算比较小了，毕竟我们还没有真正开始绘制操作。我们需要了解，改变 <code>context</code> 的属性并非是完全无代价的。我们可以通过适当地安排调用绘图 API 的顺序，降低 <code>context</code> 状态改变的频率。</p>
+<h1 id="-canvas">分层 Canvas</h1>
+<p>分层 Canvas 在几乎任何动画区域较大，动画较复杂的情形下都是非常有必要的。分层 Canvas 能够大大降低完全不必要的渲染性能开销。分层渲染的思想被广泛用于图形相关的领域：从古老的皮影戏、套色印刷术，到现代电影/游戏工业，虚拟现实领域，等等。而分层 Canvas 只是分层渲染思想在 Canvas 动画上最最基本的应用而已。</p>
+<p><img src="http://img.alicdn.com/tps/TB1RgLULpXXXXatXVXXXXXXXXXX-667-309.png" alt="分层Canvas"></p>
+<p>分层 Canvas 的出发点是，动画中的每种元素（层），对渲染和动画的要求是不一样的。对很多游戏而言，主要角色变化的频率和幅度是很大的（他们通常都是走来走去，打打杀杀的），而背景变化的频率或幅度则相对较小（基本不变，或者缓慢变化，或者仅在某些时机变化）。很明显，我们需要很频繁地更新和重绘人物，但是对于背景，我们也许只需要绘制一次，也许只需要每隔 200ms 才重绘一次，绝对没有必要每 16ms 就重绘一次。</p>
+<blockquote>
+<p>对于 Canvas 而言，能够在每层 Canvas 上保持不同的重绘频率已经是最大的好处了。然而，分层思想所解决的问题远不止如此。</p>
+</blockquote>
+<p>使用上，分层 Canvas 也很简单。我们需要做的，仅仅是生成多个 Canvas 实例，把它们重叠放置，每个 Canvas 使用不同的 z-index 来定义堆叠的次序。然后仅在需要绘制该层的时候（也许是「永不」）进行重绘。</p>
+<pre><code class="lang-javascript">var contextBackground = canvasBackground.getContext(&#39;2d&#39;);
+var contextForeground = canvasForeground.getContext(&#39;2d&#39;);
+
+function render(){
+  drawForeground(contextForeground);
+  if(needUpdateBackground){
+    drawBackground(contextBackground);
+  }
+  requestAnimationFrame(render);
+}
+</code></pre>
+<p>记住，堆叠在上方的 Canvas 中的内容会覆盖住下方 Canvas 中的内容。</p>
+<h1 id="-">绘制图像</h1>
+<p>目前，Canvas 中使用到最多的 API，非 <code>drawImage</code> 莫属了。（当然也有例外，你如果要用 Canvas 写图表，自然是半句也不会用到了）。</p>
+<p><code>drawImage</code> 方法的格式如下所示：</p>
+<pre><code>context.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+</code></pre><p><img src="http://gw.alicdn.com/tps/TB11l3dLpXXXXXRXpXXXXXXXXXX-593-395.png" alt=""></p>
+<h2 id="-">数据源与绘制的性能</h2>
+<p>由于我们具备「把图片中的某一部分绘制到 Canvas 上」的能力，所以很多时候，我们会把多个游戏对象放在一张图片里面，以减少请求数量。这通常被称为「精灵图」。然而，这实际上存在着一些潜在的性能问题。我发现，使用 <code>drawImage</code> 绘制同样大小的区域，数据源是一张和绘制区域尺寸相仿的图片的情形，比起数据源是一张较大图片（我们只是把数据扣下来了而已）的情形，前者的开销要小一些。可以认为，两者相差的开销正是「裁剪」这一个操作的开销。</p>
+<blockquote>
+<p>我尝试绘制 10<sup>4</sup> 次一块 320x180 的矩形区域，如果数据源是一张 320x180 的图片，花费了 40ms，而如果数据源是一张 800x800 图片中裁剪出来的 320x180 的区域，需要花费 70ms。</p>
+</blockquote>
+<p>虽然看上去开销相差并不多，但是 <code>drawImage</code> 是最常用的 API 之一，我认为还是有必要进行优化的。优化的思路是，将「裁剪」这一步骤事先做好，保存起来，每一帧中仅绘制不裁剪。具体的，在「离屏绘制」一节中再详述。</p>
+<h2 id="-">视野之外的绘制</h2>
+<p>有时候，Canvas 只是游戏世界的一个「窗口」，如果我们在每一帧中，都把整个世界全部画出来，势必就会有很多东西画到 Canvas 外面去了，同样调用了绘制 API，但是并没有任何效果。我们知道，判断对象是否在 Canvas 中会有额外的计算开销（比如需要对游戏角色的全局模型矩阵求逆，以分解出对象的世界坐标，这并不是一笔特别廉价的开销），而且也会增加代码的复杂程度，所以关键是，是否值得。</p>
+<p>我做了一个实验，绘制一张 320x180 的图片 10<sup>4</sup> 次，当我每次都绘制在 Canvas 内部时，消耗了 40ms，而每次都绘制在 Canvas 外时，仅消耗了 8ms。大家可以掂量一下，考虑到计算的开销与绘制的开销相差 2~3 个数量级，我认为通过计算来过滤掉哪些画布外的对象，仍然是很有必要的。</p>
+<h1 id="-">离屏绘制</h1>
+<p>上一节提到，绘制同样的一块区域，如果数据源是尺寸相仿的一张图片，那么性能会比较好，而如果数据源是一张大图上的一部分，性能就会比较差，因为每一次绘制还包含了裁剪工作。也许，我们可以先把待绘制的区域裁剪好，保存起来，这样每次绘制时就能轻松很多。</p>
+<p><code>drawImage</code> 方法的第一个参数不仅可以接收 <code>Image</code> 对象，也可以接收另一个 <code>Canvas</code> 对象。而且，使用 <code>Canvas</code> 对象绘制的开销与使用 <code>Image</code> 对象的开销几乎完全一致。我们只需要实现将对象绘制在一个未插入页面的 <code>Canvas</code> 中，然后每一帧使用这个 <code>Canvas</code> 来绘制。</p>
+<pre><code class="lang-js">// 在离屏 canvas 上绘制
+var canvasOffscreen = document.createElement(&#39;canvas&#39;);
+canvasOffscreen.width = dw;
+canvasOffscreen.height = dh;
+canvasOffscreen.getContext(&#39;2d&#39;).drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+
+// 在绘制每一帧的时候，绘制这个图形
+context.drawImage(canvasOffscreen, x, y);
+</code></pre>
+<p>离屏绘制的好处远不止上述。有时候，游戏对象是多次调用 <code>drawImage</code> 绘制而成，或者根本不是图片，而是使用路径绘制出的矢量形状，那么离屏绘制还能帮你把这些操作简化为一次 <code>drawImage</code> 调用。</p>
+<blockquote>
+<p>第一次看到 <code>getImageData</code> 和 <code>putImageData</code> 这一对 API，我有一种错觉，它们简直就是为了上面这个场景而设计的。前者可以将某个 Canvas 上的某一块区域保存为 <code>ImageData</code> 对象，后者可以将 <code>ImageData</code> 对象重新绘制到 Canvas 上面去。但实际上，<code>putImageData</code> 是一项开销极为巨大的操作，它根本就不适合在每一帧里面去调用。</p>
+</blockquote>
+<h1 id="-">避免「阻塞」</h1>
+<p>所谓「阻塞」，可以理解为不间断运行时间超过 16ms 的 JavaScript 代码，以及「导致浏览器花费超过 16ms 时间进行处理」的 JavaScript 代码。即使在没有什么动画的页面里，阻塞也会被用户立刻察觉到：阻塞会使页面上的对象失去响应——按钮按不下去，链接点不开，甚至标签页都无法关闭了。而在包含较多 JavaScript 动画的页面里，阻塞会使动画停止一段时间，直到阻塞恢复后才继续执行。如果经常出现「小型」的阻塞（比如上述提及的这些优化没有做好，渲染一帧的时间超过 16ms），那么就会出现「丢帧」的情况，</p>
+<blockquote>
+<p>CSS3 动画（<code>transition</code> 与 <code>animate</code>）不会受 JavaScript 阻塞的影响，但不是本文讨论的重点。</p>
+</blockquote>
+<p><img src="http://img.alicdn.com/tps/TB18QnWLpXXXXapXVXXXXXXXXXX-674-461.png" alt=""></p>
+<p>偶尔的且较小的阻塞是可以接收的，频繁或较大的阻塞是不可以接受的。也就是说，我们需要解决两种阻塞：</p>
+<ul>
+<li>频繁（通常较小）的阻塞。其原因主要是过高的渲染性能开销，在每一帧中做的事情太多。</li>
+<li>较大（虽然偶尔发生）的阻塞。其原因主要是运行复杂算法、大规模的 DOM 操作等等。</li>
+</ul>
+<p>对前者，我们应当仔细地优化代码，有时不得不降低动画的复杂（炫酷）程度，本文前几节中的优化方案，解决的就是这个问题。</p>
+<p>而对于后者，主要有以下两种优化的策略。</p>
+<ul>
+<li>使用 Web Worker，在另一个线程里进行计算。</li>
+<li>将任务拆分为多个较小的任务，插在多帧中进行。</li>
+</ul>
+<p>Web Worker 是好东西，性能很好，兼容性也不错。浏览器用另一个线程来运行 Worker 中的 JavaScript 代码，完全不会阻碍主线程的运行。动画（尤其是游戏）中难免会有一些时间复杂度比较高的算法，用 Web Worker 来运行再合适不过了。</p>
+<p><img src="http://img.alicdn.com/tps/TB1qt_yLpXXXXcrXVXXXXXXXXXX-764-277.jpg" alt="Web Worker 兼容性"></p>
+<p>然而，Web Worker 无法对 DOM 进行操作。所以，有些时候，我们也使用另一种策略来优化性能，那就是将任务拆分成多个较小的任务，依次插入每一帧中去完成。虽然这样做几乎肯定会使执行任务的总时间变长，但至少动画不会卡住了。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1UG.qLpXXXXbdXpXXXXXXXXXX-674-461.png" alt=""></p>
+<p>看下面这个 <a href="http://jsbin.com/puruba/edit?html,output">Demo</a>，我们的动画是使一个红色的 <code>div</code> 向右移动。Demo 中是通过每一帧改变其 <code>transform</code> 属性完成的（Canvas 绘制操作也一样）。</p>
+<p>然后，我创建了一个会阻塞浏览器的任务：获取 4x10<sup>6</sup> 次 <code>Math.random()</code> 的平均值。点击按钮，这个任务就会被执行，其结果也会打印在屏幕上。</p>
+<p><img src="http://gw.alicdn.com/tps/TB13HZILpXXXXacXXXXXXXXXXXX-296-369.png" alt=""></p>
+<p>如你所见，如果直接执行这个任务，动画会明显地「卡」一下。而使用 Web Worker 或将任务拆分，则不会卡。</p>
+<blockquote>
+<p>以上两种优化策略，有一个相同的前提，即任务是异步的。也就是说，当你决定开始执行一项任务的时候，你并不需要立刻（在下一帧）知道结果。比如，即使战略游戏中用户的某个操作触发了寻路算法，你完全可以等待几帧（用户完全感知不到）再开始移动游戏角色。
+另外，将任务拆分以优化性能，会带来显著的代码复杂度的增加，以及额外的开销。有时候，我觉得也许可以考虑优先砍一砍需求。</p>
+</blockquote>
+<h1 id="-">小结</h1>
+<p>正文就到这里，最后我们来稍微总结一下，在大部分情况下，需要遵循的「最佳实践」。</p>
+<ol>
+<li>将渲染阶段的开销转嫁到计算阶段之上。</li>
+<li>使用多个分层的 Canvas 绘制复杂场景。</li>
+<li>不要频繁设置绘图上下文的 font 属性。</li>
+<li>不在动画中使用 putImageData 方法。</li>
+<li>通过计算和判断，避免无谓的绘制操作。</li>
+<li>将固定的内容预先绘制在离屏 Canvas 上以提高性能。</li>
+<li>使用 Worker 和拆分任务的方法避免复杂算法阻塞动画运行。</li>
+</ol>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/index.html/post/canvas-best-practice-performance.html</link>
+            <guid isPermaLink="false">canvas-best-practice-performance</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[骨骼动画原理与前端实现浅谈]]></title>
+            <description><![CDATA[<h1 id="-">骨骼动画原理与前端实现浅谈</h1>
+<p>人的运动——走，跑，跳，是由骨骼带动躯干和四肢完成的。「骨骼动画」，顾名思义，就是模拟骨骼运动的机制而制作的动画。比如下面这条奔跑的小龙。参考 <a href="http://jsbin.com/seyita/1/edit?html,output">Demo</a>。</p>
+<p><img src="http://img.alicdn.com/tps/TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif" alt="奔跑的小龙"></p>
+<blockquote>
+<p>素材来自开源骨骼动画编辑器 <a href="http://dragonbones.github.io/">Dragonbones</a></p>
+</blockquote>
+<p>用到的素材，额，其实是他大卸八块后的样子。</p>
+<p><img src="http://img.alicdn.com/tps/TB1rZG9KFXXXXX3XFXXXXXXXXXX-369-272.jpg" alt="奔跑的小龙素材"></p>
+<p>骨骼动画主要被用游戏场景中，做 Logo 、彩蛋也不错（比如 2014 年双 11 的喵喵舞就是天猫的同学基于骨骼动画原理实现的）。其实，在 CSS <code>transform</code> 或 Canvas 的帮助下，Web 前端播放骨骼动画，可谓举手之劳矣。</p>
+<h2 id="-">组装骨骼</h2>
+<p>骨骼当然不是随便排列的，它们需要以树状结构组织起来。</p>
+<p><img src="http://img.alicdn.com/tps/TB17XvsKFXXXXXoXXXXXXXXXXXX-500-400.png" alt="骨骼解析"></p>
+<p>光有树状的结构还是远远不够的，每片骨骼还需要描述 <strong>自身的位移是多少（x，y），旋转的角度是多少（θ）</strong> 。注意， <strong>骨骼的位移和角度是相对「父骨骼」（的坐标系）而言的</strong> 。</p>
+<p>举个例子，左臂的位移是（78，-40），角度是 -30°，表示左臂在躯干的基础上，沿 X 轴平移 78，沿 Y 轴平移 -40，然后旋转 -30°，才是左臂目前的位置。同样，左前臂的位移是（-45，100），角度是 55°，表示左前臂在左臂的基础上，沿 X 轴平移 -45，沿 Y 轴平移 100，然后旋转 55°，才是左前臂的位置。依此类推。</p>
+<p><img src="http://img.alicdn.com/tps/TB1umjqKFXXXXXeXFXXXXXXXXXX-439-514.png" alt="躯干-左臂-左前臂 骨骼系统"></p>
+<p>位移和角度统称「变换参数」。用相对于父骨骼（而非全局）的变换参数描述子骨骼本身，其好处在于。当右臂（父骨骼）运动起来（变换参数变化起来）的时候，右前臂（子骨骼）自身即使不动（变换参数不变），它实际上还能够 <strong>随着</strong> 右臂运动。</p>
+<p>先不论如何使骨骼动起来，我们先研究下，如何把组装好的静态骨骼渲染/展示出来。这里分两种情况讨论：</p>
+<h3 id="dom-">DOM元素：</h3>
+<p>很容易想到，用固定尺寸且绝对定位的 <code>div</code>，配合 CSS <code>transform</code> 属性实现。比如：</p>
+<pre><code>&lt;div class=“躯干” style=“transform:躯干的位移和角度; position: absolute; …”&gt;
+  &lt;div class=“左臂” style=“transform:左臂的位移和角度; position: absolute; …”&gt;
+    &lt;div class=“左前臂” style=“..”&gt;
+      &lt;div class=“左爪” style=“..”&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;!—其余部分—&gt;
+&lt;/div&gt;
+</code></pre><p>你看，DOM 元素被 CSS <code>transform</code> 作用时，所有子元素随之被 <code>transform</code> 了，和骨骼动画完美契合！</p>
+<p>想法固然不错， <strong>但是</strong> ，请考虑一下这样一种情况：</p>
+<ul>
+<li>骨骼A：div A （z=1）<ul>
+<li>骨骼B：div B （z=4：B显示在D前面） </li>
+</ul>
+</li>
+<li>骨骼C：div C （z=2：C显示在A前面）<ul>
+<li>骨骼D：div D （z=3）</li>
+</ul>
+</li>
+</ul>
+<p>我们知道，在 <code>position:absolute</code> 时，DOM 元素会创建自己的 Stack Context。也就是说，只要 div A 的 <code>z-index</code> 值小于了 div C，那么作为 A 的子元素 B，即使 <code>z-index</code> 大过天，也不可能覆盖 C 及其子元素。</p>
+<p>所以，我们只能将所有骨骼平铺下来：</p>
+<ul>
+<li>骨骼A （z=1）</li>
+<li>骨骼B （z=4）</li>
+<li>骨骼C （z=2）</li>
+<li>骨骼D （z=3）</li>
+</ul>
+<p>这带来了新的问题：我们所具有的 B 的变换参数，是相对其父骨骼 A 的，而在渲染时，我们需要的是 B 直接相对于最外层骨骼的位移和角度。</p>
+<h3 id="canvas-">Canvas：</h3>
+<p>对使用 Canvas 的情况，我们知道 <code>context.transform</code> 方法会变换当前画笔坐标系，于是很容易想到这么做。</p>
+<pre><code>context.transform(躯干位置)
+context.save();  // 1
+  context.transform(左臂位置)
+  context.draw(左臂)
+    context.transform(在左臂左前臂位置)
+    context.draw(左前臂)
+      context.transform(左爪位置)
+      context.draw(左爪)
+context.restore() // 回到了 1 状态
+// 继续绘制其他部分
+</code></pre><p>这样做也存在问题。实际上，这种方法是按照深度优先的原则，遍历了以最外层骨骼为根的骨骼树，绘制了树上的每个节点（骨骼）。 <strong>这限制了我们绘制 Canvas 对象的顺序。</strong></p>
+<p>Canvas 2D 绘图没有 3D 绘图的「深度缓存」机制，所以在 2D 绘图中，对某一个像素而言，后绘制的内容一定会覆盖（至少影响）之前绘制的内容。但是，每片骨骼的 Z 值是定义好的，它们的前后关系可不能随便乱来，要使绘制的效果和定义的相同，就先得对骨骼进行深度排序，先画后面的，再画前面的。</p>
+<blockquote>
+<p>深度缓存机制，可以这样理解：我「画」了，但由于这个像素之前已经画过，而且 z 值比我大，所以我硬是没「画」上去。</p>
+</blockquote>
+<pre><code>context.setTransform(躯干的绝对位置)
+context.draw(躯干)
+context.setTransform(左臂的绝对位置)
+context.draw(左臂)
+//  按照深度顺序进行绘制
+</code></pre><p>这时，我们需要的位移和角度，便不再是相对于父骨骼的了，而是相对于最外层骨骼的。遇到的问题和使用 DOM 时一模一样。</p>
+<h2 id="-">从相对到绝对</h2>
+<p>仍然以躯干-左臂-左前臂系统为例。我们知道，左臂（相对躯干）的变换参数是（78，-40，-30°），左前臂（相对左臂）的变换参数是（-45，100，55°）。那么，左前臂相对躯干的变换参数如何求算呢？</p>
+<blockquote>
+<p>躯干也是有变换参数的，它的「父骨骼」是 Root ——一个「隐形」、「固定」的最外层骨骼，所以实际上我们需要求算相对 Root 的变换参数。不过原理是完全一致的。</p>
+</blockquote>
+<p>也许你会猜：左前臂相对躯干的变换参数是（78-45=33，-40+100=60，-30°+55°=25°）。这是错误的。</p>
+<p>实际上，位移和旋转会相互影响，不能直接加和。这里。我们需要使用「变换矩阵」来求算（还记得 <code>transform: matrix(…)</code> 的形式吗）。对于不了解图形学基础的同学，这也许有点难，不过没关系，我们只需要知道，通过一个 3x3 的矩阵，有办法算出左前臂相对躯干的变换参数。</p>
+<p>算出来的结果是 （89，69，25°）。</p>
+<p><img src="http://img.alicdn.com/tps/TB159_dKFXXXXcgXVXXXXXXXXXX-439-514.png" alt=""></p>
+<p>这样，我们就能在不依赖左臂的情况下，把左前臂的位置确定下来了。所有的骨骼都按照这种方式处理，万事大吉了！</p>
+<h2 id="-">动起来</h2>
+<p>骨骼拼装好的对象，当然是要动起来的。而骨骼动画最重要的特征，就是「父骨骼」的运动带动了所有「后代骨骼」（手臂挥舞的时候，巴掌当然要跟着动咯），所以骨骼动画才比较精致。</p>
+<p>一个完整的骨骼动画的 <strong>动作</strong> ，可以分解到每片骨骼上。而每一片骨骼的动作，则由关键帧所定义。举个例子，一个跑步的动作，分解到各个骨骼上，无非包括：</p>
+<ul>
+<li>躯干：上下起伏。</li>
+<li>腿部：抬起和落下。</li>
+<li>手臂：前后摆动。</li>
+<li>手前臂：肘部的弯曲变化。</li>
+</ul>
+<p>如果还想做细腻一些，自然还有头部的摆动，毛发颤动，眼珠转动等等……而每一片骨骼的变化，只需要三五个关键帧。比如，示例骨骼动画（小龙跑步）的关键帧定义如下图所示。每个关键帧包含的信息包括：关键帧在动画周期中的位置，以及骨骼的变换参数。</p>
+<p><img src="http://img.alicdn.com/tps/TB1BqHDKFXXXXaEXXXXXXXXXXXX-546-633.png" alt="小龙跑步关键帧"></p>
+<p>接下来，还有什么好说的呢？动画最基本的原理，就是随着时间更新对象的视觉状态。那么，对骨骼动画而言，就是在每一帧的时候，根据当前帧在一个动画周期内的位置，线性内插出每一片骨骼的位移和角度，然后算出全局的位移和角度，再画出来。</p>
+<blockquote>
+<p>内插，就是根据离散的值求取中间值的过程。最简单是线性内插，中间值仅与左右两个离散值，和中间值的位置有关。比如，当中间值位置为 0.5，左右两侧的值为 1 和 2，那么内插值就是 1.5，即 f(1, 2, 0.5) = 1.5；同理，f(1, 2, 0.7) = 1.7，f(1, 2, 0.3) = 1.3。</p>
+</blockquote>
+<p>如上图所示，一个动画周期的长度是 6 个单位（这里是 DragonBones 定义的长度单位，默认是 1/24 秒，实际播放时可以随意改变），那么在任意时刻（比如播放到 1 个单位时长之时），都需要根据左右最近的关键帧，内插出一个变换参数值，然后根据这个参数值，按照前一节所述的方法渲染或更新动画的状态。</p>
+<p>这样，我们就能看到下面的情形了：参考 <a href="http://jsbin.com/seyita/1/edit?html,output">Demo</a>。</p>
+<p><img src="http://img.alicdn.com/tps/TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif" alt="奔跑的小龙"></p>
+<h2 id="-">其他</h2>
+<p>开源软件 DragonBones 是设计 2D 骨骼动画的不二之选，它支持将动画数据导出成 JSON 格式。DragonBones 中有 bone（骨骼）、slot（插槽）、skin（皮肤）的概念。骨骼本身不包含实体，只有变换（位移、旋转等）的数据，骨骼包含一些插槽，Z 值定义在插槽上，而插槽里可以插入皮肤，皮肤除了描述对应哪张图（甚至图上的某个区域），还具有变换数据（但不会变化）。这些设计即方便了设计师在软件中的操作和编辑，也方便开发者使用这份数据来播放精灵动画。</p>
+<p>最后广告一下吧，<a href="http://gama.taobao.net">Gama</a> 现在也已经有了骨骼动画模块 <a href="http://gama.taobao.net/3/detail.html?name=skeleton">Gama Skeleton</a>，接入方便，使用简单，开箱即用，立等可取。</p>
+<p>（完）</p>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/index.html/post/skeleton.html</link>
+            <guid isPermaLink="false">skeleton</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Wed, 25 Nov 2015 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[使用 Browerify 组织前端代码]]></title>
+            <description><![CDATA[<h1 id="-browserify-">使用 Browserify 组织前端代码</h1>
+<p>在最近的一些项目中，我使用了 <a href="http://browserify.org/">Browserify</a> 来组织和构建前端代码。这个工具彻底改变了前端代码的模块化组织（以及构建）形式。</p>
+<h2 id="browserify-">Browserify 的原理</h2>
+<p>Browserify 的工作是，将 node 风格组织的代码（CMD 规范）打包为可在浏览器上运行文件。</p>
+<p>例如，模块 <code>index.js</code> 依赖了另两个模块 <code>a.js</code>，<code>b.js</code>。</p>
+<pre><code class="lang-js">// b.js
+module.exports = &#39;hello&#39;
+
+// a.js
+module.exports = require(&#39;./b.js&#39;)
+
+// index.js
+module.exports = function(argument) {
+  return {
+    x: require(&#39;./a.js&#39;)
+  }
+}
+</code></pre>
+<p>Browserify 将其打包生成了这样一个文件。外面这层代码进行过压缩，我稍作反向（加了一些注释）。</p>
+<pre><code class="lang-js">(function main(originMap, map, arr) {
+  function getModule(index, u) {
+    // 如果 map 中找不到
+    //   如果 originMap 中也找不到，就报错
+    //   如果 originMap 中找到了，就先去把 originMap 里面的模块执行一遍，放在 map 中，并返回
+    // 如果 map 中找到了，直接返回
+    if (!map[index]) {
+      if (!originMap[index]) {
+        var a = typeof require == &quot;function&quot; &amp;&amp; require;
+        if (!u &amp;&amp; a) return a(index, !0);
+        if (i) return i(index, !0);
+        var f = new Error(&quot;Cannot find module &#39;&quot; + index + &quot;&#39;&quot;);
+        throw f.code = &quot;MODULE_NOT_FOUND&quot;, f
+      }
+      // 这就是模块了
+      var theModule = map[index] = {
+        exports: {}
+      };
+      // 执行包含模块的函数 originMap[index][0]，当依赖其他模块时，
+      // 利用依赖模块的索引 originMap[index][1] 递归调用 getModule
+      originMap[index][0].call(theModule.exports, function(url) {
+          var i = originMap[index][1][url];
+          return getModule(i ? i : url)
+        }, theModule, theModule.exports,
+        main, originMap, map, arr /*这几处是用来调试的?*/ )
+    }
+    return map[index].exports
+  }
+  // Browserify 有多重模式，可以包装成供各种模式加载的模块文件。
+  // 在其他模式下，Browserify 还会在再外面包一层 shim，这里应该是给外面一层 shim 用的。
+  var i = typeof require == &quot;function&quot; &amp;&amp; require;
+  // 预先取一下入口模块
+  for (var j = 0; j &lt; arr.length; j++) {
+    getModule(arr[j])
+  };
+  return getModule
+})(
+
+  // 第 1 个参数
+  // originMap
+  {
+    // 每项是一个模块
+    1: [
+      // 模块的代码，包在一个函数中
+      function(require, module, exports) {
+        module.exports = function(argument) {
+          return {
+            x: require(&#39;./a.js&#39;)
+          }
+        }
+      },
+      // 这个模块所有依赖模块在 originMap 中的索引
+      {
+        &quot;./a.js&quot;: 2
+      }
+    ],
+    2: [
+
+      function(require, module, exports) {
+        module.exports = require(&#39;./b.js&#39;)
+      }, {
+        &quot;./b.js&quot;: 3
+      }
+    ],
+    3: [
+      function(require, module, exports) {
+        module.exports = &#39;hello&#39;
+      }, {}
+    ]
+  },
+
+  // 第 2 个参数
+  // map
+  // 存储已经执行过的模块
+  {},
+
+  // 第 3 个参数
+  // 入口模块的索引
+  [1]
+
+);
+</code></pre>
+<p>如源码所示，Browserify 将 <code>index.js</code> 文件、以及依赖的模块文件 <code>a.js</code> 和 <code>b.js</code> 中的文本分别包在函数中，在外部提供 <code>require</code>，<code>module</code>，<code>exports</code>，然后模拟 nodejs 模块化机制：仅在首次 <code>require</code> 模块时执行包含了模块的函数，并将返回值（即模块本身）暂存起来，以后 <code>require</code>模块时直接返回之前暂存的模块。</p>
+<p>传统的前端模块化方案，如 RequireJS 等需要通过浏览器发起请求，获得并执行模块，得到模块的结果。每多一个模块文件，就会多一个请求。实际编写代码的时候，往往把模块的粒度分得很细，一两百行一个文件，但是这样请求就会非常多。虽然也有一些解决方案（把若干 AMD 模块打包为一个文件以减少请求），但是并没有形成事实的标准。Browserify 直接借鉴 Node 的模块组织方式，有天然的优势。</p>
+<p>当然，Browserify 也有一些可以「缺陷」，比如文件体积比较大，使用 AMD 时在某些分支内部的文件也都全部打包了进来。但我认为这完全是可以容忍的。</p>
+<h2 id="-browserify-gulp">使用 Browserify 配合 gulp</h2>
+<p>需要配合以 gulp-buffer 和 vinyl-source-stream。</p>
+<pre><code class="lang-js">Browserify(&#39;src/index.js&#39;)
+  .bundle()
+  // vinyl-source-stream
+  .pipe(source(&#39;index.js&#39;))
+  // gulp-buffer
+  .pipe(buffer())
+  .pipe(gulp.dest(&#39;build/&#39;));
+</code></pre>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/index.html/post/use-browserify-in-fed.html</link>
+            <guid isPermaLink="false">use-browserify-in-fed</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Wed, 28 Jan 2015 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[WebGL 技术储备指南]]></title>
+            <description><![CDATA[<h1 id="webgl-">WebGL 技术储备指南</h1>
+<p>WebGL是html5草案的一部分，可以驱动canvas渲染三维场景。WebGL虽然还未有广泛应用，但极具潜力和想象空间。本文是我学习WebGL时梳理知识脉络的产物，花点时间整理出来与大家分享。</p>
+<h2 id="-">示例</h2>
+<p>WebGL很酷，有以下demos为证：</p>
+<p><a href="http://www.findyourwaytooz.com/">寻找奥兹国</a></p>
+<p><a href="http://triggerrally.com/">赛车游戏</a></p>
+<p><a href="http://www.gooengine.com/demofiles/pearl-boy/index.html">划船的男孩</a>(<a href="https://www.goocreate.com/">Goo Engine</a> Demo)</p>
+<h2 id="-">本文的目标</h2>
+<p>本文的预期读者是：不熟悉图形学，熟悉前端，希望了解或系统学习WebGL的同学。</p>
+<p>本文不是WebGL的概述性文章，也不是完整详细的WebGL教程。本文只希望成为一篇供WebGL初学者使用的提纲。</p>
+<h2 id="canvas">canvas</h2>
+<p>熟悉canvas的同学都知道，canvas绘图先要获取绘图上下文：</p>
+<pre><code>var context = canvas.getContext(&#39;2d&#39;);
+</code></pre><p>在<code>context</code>上调用各种函数绘制图形，比如：</p>
+<pre><code>// 绘制左上角为(0,0)，右下角为(50, 50)的矩形
+context.fillRect(0, 0, 50, 50);
+</code></pre><p>WebGL同样需要获取绘图上下文：</p>
+<pre><code>var gl = canvas.getContext(&#39;webgl&#39;); // 或experimental-webgl
+</code></pre><p>但是接下来，如果想画一个矩形的话，就没这么简单了。实际上，canvas是浏览器封装好的一个绘图环境，在实际进行绘图操作时，浏览器仍然需要调用OpenGL API。而WebGL API几乎就是OpenGL API未经封装，直接套了一层壳。</p>
+<p>Canvas的更多知识，可以参考：</p>
+<ul>
+<li><a href="http://www.amazon.cn/JavaScript%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97-David-Flanagan/dp/B00E593MTS">JS权威指南</a>的21.4节或<a href="http://www.amazon.cn/JavaScript%E9%AB%98%E7%BA%A7%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1-%E6%B3%BD%E5%8D%A1%E6%96%AF/dp/B00CBBJS5Y/ref=sr_1_1?s=digital-text&amp;ie=UTF8&amp;qid=1408975825&amp;sr=1-1&amp;keywords=javascript%E9%AB%98%E7%BA%A7%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1">JS高级程序设计</a>中的15章</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Canvas/Tutorial">W3CSchool</a></li>
+<li><a href="http://javascript.ruanyifeng.com/htmlapi/canvas.html">阮一峰的canvas教程</a></li>
+</ul>
+<h2 id="-">矩阵变换</h2>
+<p>三维模型，从文件中读出来，到绘制在canvas中，经历了多次坐标变换。</p>
+<p>假设有一个最简单的模型：三角形，三个顶点分别为(-1,-1,0)，(1,-1,0)，(0,1,0)。这三个数据是从文件中读出来的，是三角形最初始的坐标(局部坐标)。如下图所示，右手坐标系。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1.bc9KVXXXXXAaXXXXXXXXXXX-283-291.png" alt=""></p>
+<p>模型通常不会位于场景的原点，假设三角形的原点位于(0,0,-1)处，没有旋转或缩放，三个顶点分别为(-1,-1,-1)，(1,-1,-1)，(0,1,-1)，即世界坐标。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1x_k7KVXXXXc0aXXXXXXXXXXX-283-245.png" alt=""></p>
+<p>绘制三维场景必须指定一个观察者，假设观察者位于(0,0,1)处而且看向三角形，那么三个顶点相对于观察者的坐标为(-1,-1,-2)，(1,-1,-2)，(0,1,-2)，即视图坐标。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1zSpnLXXXXXXGXFXXXXXXXXXX-283-236.png" alt=""></p>
+<p>观察者的眼睛是一个点(这是透视投影的前提)，水平视角和垂直视角都是90度，视野范围(目力所及)为[0,2]在Z轴上，观察者能够看到的区域是一个四棱台体。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1umA_KVXXXXaDaXXXXXXXXXXX-283-324.png" alt=""></p>
+<p>将四棱台体映射为标准立方体(CCV，中心为原点，边长为2，边与坐标轴平行)。顶点在CCV中的坐标，离它最终在canvas中的坐标已经很接近了，如果把CCV的前表面看成canvas，那么最终三角形就画在图中橙色三角形的位置。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1NbRuLXXXXXc3XXXXXXXXXXXX-283-245.png" alt=""></p>
+<p>上述变换是用矩阵来进行的。</p>
+<p>局部坐标 --(模型变换)-&gt; 世界坐标 --(视图变换)-&gt; 视图坐标 --(投影变换)--&gt; CCV坐标。</p>
+<p>以(0,1,0)为例，它的齐次向量为(0,0,1,1)，上述变换的表示过程可以是：</p>
+<p>\begin{equation}\begin{pmatrix}1 &amp; 0 &amp; 0 &amp; 0\newline 0 &amp; 1 &amp; 0 &amp; 0\newline 0 &amp; 0 &amp; -2 &amp; -3\newline 0 &amp; 0 &amp; -1 &amp; 0\end{pmatrix}\cdot \begin{pmatrix}1 &amp; 0 &amp; 0 &amp; 0 \newline 0 &amp; 1 &amp; 0 &amp; 0\newline 0 &amp; 0 &amp; 1 &amp; -1\newline 0 &amp; 0 &amp; 0 &amp; 1\end{pmatrix} \cdot \begin{pmatrix}1 &amp; 0 &amp; 0 &amp; 0 \newline 0 &amp; 1 &amp; 0 &amp; 0\newline 0 &amp; 0 &amp; 1 &amp; -1\newline 0 &amp; 0 &amp; 0 &amp; 1\end{pmatrix}\cdot \begin{pmatrix} 0\newline 1\newline 0\newline 1\end{pmatrix} = \begin{pmatrix}0\newline 1\newline 2\newline 2\end{pmatrix}\end{equation}</p>
+<p>上面三个矩阵依次是透视投影矩阵，视图矩阵，模型矩阵。三个矩阵的值分别取决于：观察者的视角和视野距离，观察者在世界中的状态(位置和方向)，模型在世界中的状态(位置和方向)。计算的结果是(0,1,1,2)，化成齐次坐标是(0,0.5,0.5,1)，就是这个点在CCV中的坐标，那么(0,0.5)就是在canvas中的坐标(认为canvas中心为原点，长宽都为2)。</p>
+<p>上面出现的(0,0,1,1)是(0,0,1)的齐次向量。齐次向量(x,y,z,w)可以代表三维向量(x,y,z)参与矩阵运算，通俗地说，w分量为1时表示位置，w分量为0时表示位移。</p>
+<p>WebGL没有提供任何有关上述变换的机制，开发者需要亲自计算顶点的CCV坐标。</p>
+<p>关于坐标变换的更多内容，可以参考：</p>
+<ul>
+<li><a href="http://www.amazon.cn/%E5%9B%BD%E5%A4%96%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E6%95%99%E6%9D%90%E7%B3%BB%E5%88%97-%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6-Donald-D-Hearn/dp/B007IDS39W/ref=sr_1_cc_2?s=aps&amp;ie=UTF8&amp;qid=1408975885&amp;sr=1-2-catcorr&amp;keywords=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>中的5-7章</li>
+<li><a href="http://zh.wikipedia.org/wiki/%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5">变换矩阵@维基百科</a></li>
+<li><a href="http://www.cnblogs.com/graphics/archive/2012/07/25/2582119.html">透视投影详解</a></li>
+<li><a href="http://www.cnblogs.com/yiyezhai/archive/2012/09/12/2677902.html">我以前的笔记</a></li>
+</ul>
+<p>比较复杂的是模型变换中的绕任意轴旋转(通常用四元数生成矩阵)和投影变换(上面的例子都没收涉及到)。</p>
+<p>关于绕任意轴旋转和四元数，可以参考：</p>
+<ul>
+<li><a href="http://zh.wikipedia.org/wiki/%E5%9B%9B%E5%85%83%E6%95%B8">四元数@维基百科</a></li>
+<li><a href="http://www.cnblogs.com/yiyezhai/p/3176725.html">我以前的笔记</a></li>
+<li><a href="http://www.cs.ucr.edu/~vbz/resources/quatut.pdf">一个老外对四元数公式的证明</a></li>
+<li><a href="http://www.xieguanglei.com/post/2013-07-12-%E5%9B%9B%E5%85%83%E6%95%B0%E6%97%8B%E8%BD%AC%E5%85%AC%E5%BC%8F%E8%AF%81%E6%98%8E.html">我以前的另一篇笔记</a></li>
+</ul>
+<p>关于齐次向量的更多内容，可以参考。</p>
+<ul>
+<li><a href="http://www.amazon.cn/%E5%9B%BD%E5%A4%96%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%E6%95%99%E6%9D%90%E7%B3%BB%E5%88%97-%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6-Donald-D-Hearn/dp/B007IDS39W/ref=sr_1_cc_2?s=aps&amp;ie=UTF8&amp;qid=1408975885&amp;sr=1-2-catcorr&amp;keywords=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6">计算机图形学</a>的5.2节</li>
+<li><a href="http://zh.wikipedia.org/zh/%E9%BD%90%E6%AC%A1%E5%9D%90%E6%A0%87">齐次坐标@维基百科</a></li>
+</ul>
+<h2 id="-">着色器和光栅化</h2>
+<p>在WebGL中，开发者是通过着色器来完成上述变换的。着色器是运行在显卡中的程序，以GLSL语言编写，开发者需要将着色器的源码以字符串的形式传给webgl上下文的相关函数。</p>
+<p>着色器有两种，顶点着色器和片元(像素)着色器，它们成对出现。顶点着色器任务是接收顶点的局部坐标，输出CCV坐标。CCV坐标经过光栅化，转化为逐像素的数据，传给片元着色器。片元着色器的任务是确定每个片元的颜色。</p>
+<p>顶点着色器接收的是attribute变量，是逐顶点的数据。顶点着色器输出varying变量，也是逐顶点的。逐顶点的varying变量数据经过光栅化，成为逐片元的varying变量数据，输入片元着色器，片元着色器输出的结果就会显示在canvas上。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1H9xALXXXXXaYXXXXXXXXXXXX-567-463.png" alt=""></p>
+<p>着色器功能很多，上述只是基本功能。大部分炫酷的效果都是依赖着色器的。如果你对着色器完全没有概念，可以试着理解下一节hello world程序中的着色器再回顾一下本节。</p>
+<p>关于更多着色器的知识，可以参考：</p>
+<ul>
+<li><a href="http://zh.wikipedia.org/zh/GLSL">GLSL@维基百科</a></li>
+<li><a href="http://msdn.microsoft.com/zh-cn/library/dn385807.aspx">WebGL@MSDN</a></li>
+</ul>
+<h2 id="-">程序</h2>
+<p>这一节解释绘制上述场景(三角形)的WebGL程序。点<a href="http://xieguanglei.qiniudn.com/webgl/hello-triangle/HelloTriangle.html">这个链接</a>，查看源代码，试图理解一下。这段代码出自<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920">WebGL Programming Guide</a>，我作了一些修改以适应本文内容。如果一切正常，你看到的应该是下面这样：</p>
+<p><img src="http://gw.alicdn.com/tps/TB1sXXmLXXXXXasXFXXXXXXXXXX-283-283.png" alt=""></p>
+<p>解释几点(如果之前不了解WebGL，多半会对下面的代码困惑，无碍)：</p>
+<ol>
+<li><p>字符串VSHADER_SOURCE和FSHADER_SOURCE是顶点着色器和片元着色器的源码。可以将着色器理解为有固定输入和输出格式的程序。开发者需要事先编写好着色器，再按照一定格式着色器发送绘图命令。</p>
+</li>
+<li><p>Part2将着色器源码编译为program对象：先分别编译顶点着色器和片元着色器，然后连接两者。如果编译源码错误，不会报JS错误，但可以通过其他API(如gl.getShaderInfo等)获取编译状态信息(成功与否，如果出错的错误信息)。</p>
+<pre><code> // 顶点着色器
+ var vshader = gl.createShader(gl.VERTEX_SHADER);
+ gl.shaderSource(vshader, VSHADER_SOURCE);
+ gl.compileShader(vshader);
+ // 同样新建fshader
+ var program = gl.createProgram();
+ gl.attachShader(program, vshader);
+ gl.attachShader(program, fshader);
+ gl.linkProgram(program);
+</code></pre></li>
+<li><p>program对象需要指定使用它，才可以向着色器传数据并绘制。复杂的程序通常有多个program对象，(绘制每一帧时)通过切换program对象绘制场景中的不同效果。</p>
+<pre><code> gl.useProgram(program);
+</code></pre></li>
+<li><p>Part3向正在使用的着色器传入数据，包括逐顶点的attribute变量和全局的uniform变量。向着色器传入数据必须使用ArrayBuffer，而不是常规的JS数组。</p>
+<pre><code> var varray = new Float32Array([-1, -1, 0, 1, -1, 0, 0, 1, 0])
+</code></pre></li>
+<li><p>WebGL API对ArrayBuffer的操作(填充缓冲区，传入着色器，绘制等)都是通过gl.ARRAY_BUFFER进行的。在WebGL系统中又很多类似的情况。</p>
+<pre><code> // 只有将vbuffer绑定到gl.ARRAY_BUFFER，才可以填充数据
+ gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+ // 这里的意思是，向“绑定到gl.ARRAY_BUFFER”的缓冲区中填充数据
+ gl.bufferData(gl.ARRAY_BUFFER, varray, gl.STATIC_DRAW);
+ // 获取a_Position变量在着色器程序中的位置，参考顶点着色器源码
+ var aloc = gl.getAttribLocation(program, &#39;a_Position&#39;);
+ // 将gl.ARRAY_BUFFER中的数据传入aloc表示的变量，即a_Position
+ gl.vertexAttribPointer(aloc, 3, gl.FLOAT, false, 0, 0);
+ gl.enableVertexAttribArray(aloc);
+</code></pre></li>
+<li><p>向着色器传入矩阵时，是按列存储的。可以比较一下mmatrix和矩阵变换一节中的模型矩阵(第3个)。</p>
+</li>
+<li><p>顶点着色器计算出的gl_Position就是CCV中的坐标，比如最上面的顶点(蓝色)的gl_Position化成齐次坐标就是(0,0.5,0.5,1)。</p>
+</li>
+<li><p>向顶点着色器传入的只是三个顶点的颜色值，而三角形表面的颜色渐变是由这三个颜色值内插出的。光栅化不仅会对gl_Position进行，还会对varying变量插值。</p>
+</li>
+<li><p>gl.drawArrays()方法驱动缓冲区进行绘制，gl.TRIANGLES指定绘制三角形，也可以改变参数绘制点、折线等等。</p>
+</li>
+</ol>
+<p>关于ArrayBuffer的详细信息，可以参考：</p>
+<ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/ArrayBuffer">ArrayBuffer@MDN</a></li>
+<li><a href="http://javascript.ruanyifeng.com/stdlib/arraybuffer.html">阮一峰的ArrayBuffer介绍</a></li>
+<li><a href="http://www.zhangxinxu.com/wordpress/2013/10/understand-domstring-document-formdata-blob-file-arraybuffer/">张鑫旭的ArrayBuffer介绍</a></li>
+</ul>
+<p>关于gl.TRIANGLES等其他绘制方式，可以参考下面这张图或<a href="http://3dgep.com/rendering-primitives-with-opengl/">这篇博文</a>。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1B1A.KVXXXXcQXVXXXXXXXXXX-600-300.png" alt="引用自http://3dgep.com/rendering-primitives-with-opengl/"></p>
+<h2 id="-">深度检测</h2>
+<p>当两个表面重叠时，前面的模型会挡住后面的模型。比如<a href="http://xieguanglei.qiniudn.com/webgl/depth-test/DepthTest.html">这个例子</a>，绘制了两个交叉的三角形(varray和carray的长度变为18，gl.drawArrays最后一个参数变为6)。为了简单，这个例子去掉了矩阵变换过程，直接向着色器传入CCV坐标。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1uKZ7KVXXXXc8aXXXXXXXXXXX-283-286.png" alt=""></p>
+<p><img src="http://gw.alicdn.com/tps/TB1PNVmLXXXXXXLXFXXXXXXXXXX-283-262.png" alt=""></p>
+<p>顶点着色器给出了6个顶点的gl_Position，经过光栅化，片元着色器获得了2X个片元(假设X为每个三角形的像素个数)，每个片元都离散的x，y坐标值，还有z值。x，y坐标就是三角形在canvas上的坐标，但如果有两个具有相同x，y坐标的片元同时出现，那么WebGL就会取z坐标值较小的那个片元。</p>
+<p>在深度检测之前，必须在绘制前开启一个常量。否则，WebGL就会按照在varray中定义的顺序绘制了，后面的会覆盖前面的。</p>
+<pre><code>gl.enable(gl.DEPTH_TEST);
+</code></pre><p>实际上，WebGL的逻辑是这样的：依次处理片元，如果渲染缓冲区(这里就是canvas了)的那个与当前片元对应的像素还没有绘制时，就把片元的颜色画到渲染缓冲区对应像素里，同时把片元的z值缓存在另一个深度缓冲区的相同位置；如果当前缓冲区的对应像素已经绘制过了，就去查看深度缓冲区中对应位置的z值，如果当前片元z值小，就重绘，否则就放弃当前片元。</p>
+<p>WebGL的这套逻辑，对理解蒙版(后面会说到)有一些帮助。</p>
+<h2 id="-">顶点索引</h2>
+<p>gl.drawArrays()是按照顶点的顺序绘制的，而gl.drawElements()可以令着色器以一个索引数组为顺序绘制顶点。比如<a href="http://xieguanglei.qiniudn.com/webgl/draw-elements/drawElements.html">这个例子</a>。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1e50eLXXXXXauXVXXXXXXXXXX-283-281.png" alt=""></p>
+<p>这里画了两个三角形，但只用了5个顶点，有一个顶点被两个三角形共用。这时需要建立索引数组，数组的每个元素表示顶点的索引值。将数组填充至<code>gl.ELEMENT_ARRAY</code>，然后调用gl.drawElements()。</p>
+<pre><code>var iarray = new Uint8Array([0,1,2,2,3,4]);
+var ibuffer = gl.createBuffer(gl.ARRAY_BUFFER, ibuffer);
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, iarray, gl.STATIC_DRAW);
+</code></pre><h2 id="-">纹理</h2>
+<p>attribute变量不仅可以传递顶点的坐标，还可以传递其他任何逐顶点的数据。比如HelloTriangle程序把单个顶点的颜色传入了a_Color，片元着色器收到v_Color后直接赋给gl_FragmentColor，就决定了颜色。</p>
+<p>attribute变量还可以帮助绘制纹理。绘制纹理的基本原理是，为每个顶点指定一个纹理坐标(在(0,0)与(1,1,)的正方形中)，然后传入纹理对象。片元着色器拿到的是对应片元的内插后的纹理坐标，就利用这个纹理坐标去纹理对象上取颜色，再画到片元上。内插后的纹理坐标很可能不恰好对应纹理上的某个像素，而是在几个像素之间(因为通常的图片纹理也是离散)，这时可能会通过周围几个像素的加权平均算出该像素的值(具体有若干种不同方法，可以参考)。</p>
+<p>比如<a href="http://xieguanglei.qiniudn.com/webgl/texture/texture.html">这个例子</a>。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1.6twLXXXXXcRXXXXXXXXXXXX-283-283.png" alt=""></p>
+<p>纹理对象和缓冲区对象很类似：使用gl的API函数创建，需要绑定至常量gl.ARRAY_BUFFER和gl.TEXTURE_2D，都通过常量对象向其中填入图像和数据。不同的是，纹理对象在绑定时还需要激活一个纹理单元(此处的<code>gl.TEXTURE0</code>)，而WebGL系统支持的纹理单元个数是很有限的(一般为8个)。</p>
+<pre><code>var texture = gl.createTexture();
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+gl.activeTexture(gl.TEXTURE0);
+gl.bindTexture(gl.TEXTURE_2D, texture);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, textureImage);
+var sloc = gl.getUniformLocation(program, &#39;u_Sampler&#39;);
+gl.uniform1i(sloc, 0);
+</code></pre><p>片元着色器内声明了sampler2D类型的uniform变量，通过<code>texture2D</code>函数取样。</p>
+<pre><code>precision mediump float;
+uniform sampler2D u_Sampler;
+varying vec2 v_TexCoord;
+void main() {
+  gl_FragColor = texture2D(u_Sampler, v_TexCoord);
+};
+</code></pre><h2 id="-">混合与蒙版</h2>
+<p>透明效果是用混合机制完成的。混合机制与深度检测类似，也发生在试图向某个已填充的像素填充颜色时。深度检测通过比较z值来确定像素的颜色，而混合机制会将两种颜色混合。比如<a href="http://xieguanglei.qiniudn.com/webgl/blend/blend.html">这个例子</a>。</p>
+<p><img src="https://gw.alicdn.com/tps/TB1pndjLXXXXXbtXFXXXXXXXXXX-283-285.png" alt=""></p>
+<p>混合的顺序是按照绘制的顺序进行的，如果绘制的顺序有变化，混合的结果通常也不同。如果模型既有非透明表面又有透明表面，绘制透明表面时开启蒙版，其目的是锁定深度缓冲区，因为半透明物体后面的物体还是可以看到的，如果不这样做，半透明物体后面的物体将会被深度检测机制排除。</p>
+<p>开启混合的代码如下。<code>gl.blendFunc</code>方法指定了混合的方式，这里的意思是，使用源(待混合)颜色的α值乘以源颜色，加上1-[源颜色的α]乘以目标颜色。</p>
+<pre><code>gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+</code></pre><p>所谓α值，就是颜色的第4个分量。</p>
+<pre><code>var carray = new Float32Array([
+  1,0,0,0.7,1,0,0,0.7,1,0,0,0.7,
+  0,0,1,0.4,0,0,1,0.4,0,0,1,0.4
+  ]);
+</code></pre><h2 id="-webgl-">浏览器的WebGL系统</h2>
+<p>WebGL系统各个组成部分在既定规则下互相配合。稍作梳理如下。</p>
+<p><img src="http://gw.alicdn.com/tps/TB1st34KVXXXXXqapXXXXXXXXXX-567-447.png" alt=""></p>
+<p>这张图比较随意，箭头上的文字表示API，箭头方向大致表现了数据的流动方向，不必深究。</p>
+<h2 id="-">光照</h2>
+<p>WebGL没有为光照提供任何内置的方法，需要开发者在着色器中实现光照算法。</p>
+<p>光是有颜色的，模型也是有颜色的。在光照下，最终物体呈现的颜色是两者共同作用的结果。</p>
+<p>实现光照的方式是：将光照的数据(点光源的位置，平行光的方向，以及光的颜色和强度)作为uniform变量传入着色器中，将物体表面每个顶点处的法线作为attribute变量传入着色器，遵循光照规则，修订最终片元呈现的颜色。</p>
+<p>光照又分为逐顶点的和逐片元的，两者的区别是，将法线光线交角因素放在顶点着色器中考虑还是放在片元着色器中考虑。逐片元光照更加逼真，一个极端的例子是：</p>
+<p><img src="http://gw.alicdn.com/tps/TB1b6g_KVXXXXaYaXXXXXXXXXXX-145-286.png" alt=""></p>
+<p>此时，点光源在距离一个表面较近处，表面中央A处较亮，四周较暗。但是在逐顶点光照下，表面的颜色(的影响因子)是由顶点内插出来的，所以表面中央也会比较暗。而逐片元光照直接使用片元的位置和法线计算与点光源的交角，因此表面中央会比较亮。</p>
+<h2 id="-">复杂模型</h2>
+<p>复杂模型可能有包括子模型，子模型可能与父模型有相对运动。比如开着雨刮器的汽车，雨刮器的世界坐标是受父模型汽车，和自身的状态共同决定的。若要计算雨刮器某顶点的位置，需要用雨刮器相对汽车的模型矩阵乘上汽车的模型矩阵，再乘以顶点的局部坐标。</p>
+<p>复杂模型可能有很多表面，可能每个表面使用的着色器就不同。通常将模型拆解为组，使用相同着色器的表面为一组，先绘制同一组中的内容，然后切换着色器。每次切换着色器都要重新将缓冲区中的数据分配给着色器中相应变量。</p>
+<h2 id="-">动画</h2>
+<p>动画的原理就是快速地擦除和重绘。常用的方法是大名鼎鼎的requestAnimationFrame。不熟悉的同学，可以参考<a href="http://www.cnblogs.com/rubylouvre/archive/2011/08/22/2148797.html">正美的介绍</a>。</p>
+<h2 id="webgl-">WebGL库</h2>
+<p>目前最流行的WebGL库是ThreeJS，很强大，<a href="http://threejs.org/">官网</a>，<a href="https://github.com/mrdoob/three.js/">代码</a>。</p>
+<h2 id="-">调试工具</h2>
+<p>比较成熟的WebGL调试工具是<a href="http://benvanik.github.io/WebGL-Inspector/">WebGL Inspector</a>。</p>
+<h2 id="-">网络资源和书籍</h2>
+<p>英文的关于WebGL的资源有很多，包括：</p>
+<ul>
+<li><a href="http://learningwebgl.com/blog/?page_id=1217">learning webgl</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/WebGL">WebGL@MDN</a></li>
+<li><a href="http://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf">WebGL Cheat Sheet</a></li>
+</ul>
+<p>国内最早的WebGL教程是由郝稼力翻译的，放在hiwebgl上，目前hiwebgl已经关闭，但教程还可以在<a href="http://www.html-5.cn/html5/texing/WebGL/">这里</a>找到。郝稼力目前运营着<a href="http://www.lao3d.com/">Lao3D</a>。</p>
+<p>国内已经出版的WebGL书籍有：</p>
+<ul>
+<li><a href="http://www.amazon.cn/WebGL%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97-%E5%B8%95%E9%87%8C%E8%A5%BF/dp/B00DA1VQF4/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1409016405&amp;sr=1-1&amp;keywords=webgl%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97">WebGL入门指南</a>：其实是一本讲ThreeJS的书</li>
+<li><a href="http://www.amazon.cn/WebGL%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B-%E5%BC%80%E5%8F%91Web-3D%E5%9B%BE%E5%BD%A2-%E9%98%BF%E5%B0%A4%E9%B2%81/dp/B00DNVT6H6/ref=cm_cr_pr_pb_t">WebGL高级编程</a>：还不错的一本</li>
+<li><a href="http://www.amazon.cn/WebGL%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97-%E6%9D%BE%E7%94%B0%E6%B5%A9%E4%B8%80/dp/B00KXQPR0Y/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1409016454&amp;sr=1-1&amp;keywords=WebGL%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97">WebGL编程指南</a>：相当靠谱的全面教程</li>
+</ul>
+<p>最后再夹杂一点私货吧。读书期间我曾花了小半年时间翻译了一本<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920">WebGL的书</a>，也就是上面的第3本。这本书确实相当靠谱，网上各种教程里很多没说清楚的东西，这本书说得很清楚，而且还提供了一份很完整的API文档。翻译这本书的过程也使我受益匪浅。如果有同学愿意系统学一下WebGL的，建议购买一本(文青建议买<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920/ref=sr_1_1?ie=UTF8&amp;qid=1409015819&amp;sr=8-1&amp;keywords=webgl+programming+guide">英文版</a>)。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/index.html/post/webgl-handbook.html</link>
+            <guid isPermaLink="false">webgl-handbook</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Mon, 25 Aug 2014 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[「三国杀」全武将 DIY]]></title>
+            <description><![CDATA[<h1 id="-diy">三国杀全武将DIY</h1>
+<p>我很喜欢三国杀标准版中，对武将<strong>朴素而传神</strong>的设计，因此我按照这样的思路重新YY了三国杀全武将。</p>
+<h2 id="-">魏国</h2>
+<table>
+<thead>
+<tr>
+<th>武将</th>
+<th>勾玉</th>
+<th>技能 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 曹操</td>
+<td>4</td>
+<td>奸雄：可以获得对你造成伤害的牌。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>归心：限定技，首次进入濒死阶段并被救回后，你可以立刻恢复1点体力并增加1点体力上限。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>护驾：主公技，魏国角色可以为你打出【闪】。</td>
+</tr>
+<tr>
+<td> 张辽</td>
+<td>4</td>
+<td>突袭：你可跳过判定和摸牌阶段，抽取其他两名角色各1张手牌。</td>
+</tr>
+<tr>
+<td> 徐晃</td>
+<td>4</td>
+<td>断粮：你可将黑色基本牌或装备牌作为【兵粮寸断】使用，你可以对距离为2的角色使用【兵粮寸断】。</td>
+</tr>
+<tr>
+<td> 张郃</td>
+<td>4</td>
+<td>料敌：出牌阶段，你可以收回其他角色打出的【闪】或【桃】。</td>
+</tr>
+<tr>
+<td> 于禁</td>
+<td>4</td>
+<td>毅重：弃牌阶段，你可将弃置的至多2张基本牌收回。</td>
+</tr>
+<tr>
+<td> 乐进</td>
+<td>4</td>
+<td>骁勇：每出1张【杀】，你可以摸1张牌，然后弃1张牌。</td>
+</tr>
+<tr>
+<td> 李典</td>
+<td>4</td>
+<td>镇静：出牌阶段，你可以交给一名角色1张手牌，移除其所有判定区的牌，并使其正面朝上。1回合限1次。</td>
+</tr>
+<tr>
+<td> 许褚</td>
+<td>4</td>
+<td>虎痴：出牌阶段，可与其他角色拼点，若你赢，视为对其出1张【决斗】。</td>
+</tr>
+<tr>
+<td> 典韦</td>
+<td>4</td>
+<td>强袭：出牌阶段，你可以弃置1张武器牌或失去1点体力，对攻击范围内的角色造成1点伤害。1回合限1次。</td>
+</tr>
+<tr>
+<td> 夏侯惇</td>
+<td>4</td>
+<td>刚烈：你每受到1次伤害，可以对伤害来源造成1点伤害。</td>
+</tr>
+<tr>
+<td> 夏侯渊</td>
+<td>4</td>
+<td>神速：你每回合可以出两张【杀】，你的【杀】没有距离限制。</td>
+</tr>
+<tr>
+<td> 曹仁</td>
+<td>4</td>
+<td>据守：你在回合外打出1张基本牌后，若手牌数小于3，可摸1张牌。</td>
+</tr>
+<tr>
+<td> 郭嘉</td>
+<td>3</td>
+<td>遗计：每受到1点伤害，可观看牌堆顶的两张牌，并任意分配给其他角色。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>天妒：在你的判定牌生效前，你可以获得之。</td>
+</tr>
+<tr>
+<td> 贾诩</td>
+<td>3</td>
+<td>完杀：锁定技，你的回合内，只有你或濒死的角色才能使用【桃】。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>帷幕：锁定技，黑色锦囊对你无效。</td>
+</tr>
+<tr>
+<td> 司马懿</td>
+<td>3</td>
+<td>鬼才：任何判定牌生效前，你可以打出1张点数大于判定牌的手牌替代之，并获得原判定牌。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>权谋：你的手牌上限始终为体力最大值+2。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>固守：限定技，回合结束阶段，你可以翻面，免疫任何有来源伤害直到你下回合开始。</td>
+</tr>
+<tr>
+<td> 荀彧</td>
+<td>3</td>
+<td>固政：任何角色弃牌阶段弃置的牌中有【桃】时，你可以将其收回。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>节命：锁定技，你的【桃】可以恢复2点体力。</td>
+</tr>
+<tr>
+<td> 荀攸</td>
+<td>3</td>
+<td>奇策：出牌阶段，可将任意2张同花色手牌作为任意非延时类锦囊使用。一回合限1次。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>百出：</td>
+</tr>
+<tr>
+<td> 曹丕/甄姬</td>
+<td>3</td>
+<td>放逐：你每受到一点伤害，可令任一名正面朝上的角色摸1张牌并翻面。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>洛神：锁定技，杀死你的角色弃光所有手牌并翻面。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>颂威：主公技，魏国角色的判定牌为黑色时，可令你摸1张牌。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-">蜀国</h2>
+<table>
+<thead>
+<tr>
+<th>武将</th>
+<th>勾玉</th>
+<th>技能 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 刘备</td>
+<td>4</td>
+<td>仁德：出牌阶段，可将至多三张牌任意交给其他角色，并回复1点体力。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>激将：主公技，蜀势力角色可以替你打出【杀】。</td>
+</tr>
+<tr>
+<td> 关羽</td>
+<td>4</td>
+<td>武圣：出牌阶段，你使用红色的【杀】后，可以立刻摸1张牌或回复1点体力。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>武魂：限定技，锁定技，你死亡后，杀死你的角色立刻失去2点体力。</td>
+</tr>
+<tr>
+<td> 张飞</td>
+<td>4</td>
+<td>咆哮：每当你对其他角色造成伤害，可摸一张牌，或令其翻面。</td>
+</tr>
+<tr>
+<td> 赵云</td>
+<td>4</td>
+<td>龙胆：回合外，你可将【杀】或【闪】作为任意基本牌使用。</td>
+</tr>
+<tr>
+<td> 黄忠</td>
+<td>4</td>
+<td>烈弓：你的【杀】击中目标后，可令其判定，若为黑色且点数小于5，该角色失去所有体力。</td>
+</tr>
+<tr>
+<td> 马超</td>
+<td>4</td>
+<td>长驱：锁定技，你与其他所有角色的距离都为1，其他角色与你的距离都+1。</td>
+</tr>
+<tr>
+<td> 魏延</td>
+<td>4</td>
+<td>挑衅：出牌阶段，可令1名角色对你出1张【杀】，若其不能，你可以弃置其1张牌。1回合限1次。</td>
+</tr>
+<tr>
+<td> 诸葛亮</td>
+<td>3</td>
+<td>天机：回合准备阶段，你可以观看牌堆顶的5张牌，并任意改变次序。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>八阵：你始终视为装备了【八卦阵】。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>七星：限定技，回合结束阶段，你可以摸7张牌，然后翻面。</td>
+</tr>
+<tr>
+<td> 庞统</td>
+<td>3</td>
+<td>狂士：锁定技，你无法被拼点或翻面。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>连环：你可将草花牌作为【铁索连环】使用，你的【铁索连环】可额外指定1个目标。</td>
+</tr>
+<tr>
+<td> 法正</td>
+<td>3</td>
+<td>奇谋：使用任意1张非延时类锦囊牌后，你可以立即摸1张牌。</td>
+</tr>
+<tr>
+<td> 黄月英</td>
+<td>3</td>
+<td>匠心：出牌阶段，你可将1张黑色手牌作为【八卦阵】置于1名角色的防具区。该【八卦阵】在第1次生效后需弃置。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>奇才：你有1个额外的防具栏位。</td>
+</tr>
+<tr>
+<td> 姜维</td>
+<td>3</td>
+<td>智勇：你可将红色锦囊作为【杀】或【闪】使用。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>八阵：你始终视为装备了【八卦阵】。</td>
+</tr>
+<tr>
+<td> 蒋琬/费祎</td>
+<td>3</td>
+<td>辅国：出牌阶段，可将任意红色锦囊牌作为【五谷丰登】使用，1回合限1次。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>辞辨：可将点数大于10的手牌作为【无懈可击】使用。</td>
+</tr>
+<tr>
+<td> 刘禅</td>
+<td>3</td>
+<td>放权：弃牌阶段，你可将弃牌中的至多1张交给任意1名角色，令其进行1个额外的出牌阶段。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>享乐：弃牌阶段弃牌为两张或更多时，你可以恢复1点体力。 </td>
+</tr>
+<tr>
+<td> 马谡</td>
+<td>3</td>
+<td>心战：摸牌阶段，你可翻开牌堆顶的三张牌，并挑选不同颜色的两张作为手牌。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>兵法：出牌阶段，当你使用1张单体目标锦囊之后，你可以将相同花色的手牌作为同1种锦囊再次使用。1回合限1次。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-">吴国</h2>
+<table>
+<thead>
+<tr>
+<th>武将</th>
+<th>勾玉</th>
+<th>技能 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 孙坚</td>
+<td>4</td>
+<td>破虏：你对其他角色造成伤害后，可进行1次判定，若结果为红色，你获得该判定牌。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>英魂：主公技，锁定技，你死亡后，游戏继续进行三轮，若还未达成其他游戏结束条件，则游戏结束。</td>
+</tr>
+<tr>
+<td> 孙策</td>
+<td>4</td>
+<td>制霸：出牌阶段，你可与任意角色拼点，若你赢，你可以收回拼点牌，并对该角色造成1点伤害。一回合限一次。</td>
+</tr>
+<tr>
+<td> 孙权</td>
+<td>4</td>
+<td>制衡：出牌阶段，可弃1定数量的牌，并摸相同数量的牌。1回合限1次。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>救援：主公技，吴国角色对你使用桃可令你恢复2点体力。</td>
+</tr>
+<tr>
+<td> 周瑜</td>
+<td>3</td>
+<td>业火：出牌阶段，可弃1张红色手牌，对任1个敌人造成1点火属性伤害。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>火神：你免疫火属性伤害。</td>
+</tr>
+<tr>
+<td> 鲁肃</td>
+<td>3</td>
+<td>富豪：任何人使用【五谷丰登】或【无中生有】，你可以立刻摸两张牌。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>好施：你可以将全部手牌（至少三张）作为【五谷丰登】使用，1回合限1次。  </td>
+</tr>
+<tr>
+<td> 吕蒙</td>
+<td>3</td>
+<td>克己：你的手牌上限始终为体力上限的四倍。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>攻心：出牌阶段，你可以弃置两张不同颜色的手牌，观看任意1名角色的手牌。</td>
+</tr>
+<tr>
+<td> 陆逊</td>
+<td>3</td>
+<td>火计：可将红色手牌作为【火攻】使用。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>连营：你对其他角色造成火属性伤害时，可弃置1张草花或方片花色手牌，令与该角色距离为1的另1名角色受到1点火属性伤害。</td>
+</tr>
+<tr>
+<td> 甘宁</td>
+<td>4</td>
+<td>奇袭：回合结束阶段，你可以抽取1名角色1张手牌。</td>
+</tr>
+<tr>
+<td> 太史慈</td>
+<td>4</td>
+<td>天义：你的【杀】或【决斗】可以指定两个目标。</td>
+</tr>
+<tr>
+<td> 大乔/小乔</td>
+<td>3</td>
+<td>国色：可以将任意红桃手牌作为【乐不思蜀】使用。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>红颜：你的黑桃花色牌全部视为红桃花色。</td>
+</tr>
+<tr>
+<td> 孙尚香</td>
+<td>4</td>
+<td>枭姬：出牌阶段，你出【杀】时，可以发动任意武器的特效，一回合限一次。</td>
+</tr>
+<tr>
+<td> 周泰</td>
+<td>4</td>
+<td>死战：其他角色对你造成伤害并使你进入濒死状态时，在结算前，你可以立刻对其造成两点伤害。</td>
+</tr>
+<tr>
+<td> 黄盖</td>
+<td>4</td>
+<td>诈降：你可以交给任意1名角色1张【杀】，并视为对其出1张火属性的【杀】。</td>
+</tr>
+<tr>
+<td> 凌统</td>
+<td>4</td>
+<td>旋风：当你受到1点伤害或失去1张装备时，你可以弃置任意两名角色各1张牌。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-">群雄</h2>
+<table>
+<thead>
+<tr>
+<th>武将</th>
+<th>勾玉</th>
+<th>技能 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 吕布</td>
+<td>4</td>
+<td>无双：你的【杀】需要两张【闪】才能抵消。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>赤兔：你始终视为装备了-1马和+1马。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>飞将：主公技，每存在1名群雄角色，你的攻击范围+1。</td>
+</tr>
+<tr>
+<td> 张角</td>
+<td>4</td>
+<td>雷击：在使用【闪】之后，可令1名角色进行1次判定，若结果为黑桃，该角色收到2点雷属性伤害。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>黄天：主公技，可获得群雄角色打出的【闪】。</td>
+</tr>
+<tr>
+<td> 貂蝉</td>
+<td>3</td>
+<td>离间：出牌阶段，你可以交给两名男性角色各1张牌，并指定1名角色对另1名角色造成1点伤害。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>闭月：回合结束阶段，你可摸1张牌。</td>
+</tr>
+<tr>
+<td> 董卓</td>
+<td>4</td>
+<td>酒池：可将任意黑桃花色手牌作为【酒】使用。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>暴虐：主公技，群雄角色造成1点伤害后可进行1次判定，若结果为黑桃，你可以回复1点体力，若结果为草花，你可以摸1张牌。</td>
+</tr>
+<tr>
+<td> 袁绍</td>
+<td>4</td>
+<td>乱击：可将任意两张颜色不同的牌作为【万箭齐发】使用。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>血裔：主公技，每有1名群雄角色存在，你的体力上限+1。</td>
+</tr>
+<tr>
+<td> 袁术</td>
+<td>4</td>
+<td>伪帝：主公因任何原因恢复1点体力，你可以恢复1点体力或摸两张牌。  </td>
+</tr>
+<tr>
+<td></td>
+<td>4</td>
+<td>窃玺：锁定技，拥有当前主公的主公技。</td>
+</tr>
+<tr>
+<td> 华佗</td>
+<td>3</td>
+<td>急救：你的回合外，可将任意1张红色牌作为【桃】使用。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>青囊：出牌阶段，可弃置1张手牌，令任意角色回复1点体力，1回合限1次。</td>
+</tr>
+<tr>
+<td> 颜良/文丑</td>
+<td>4</td>
+<td>威风：出牌阶段，当你使用【杀】或【决斗】对1名角色造成1点伤害后，你可以摸1张牌，1回合限两次。</td>
+</tr>
+<tr>
+<td> 庞德</td>
+<td>4</td>
+<td>猛进：出牌阶段，当你的【杀】被闪抵消，你可以摸1张牌或弃置目标角色1张牌。</td>
+</tr>
+<tr>
+<td> 陈宫</td>
+<td>3</td>
+<td>明策：出牌阶段，你可将1张基本牌交给任意1个角色，若交出的是【桃】，你可摸1张牌，1回合限1次。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>智迟：你进入濒死状态并被救回后，你不受除了闪电伤害以外的任何伤害，直到你的回合开始。</td>
+</tr>
+<tr>
+<td> 高顺</td>
+<td>4</td>
+<td>陷阵：成为杀的目标时，在结算前，你可以立刻向对你出【杀】的角色或攻击范围内的1名角色出1张【杀】。</td>
+</tr>
+<tr>
+<td> 公孙瓒</td>
+<td>4</td>
+<td>义从：当你的体力值大于2时，你与他人的距离-2，当你的体力值等于或小于2时，他人与你的距离+2。</td>
+</tr>
+<tr>
+<td> 田丰/沮授</td>
+<td>3</td>
+<td>死谏：你在回合外失去最后1张手牌时，可以弃置任1名角色至多两张牌。  </td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>忠言：你可以将全部手牌作为【无懈可击】或【桃】使用。</td>
+</tr>
+</tbody>
+</table>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/index.html/post/sgs-diy.html</link>
+            <guid isPermaLink="false">sgs-diy</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Thu, 26 Jun 2014 00:00:00 GMT</pubDate>
+        </item>
+    </channel>
+</rss>

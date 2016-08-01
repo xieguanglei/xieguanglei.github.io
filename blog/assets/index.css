@@ -1,0 +1,136 @@
+@font-face {
+  font-family: 'Galdeano';
+  src: url('Galdeano-Regular.woff') format('woff');
+}
+
+@font-face{
+  font-family: 'Source Code Pro light';
+  src: url('SourceCodePro-Regular.ttf.woff');
+}
+
+*{
+  font-family: 'Verdana', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+}
+
+html{
+  height: 100%;
+}
+
+body{
+  height: 100%;
+}
+
+#header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 75px;
+  height: 100%;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  box-shadow: 0 3px 5px #2c3e50;
+}
+#header a{
+  text-decoration: none;
+  color: #ecf0f1;
+}
+
+#title{
+  font-family: 'Verdana','Hiragino Sans GB','Microsoft Yahei',sans-serif;
+  font-size: 16px;
+  text-align: center;
+  margin-left: -8px;
+  font-weight: normal;
+}
+#title > a{
+  text-decoration: none;
+  color: #ecf0f1;
+}
+
+#main{
+  margin-left: 75px;
+}
+
+#posts{
+  padding-top: 30px;
+  padding-bottom: 30px;
+  width: 500px;
+  margin: auto;
+}
+
+#posts .post{
+  margin-top: 12px;
+}
+#posts .post .date{
+  width: 80px;
+  margin-right: 50px;
+  font-family: 'Galdeano','Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+#posts .post .title a{
+  text-decoration: none;
+}
+
+#post .date{
+  font-family: 'Galdeano','Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+#post .main table{
+  border-top: 2px solid #7f8c8d;
+  border-bottom: 2px solid #7f8c8d;
+}
+#post .main table th, #post .main table td{
+  max-width:400px;
+  min-width:100px;
+  text-align:left;
+  vertical-align:top;
+  padding: 0 20px 0 0;
+}
+#post .main table th{
+  border-bottom:1px solid #7f8c8d;
+}
+#post .main{
+  font-size: 14px;
+}
+#post .main pre{
+  font-family: 'Source Code Pro light' ,'Consolas', 'Courier', sans-serif;
+}
+#post .main code{
+  font-family: 'Source Code Pro light' ,'Consolas', 'Courier', sans-serif;
+}
+
+#footer{
+  text-align: center;
+}
+#footer p{
+  font-family: 'Galdeano','Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+#post{
+  padding: 20px;
+}
+#post .main{
+  max-width: 750px;
+  margin: auto;
+}
+
+
+
+@font-face {font-family: "iconfont";
+  src: url('iconfont.woff?t=1470046241') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1470046241') format('truetype') /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+}
+
+.iconfont {
+  text-align: center;
+  margin-left: -8px;
+  font-family:"iconfont";
+  font-size:20px;
+  margin-bottom: 10px;
+  font-style:normal;
+}
+.icon-github:before { content: "\e735"; }
+.icon-rss:before { content: "\e609"; }
