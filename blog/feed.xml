@@ -4,8 +4,274 @@
         <description><![CDATA[一叶障目 一叶知秋]]></description>
         <link>http://xieguanglei.github.io/blog/index.html</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 03 Aug 2016 07:12:18 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 04 Aug 2016 13:55:59 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[React 实践心得：说说 children 的使用]]></title>
+            <description><![CDATA[<h1 id="react-children-">React 实践心得：说说 children 的使用</h1>
+<p>React 的初学者通常会犯一个错误是：不大会使用（甚至完全不使用）组件的 children 属性。其实，对 children 的合理使用，是「组件化」的基础。</p>
+<p>这篇短文就通过一个例子，说说应该怎样合理地使用 children。</p>
+<p>假设我们要做下图所示的一个用户列表组件：具体要求是这样的：</p>
+<ul>
+<li>顶部有「用户列表」的字样。</li>
+<li>用户列表中应显示用户的头像，名称，描述，还有一个关注按钮。</li>
+<li>用户的描述信息默认不显示，鼠标 hover 到用户头像上时，用气泡显示描述信息。</li>
+<li>点击「关注」按钮即可关注用户，随之按钮文案变成「取关」（取消关注）。</li>
+</ul>
+<p><img src="https://img.alicdn.com/tps/TB1_AceLXXXXXXHXpXXXXXXXXXX-200-271.png" alt="原型图"></p>
+<p>首先拆解一下上面的原型：</p>
+<ul>
+<li>我们首先需要一个用户列表 UserList，它在最外层。</li>
+<li>UserList 组件中有一组用户信息组件 UserItem。</li>
+<li>用户信息组件包括头像 Avatar，名字 Name，描述 Description，关注按钮 FollowButton。</li>
+</ul>
+<p><code>UserList</code> 会被其外层容器组件调用。如果你对 React 和「组件化」思想比较缺乏经验，很有可能会写出这样的代码来。</p>
+<pre><code class="lang-js">// 不好的实现
+// UserList 的外层容器组件
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [{
+        id: &#39;001&#39;,
+        name: &#39;关羽&#39;,
+        description: &#39;斩颜良诛文丑巴拉巴拉&#39;,
+        avatar: &#39;https://关羽的自画像.jpg&#39;,
+        followed: false  // 是否已关注
+      }, ...otherUsers]
+    }
+  }
+
+  doToggleFollow(id) {
+    // 关注、取消关注的请求
+    requestToggleFollow(id, ()=&gt;{
+      const users = _.clone(this.state.users);
+      const user = _.find(users, {id});
+      user.followed = !user.followed;
+      this.setState({users});
+    })
+  }
+
+  render() {
+    return (&lt;div&gt;
+      &lt;UserList users={this.state.users}
+                onToggleFollow={id=&gt;this.doToggleFollow(id)}
+      /&gt;
+    &lt;/div&gt;)
+  }
+}
+</code></pre>
+<p>用户的数据，通常是在较外层的容器维护（这里在 <code>App</code> 组件的 <code>state</code> 下），虽然现在只有 <code>UserList</code> 用到了用户数据，但如果 App 下还有其他组件，它们几乎也一定会使用这份数据。</p>
+<p>总之，现在看上去好像没有什么问题。我们使用了一个「封装良好」的 <code>UserList</code> 组件，这个组件负责搞定用户列表组件内的所有事情。如果你比较敏感的话，你可能会觉得把 <code>onToggleFollow</code> 方法传给 <code>UserList</code> 这件事似乎有些不妥，那又怎样，总之 <code>render</code> 方法看上去很干净，不是吗？</p>
+<p>下面我们来看 <code>UserList</code> 的实现。</p>
+<pre><code class="lang-js">// 不好的实现
+const UserList = props =&gt; {
+  const {users, onToggleFollow} = props;
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;用户列表&lt;/h3&gt;
+      {
+        users.map((u, i)=&gt;
+          &lt;div key={i}&gt;
+            &lt;UserItem user={u} onToggleFollow={onToggleFollow}/&gt;
+          &lt;/div&gt;
+        )
+      }
+    &lt;/div&gt;
+  )
+};
+</code></pre>
+<p>我们把从外面传过来的 <code>onToggleFollow</code> 继续向里传递给了 <code>UserItem</code> 组件。虽然有点小不爽，但是我忍了！看 <code>UserItem</code> 的实现：</p>
+<pre><code class="lang-js">// 不好的实现
+class UserItem extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      hover: false
+    }
+  }
+
+  render() {
+    const {user, onToggleFollow} = this.props;
+    return (
+      &lt;div&gt;
+        &lt;Avatar src={user.avatar}
+                onMouseEnter={()=&gt;this.setState({hover: true})}
+                onMouseLeave={()=&gt;this.setState({hover: false})}
+        /&gt;
+        &lt;Name value={user.name}/&gt;
+        &lt;FollowButton isFollowing={user.followed} onClick={()=&gt;onToggleFollow(user.id)}/&gt;
+        {this.state.hover ? &lt;Description value={user.description}/&gt; : null}
+      &lt;/div&gt;
+    )
+  }
+}
+</code></pre>
+<p><code>UserItem</code> 有一个状态 <code>hover</code>，表示用户的鼠标是否悬浮在头像上方。这个状态也用来判断是否显示用户的介绍 <code>Description</code> 组件。</p>
+<p><code>onToggleFollow</code> 方法继续向下传递，实在是有点忍不了了！</p>
+<p>最后我们看下最底层，最简单的这几个组件：<code>Avatar</code>，<code>Name</code>，<code>FollowButton</code> 和 <code>Description</code>。</p>
+<pre><code class="lang-js">// 不好的实现
+
+// user-item-avatar.js
+class Avatar extends React.Component {
+  componentDidMount(){
+    const img = this.refs.img;
+    img.addEventListener(&#39;mouseenter&#39;, this.props.onMouseEnter);
+    img.addEventListener(&#39;mouseleave&#39;, this.props.onMouseLeave);
+  }
+  render() {
+    return &lt;img ref=&quot;img&quot; src={this.props.src}/&gt;
+  }
+}
+
+// user-item-name.js
+const Name = props =&gt; &lt;div&gt;{props.value}&lt;/div&gt;;
+
+// user-item-follow-button.js
+const FollowButton = props =&gt; (
+  &lt;button onClick={props.onClick}&gt;{props.isFollowing ? &#39;取消关注&#39; : &#39;关注&#39;}&lt;/button&gt;
+);
+
+// user-item-description.js
+const Description = props =&gt; &lt;div&gt;{props.value}&lt;/div&gt;;
+</code></pre>
+<p>我们可以看到，<code>onToggleFollow</code> 方法从最外层的 <code>App</code> 组件开始向内传递，经过 <code>UserList</code> 和 <code>UserItem</code>，最终落在了 <code>FollowButton</code> 上。其实，这个行为（关注与否）与中间的两层组件 <code>UserList</code> 和 <code>UserItem</code> 并没有什么关系，如果某一天「关注」按钮变成了「发信」按钮，<code>UserList</code> 和 <code>UserItem</code> 不应该为此作任何修改。</p>
+<p>也就是说，上面的这个 <code>UserList</code> 看上去把用户列表内的逻辑都封装了起来，但它并不是一个足够「组件化」的组件。一个合格的「组件化」的 <code>UserList</code> 应该能像下面这样被调用。</p>
+<pre><code class="lang-js">// UserList 的外层容器组件
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [{
+        id: &#39;001&#39;,
+        name: &#39;关羽&#39;,
+        description: &#39;斩颜良诛文丑巴拉巴拉&#39;,
+        avatar: &#39;https://关羽的自画像.jpg&#39;,
+        followed: false  // 是否已关注
+      }, ...otherUsers]
+    }
+  }
+
+  doToggleFollow(id) {
+    // 关注、取消关注的请求
+    requestToggleFollow(id, ()=&gt;{
+      const users = _.clone(this.state.users);
+      const user = _.find(users, {id});
+      user.followed = !user.followed;
+      this.setState({users});
+    })
+  }
+
+  render() {
+    return (&lt;div&gt;
+        &lt;UserList&gt;{
+          users.map((user, i) =&gt;
+            &lt;UserItem key={i}&gt;
+              &lt;Avatar src={user.avatar}/&gt;
+              &lt;Name&gt;{user.name}&lt;/Name&gt;
+              &lt;FollowButton isFollowing={user.followed} onClick={()=&gt;this.doToggleFollow(user.id)}/&gt;
+              &lt;Description&gt;{user.description}&lt;/Description&gt;
+            &lt;/UserItem&gt;
+          )
+        }&lt;/UserList&gt;
+    &lt;/div&gt;)
+  }
+}
+</code></pre>
+<p>对比上述两种 <code>UserList</code> 的用法，可见前者的用法虽然简单，但对调用者而言，却像一个令人不安的「黑盒子」，完全不知道 <code>UserList</code> 会在内部干出什么事情来，而且还需要传一个莫名其妙的 <code>onToggleFollow</code> 函数。</p>
+<p>相较之下，后者的用法虽然看上去复杂一些，但是对调用者来说，组件内部的结构更加清晰，也更容易掌控。数据和行为都显而易见地绑定在与之直接关联的组件上，用户根本不需要查看 <code>UserList</code> 的实现代码就能很清楚地知道，这个组件的真正功能。</p>
+<p>而这两种组件的差别，最表面的就是是否使用了 <code>children</code> 属性。</p>
+<pre><code class="lang-js">// 第一种用法
+render() {
+  return (&lt;div&gt;
+    &lt;UserList users={this.state.users}
+              onToggleFollow={id=&gt;this.doToggleFollow(id)}
+    /&gt;
+  &lt;/div&gt;)
+}
+
+// 第二种用法
+render() {
+  return (&lt;div&gt;
+    &lt;UserList&gt;{
+      users.map((user, i) =&gt;
+        &lt;UserItem key={i}&gt;
+          &lt;Avatar src={user.avatar}/&gt;
+          &lt;Name&gt;{user.name}&lt;/Name&gt;
+          &lt;FollowButton isFollowing={user.followed} onClick={()=&gt;this.doToggleFollow(user.id)}/&gt;
+          &lt;Description&gt;{user.description}&lt;/Description&gt;
+        &lt;/UserItem&gt;
+      )
+    }&lt;/UserList&gt;
+  &lt;/div&gt;)
+}
+</code></pre>
+<p>实现第二种 <code>UserList</code>，需要在渲染组件的时候，在特定的「坑位」上加上 <code>this.props.children</code>。如下所示：</p>
+<pre><code class="lang-js">const UserList = props =&gt; (
+  &lt;div&gt;
+    &lt;h3&gt;用户列表&lt;/h3&gt;
+    {this.props.children}
+  &lt;/div&gt;
+);
+</code></pre>
+<p><code>UserItem</code> 相对会复杂一些：</p>
+<pre><code class="lang-js">class UserItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hover: false
+    }
+  }
+
+  render() {
+    const {children: [avatar, name, followButton, description]} = this.props;
+    const onMouseEnter = () =&gt; this.setState({hover: true});
+    const onMouseLeave = () =&gt; this.setState({hover: false});
+    return (
+      &lt;div&gt;
+        {React.cloneElement(avatar, {onMouseEnter, onMouseLeave})}
+        {name}
+        {followButton}
+        {this.state.hover ? description : null}
+      &lt;/div&gt;
+    )
+  }
+}
+</code></pre>
+<p>由于我们在 <code>UserItem</code> 内部放了多个组件，所以在 <code>UserItem</code> 中，<code>children</code> 是一个数组，需要对数组中的每一个元素进行额外处理。</p>
+<p>第1个元素是头像 <code>avatar</code>，它的 hover 状态影响到用户描述的显示与否，所以需要在这一步绑定事件。但是 ReactElemnt 是不可改变（immutable）的，我们使用 <code>React.cloneElement</code> 创建了一个新的 ReactElement。</p>
+<p>第4个元素的显示与否，取决于 <code>state.hover</code>，十分合理。</p>
+<p>最后，我们可以总结一下，<code>UserList</code> 组件对于用户的直观感受：</p>
+<p>第一种实现：</p>
+<ul>
+<li>用户列表 UserList：<ul>
+<li>需要传入用户数据（用户数据里的结构不大清楚）。</li>
+<li>还需要传入一个不知干什么的函数（研究了一下，应该是点击关注按钮后调用）。</li>
+</ul>
+</li>
+</ul>
+<p>第二种实现：</p>
+<ul>
+<li>用户列表 UserList：<ul>
+<li>其中包括 UserItem 的列表。</li>
+</ul>
+</li>
+<li>用户信息 UserItem：<ul>
+<li>包括用户头像 Avatar，数据来源于 user.avatar。</li>
+<li>包括用户名字 Name，数据来源于 user.name。</li>
+<li>包括一个按钮 FollowButton，需要设定 user.isFollowing 状态，用户点击后调用函数进行关注/取关。</li>
+<li>包括用户描述 Description，数据来源于 user.description。</li>
+<li>发现只有鼠标 hover 在头像上时才会显示出来，但是我可以不需要关心这件事。</li>
+</ul>
+</li>
+</ul>
+<p>很显然，上面的第二种实现方案确实比第一种的质量高很多。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/index.html/post/react-tips-children.html</link>
+            <guid isPermaLink="false">react-tips-children</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Sun, 14 Aug 2016 00:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[Canvas 最佳实践（性能篇）]]></title>
             <description><![CDATA[<h1 id="canvas-">Canvas 最佳实践（性能篇）</h1>
@@ -645,549 +911,6 @@ gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             <guid isPermaLink="false">webgl-handbook</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Mon, 25 Aug 2014 00:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[「三国杀」全武将 DIY]]></title>
-            <description><![CDATA[<h1 id="-diy">三国杀全武将DIY</h1>
-<p>我很喜欢三国杀标准版中，对武将<strong>朴素而传神</strong>的设计，因此我按照这样的思路重新YY了三国杀全武将。</p>
-<h2 id="-">魏国</h2>
-<table>
-<thead>
-<tr>
-<th>武将</th>
-<th>勾玉</th>
-<th>技能 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> 曹操</td>
-<td>4</td>
-<td>奸雄：可以获得对你造成伤害的牌。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>归心：限定技，首次进入濒死阶段并被救回后，你可以立刻恢复1点体力并增加1点体力上限。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>护驾：主公技，魏国角色可以为你打出【闪】。</td>
-</tr>
-<tr>
-<td> 张辽</td>
-<td>4</td>
-<td>突袭：你可跳过判定和摸牌阶段，抽取其他两名角色各1张手牌。</td>
-</tr>
-<tr>
-<td> 徐晃</td>
-<td>4</td>
-<td>断粮：你可将黑色基本牌或装备牌作为【兵粮寸断】使用，你可以对距离为2的角色使用【兵粮寸断】。</td>
-</tr>
-<tr>
-<td> 张郃</td>
-<td>4</td>
-<td>料敌：出牌阶段，你可以收回其他角色打出的【闪】或【桃】。</td>
-</tr>
-<tr>
-<td> 于禁</td>
-<td>4</td>
-<td>毅重：弃牌阶段，你可将弃置的至多2张基本牌收回。</td>
-</tr>
-<tr>
-<td> 乐进</td>
-<td>4</td>
-<td>骁勇：每出1张【杀】，你可以摸1张牌，然后弃1张牌。</td>
-</tr>
-<tr>
-<td> 李典</td>
-<td>4</td>
-<td>镇静：出牌阶段，你可以交给一名角色1张手牌，移除其所有判定区的牌，并使其正面朝上。1回合限1次。</td>
-</tr>
-<tr>
-<td> 许褚</td>
-<td>4</td>
-<td>虎痴：出牌阶段，可与其他角色拼点，若你赢，视为对其出1张【决斗】。</td>
-</tr>
-<tr>
-<td> 典韦</td>
-<td>4</td>
-<td>强袭：出牌阶段，你可以弃置1张武器牌或失去1点体力，对攻击范围内的角色造成1点伤害。1回合限1次。</td>
-</tr>
-<tr>
-<td> 夏侯惇</td>
-<td>4</td>
-<td>刚烈：你每受到1次伤害，可以对伤害来源造成1点伤害。</td>
-</tr>
-<tr>
-<td> 夏侯渊</td>
-<td>4</td>
-<td>神速：你每回合可以出两张【杀】，你的【杀】没有距离限制。</td>
-</tr>
-<tr>
-<td> 曹仁</td>
-<td>4</td>
-<td>据守：你在回合外打出1张基本牌后，若手牌数小于3，可摸1张牌。</td>
-</tr>
-<tr>
-<td> 郭嘉</td>
-<td>3</td>
-<td>遗计：每受到1点伤害，可观看牌堆顶的两张牌，并任意分配给其他角色。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>天妒：在你的判定牌生效前，你可以获得之。</td>
-</tr>
-<tr>
-<td> 贾诩</td>
-<td>3</td>
-<td>完杀：锁定技，你的回合内，只有你或濒死的角色才能使用【桃】。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>帷幕：锁定技，黑色锦囊对你无效。</td>
-</tr>
-<tr>
-<td> 司马懿</td>
-<td>3</td>
-<td>鬼才：任何判定牌生效前，你可以打出1张点数大于判定牌的手牌替代之，并获得原判定牌。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>权谋：你的手牌上限始终为体力最大值+2。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>固守：限定技，回合结束阶段，你可以翻面，免疫任何有来源伤害直到你下回合开始。</td>
-</tr>
-<tr>
-<td> 荀彧</td>
-<td>3</td>
-<td>固政：任何角色弃牌阶段弃置的牌中有【桃】时，你可以将其收回。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>节命：锁定技，你的【桃】可以恢复2点体力。</td>
-</tr>
-<tr>
-<td> 荀攸</td>
-<td>3</td>
-<td>奇策：出牌阶段，可将任意2张同花色手牌作为任意非延时类锦囊使用。一回合限1次。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>百出：</td>
-</tr>
-<tr>
-<td> 曹丕/甄姬</td>
-<td>3</td>
-<td>放逐：你每受到一点伤害，可令任一名正面朝上的角色摸1张牌并翻面。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>洛神：锁定技，杀死你的角色弃光所有手牌并翻面。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>颂威：主公技，魏国角色的判定牌为黑色时，可令你摸1张牌。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="-">蜀国</h2>
-<table>
-<thead>
-<tr>
-<th>武将</th>
-<th>勾玉</th>
-<th>技能 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> 刘备</td>
-<td>4</td>
-<td>仁德：出牌阶段，可将至多三张牌任意交给其他角色，并回复1点体力。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>激将：主公技，蜀势力角色可以替你打出【杀】。</td>
-</tr>
-<tr>
-<td> 关羽</td>
-<td>4</td>
-<td>武圣：出牌阶段，你使用红色的【杀】后，可以立刻摸1张牌或回复1点体力。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>武魂：限定技，锁定技，你死亡后，杀死你的角色立刻失去2点体力。</td>
-</tr>
-<tr>
-<td> 张飞</td>
-<td>4</td>
-<td>咆哮：每当你对其他角色造成伤害，可摸一张牌，或令其翻面。</td>
-</tr>
-<tr>
-<td> 赵云</td>
-<td>4</td>
-<td>龙胆：回合外，你可将【杀】或【闪】作为任意基本牌使用。</td>
-</tr>
-<tr>
-<td> 黄忠</td>
-<td>4</td>
-<td>烈弓：你的【杀】击中目标后，可令其判定，若为黑色且点数小于5，该角色失去所有体力。</td>
-</tr>
-<tr>
-<td> 马超</td>
-<td>4</td>
-<td>长驱：锁定技，你与其他所有角色的距离都为1，其他角色与你的距离都+1。</td>
-</tr>
-<tr>
-<td> 魏延</td>
-<td>4</td>
-<td>挑衅：出牌阶段，可令1名角色对你出1张【杀】，若其不能，你可以弃置其1张牌。1回合限1次。</td>
-</tr>
-<tr>
-<td> 诸葛亮</td>
-<td>3</td>
-<td>天机：回合准备阶段，你可以观看牌堆顶的5张牌，并任意改变次序。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>八阵：你始终视为装备了【八卦阵】。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>七星：限定技，回合结束阶段，你可以摸7张牌，然后翻面。</td>
-</tr>
-<tr>
-<td> 庞统</td>
-<td>3</td>
-<td>狂士：锁定技，你无法被拼点或翻面。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>连环：你可将草花牌作为【铁索连环】使用，你的【铁索连环】可额外指定1个目标。</td>
-</tr>
-<tr>
-<td> 法正</td>
-<td>3</td>
-<td>奇谋：使用任意1张非延时类锦囊牌后，你可以立即摸1张牌。</td>
-</tr>
-<tr>
-<td> 黄月英</td>
-<td>3</td>
-<td>匠心：出牌阶段，你可将1张黑色手牌作为【八卦阵】置于1名角色的防具区。该【八卦阵】在第1次生效后需弃置。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>奇才：你有1个额外的防具栏位。</td>
-</tr>
-<tr>
-<td> 姜维</td>
-<td>3</td>
-<td>智勇：你可将红色锦囊作为【杀】或【闪】使用。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>八阵：你始终视为装备了【八卦阵】。</td>
-</tr>
-<tr>
-<td> 蒋琬/费祎</td>
-<td>3</td>
-<td>辅国：出牌阶段，可将任意红色锦囊牌作为【五谷丰登】使用，1回合限1次。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>辞辨：可将点数大于10的手牌作为【无懈可击】使用。</td>
-</tr>
-<tr>
-<td> 刘禅</td>
-<td>3</td>
-<td>放权：弃牌阶段，你可将弃牌中的至多1张交给任意1名角色，令其进行1个额外的出牌阶段。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>享乐：弃牌阶段弃牌为两张或更多时，你可以恢复1点体力。 </td>
-</tr>
-<tr>
-<td> 马谡</td>
-<td>3</td>
-<td>心战：摸牌阶段，你可翻开牌堆顶的三张牌，并挑选不同颜色的两张作为手牌。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>兵法：出牌阶段，当你使用1张单体目标锦囊之后，你可以将相同花色的手牌作为同1种锦囊再次使用。1回合限1次。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="-">吴国</h2>
-<table>
-<thead>
-<tr>
-<th>武将</th>
-<th>勾玉</th>
-<th>技能 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> 孙坚</td>
-<td>4</td>
-<td>破虏：你对其他角色造成伤害后，可进行1次判定，若结果为红色，你获得该判定牌。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>英魂：主公技，锁定技，你死亡后，游戏继续进行三轮，若还未达成其他游戏结束条件，则游戏结束。</td>
-</tr>
-<tr>
-<td> 孙策</td>
-<td>4</td>
-<td>制霸：出牌阶段，你可与任意角色拼点，若你赢，你可以收回拼点牌，并对该角色造成1点伤害。一回合限一次。</td>
-</tr>
-<tr>
-<td> 孙权</td>
-<td>4</td>
-<td>制衡：出牌阶段，可弃1定数量的牌，并摸相同数量的牌。1回合限1次。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>救援：主公技，吴国角色对你使用桃可令你恢复2点体力。</td>
-</tr>
-<tr>
-<td> 周瑜</td>
-<td>3</td>
-<td>业火：出牌阶段，可弃1张红色手牌，对任1个敌人造成1点火属性伤害。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>火神：你免疫火属性伤害。</td>
-</tr>
-<tr>
-<td> 鲁肃</td>
-<td>3</td>
-<td>富豪：任何人使用【五谷丰登】或【无中生有】，你可以立刻摸两张牌。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>好施：你可以将全部手牌（至少三张）作为【五谷丰登】使用，1回合限1次。  </td>
-</tr>
-<tr>
-<td> 吕蒙</td>
-<td>3</td>
-<td>克己：你的手牌上限始终为体力上限的四倍。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>攻心：出牌阶段，你可以弃置两张不同颜色的手牌，观看任意1名角色的手牌。</td>
-</tr>
-<tr>
-<td> 陆逊</td>
-<td>3</td>
-<td>火计：可将红色手牌作为【火攻】使用。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>连营：你对其他角色造成火属性伤害时，可弃置1张草花或方片花色手牌，令与该角色距离为1的另1名角色受到1点火属性伤害。</td>
-</tr>
-<tr>
-<td> 甘宁</td>
-<td>4</td>
-<td>奇袭：回合结束阶段，你可以抽取1名角色1张手牌。</td>
-</tr>
-<tr>
-<td> 太史慈</td>
-<td>4</td>
-<td>天义：你的【杀】或【决斗】可以指定两个目标。</td>
-</tr>
-<tr>
-<td> 大乔/小乔</td>
-<td>3</td>
-<td>国色：可以将任意红桃手牌作为【乐不思蜀】使用。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>红颜：你的黑桃花色牌全部视为红桃花色。</td>
-</tr>
-<tr>
-<td> 孙尚香</td>
-<td>4</td>
-<td>枭姬：出牌阶段，你出【杀】时，可以发动任意武器的特效，一回合限一次。</td>
-</tr>
-<tr>
-<td> 周泰</td>
-<td>4</td>
-<td>死战：其他角色对你造成伤害并使你进入濒死状态时，在结算前，你可以立刻对其造成两点伤害。</td>
-</tr>
-<tr>
-<td> 黄盖</td>
-<td>4</td>
-<td>诈降：你可以交给任意1名角色1张【杀】，并视为对其出1张火属性的【杀】。</td>
-</tr>
-<tr>
-<td> 凌统</td>
-<td>4</td>
-<td>旋风：当你受到1点伤害或失去1张装备时，你可以弃置任意两名角色各1张牌。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="-">群雄</h2>
-<table>
-<thead>
-<tr>
-<th>武将</th>
-<th>勾玉</th>
-<th>技能 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> 吕布</td>
-<td>4</td>
-<td>无双：你的【杀】需要两张【闪】才能抵消。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>赤兔：你始终视为装备了-1马和+1马。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>飞将：主公技，每存在1名群雄角色，你的攻击范围+1。</td>
-</tr>
-<tr>
-<td> 张角</td>
-<td>4</td>
-<td>雷击：在使用【闪】之后，可令1名角色进行1次判定，若结果为黑桃，该角色收到2点雷属性伤害。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>黄天：主公技，可获得群雄角色打出的【闪】。</td>
-</tr>
-<tr>
-<td> 貂蝉</td>
-<td>3</td>
-<td>离间：出牌阶段，你可以交给两名男性角色各1张牌，并指定1名角色对另1名角色造成1点伤害。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>闭月：回合结束阶段，你可摸1张牌。</td>
-</tr>
-<tr>
-<td> 董卓</td>
-<td>4</td>
-<td>酒池：可将任意黑桃花色手牌作为【酒】使用。</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>暴虐：主公技，群雄角色造成1点伤害后可进行1次判定，若结果为黑桃，你可以回复1点体力，若结果为草花，你可以摸1张牌。</td>
-</tr>
-<tr>
-<td> 袁绍</td>
-<td>4</td>
-<td>乱击：可将任意两张颜色不同的牌作为【万箭齐发】使用。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>血裔：主公技，每有1名群雄角色存在，你的体力上限+1。</td>
-</tr>
-<tr>
-<td> 袁术</td>
-<td>4</td>
-<td>伪帝：主公因任何原因恢复1点体力，你可以恢复1点体力或摸两张牌。  </td>
-</tr>
-<tr>
-<td></td>
-<td>4</td>
-<td>窃玺：锁定技，拥有当前主公的主公技。</td>
-</tr>
-<tr>
-<td> 华佗</td>
-<td>3</td>
-<td>急救：你的回合外，可将任意1张红色牌作为【桃】使用。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>青囊：出牌阶段，可弃置1张手牌，令任意角色回复1点体力，1回合限1次。</td>
-</tr>
-<tr>
-<td> 颜良/文丑</td>
-<td>4</td>
-<td>威风：出牌阶段，当你使用【杀】或【决斗】对1名角色造成1点伤害后，你可以摸1张牌，1回合限两次。</td>
-</tr>
-<tr>
-<td> 庞德</td>
-<td>4</td>
-<td>猛进：出牌阶段，当你的【杀】被闪抵消，你可以摸1张牌或弃置目标角色1张牌。</td>
-</tr>
-<tr>
-<td> 陈宫</td>
-<td>3</td>
-<td>明策：出牌阶段，你可将1张基本牌交给任意1个角色，若交出的是【桃】，你可摸1张牌，1回合限1次。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>智迟：你进入濒死状态并被救回后，你不受除了闪电伤害以外的任何伤害，直到你的回合开始。</td>
-</tr>
-<tr>
-<td> 高顺</td>
-<td>4</td>
-<td>陷阵：成为杀的目标时，在结算前，你可以立刻向对你出【杀】的角色或攻击范围内的1名角色出1张【杀】。</td>
-</tr>
-<tr>
-<td> 公孙瓒</td>
-<td>4</td>
-<td>义从：当你的体力值大于2时，你与他人的距离-2，当你的体力值等于或小于2时，他人与你的距离+2。</td>
-</tr>
-<tr>
-<td> 田丰/沮授</td>
-<td>3</td>
-<td>死谏：你在回合外失去最后1张手牌时，可以弃置任1名角色至多两张牌。  </td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>忠言：你可以将全部手牌作为【无懈可击】或【桃】使用。</td>
-</tr>
-</tbody>
-</table>
-]]></description>
-            <link>http://xieguanglei.github.io/blog/index.html/post/sgs-diy.html</link>
-            <guid isPermaLink="false">sgs-diy</guid>
-            <dc:creator><![CDATA[谢光磊]]></dc:creator>
-            <pubDate>Thu, 26 Jun 2014 00:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>
