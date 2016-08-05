@@ -36,6 +36,7 @@
 <li>UserList 组件中有一组用户信息组件 UserItem。</li>
 <li>用户信息组件包括头像 Avatar，名字 Name，描述 Description，关注按钮 FollowButton。</li>
 </ul>
+<p><img src="https://img.alicdn.com/tps/TB1OU.rLXXXXXXBXFXXXXXXXXXX-754-415.png" alt=""></p>
 <p><code>UserList</code> 会被其外层容器组件调用。如果你对 React 和「组件化」思想比较缺乏经验，很有可能会写出这样的代码来。</p>
 <pre><code class="lang-js">// 不好的实现
 // UserList 的外层容器组件
@@ -147,6 +148,7 @@ const FollowButton = props =&gt; (
 const Description = props =&gt; &lt;div&gt;{props.value}&lt;/div&gt;;
 </code></pre>
 <p>我们可以看到，<code>onToggleFollow</code> 方法从最外层的 <code>App</code> 组件开始向内传递，经过 <code>UserList</code> 和 <code>UserItem</code>，最终落在了 <code>FollowButton</code> 上。其实，这个行为（关注与否）与中间的两层组件 <code>UserList</code> 和 <code>UserItem</code> 并没有什么关系，如果某一天「关注」按钮变成了「发信」按钮，<code>UserList</code> 和 <code>UserItem</code> 不应该为此作任何修改。</p>
+<p><img src="https://img.alicdn.com/tps/TB1jPQqLXXXXXXSXFXXXXXXXXXX-714-206.png" alt=""></p>
 <p>也就是说，上面的这个 <code>UserList</code> 看上去把用户列表内的逻辑都封装了起来，但它并不是一个足够「组件化」的组件。一个合格的「组件化」的 <code>UserList</code> 应该能像下面这样被调用。</p>
 <pre><code class="lang-js">// UserList 的外层容器组件
 class App extends React.Component {
