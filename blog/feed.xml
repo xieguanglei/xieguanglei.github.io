@@ -4,7 +4,7 @@
         <description><![CDATA[一叶障目 一叶知秋]]></description>
         <link>http://xieguanglei.github.io/blog/index.html</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Thu, 04 Aug 2016 13:55:59 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 05 Aug 2016 12:24:17 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[React 实践心得：说说 children 的使用]]></title>
