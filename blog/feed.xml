@@ -2,9 +2,9 @@
     <channel>
         <title><![CDATA[一叶斋]]></title>
         <description><![CDATA[一叶障目 一叶知秋]]></description>
-        <link>http://xieguanglei.github.io/blog/index.html</link>
+        <link>http://xieguanglei.github.io/blog/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 05 Aug 2016 12:42:28 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 10 Aug 2016 09:31:28 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[React 实践心得：说说 children 的使用]]></title>
@@ -269,7 +269,7 @@ render() {
 </ul>
 <p>很显然，上面的第二种实现方案确实比第一种的质量高很多。</p>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/index.html/post/react-tips-children.html</link>
+            <link>http://xieguanglei.github.io/blog/post/react-tips-children.html</link>
             <guid isPermaLink="false">react-tips-children</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Sun, 14 Aug 2016 00:00:00 GMT</pubDate>
@@ -455,7 +455,7 @@ context.drawImage(canvasOffscreen, x, y);
 <li>使用 Worker 和拆分任务的方法避免复杂算法阻塞动画运行。</li>
 </ol>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/index.html/post/canvas-best-practice-performance.html</link>
+            <link>http://xieguanglei.github.io/blog/post/canvas-best-practice-performance.html</link>
             <guid isPermaLink="false">canvas-best-practice-performance</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate>
@@ -567,7 +567,7 @@ context.draw(左臂)
 <p>最后广告一下吧，<a href="http://gama.taobao.net">Gama</a> 现在也已经有了骨骼动画模块 <a href="http://gama.taobao.net/3/detail.html?name=skeleton">Gama Skeleton</a>，接入方便，使用简单，开箱即用，立等可取。</p>
 <p>（完）</p>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/index.html/post/skeleton.html</link>
+            <link>http://xieguanglei.github.io/blog/post/skeleton.html</link>
             <guid isPermaLink="false">skeleton</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Wed, 25 Nov 2015 00:00:00 GMT</pubDate>
@@ -689,7 +689,7 @@ module.exports = function(argument) {
   .pipe(gulp.dest(&#39;build/&#39;));
 </code></pre>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/index.html/post/use-browserify-in-fed.html</link>
+            <link>http://xieguanglei.github.io/blog/post/use-browserify-in-fed.html</link>
             <guid isPermaLink="false">use-browserify-in-fed</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Wed, 28 Jan 2015 00:00:00 GMT</pubDate>
@@ -909,7 +909,7 @@ gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 </ul>
 <p>最后再夹杂一点私货吧。读书期间我曾花了小半年时间翻译了一本<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920">WebGL的书</a>，也就是上面的第3本。这本书确实相当靠谱，网上各种教程里很多没说清楚的东西，这本书说得很清楚，而且还提供了一份很完整的API文档。翻译这本书的过程也使我受益匪浅。如果有同学愿意系统学一下WebGL的，建议购买一本(文青建议买<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920/ref=sr_1_1?ie=UTF8&amp;qid=1409015819&amp;sr=8-1&amp;keywords=webgl+programming+guide">英文版</a>)。</p>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/index.html/post/webgl-handbook.html</link>
+            <link>http://xieguanglei.github.io/blog/post/webgl-handbook.html</link>
             <guid isPermaLink="false">webgl-handbook</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Mon, 25 Aug 2014 00:00:00 GMT</pubDate>
