@@ -71,6 +71,7 @@ body{
   margin-top: 12px;
 }
 #posts .post .date{
+  display: inline-block;
   width: 80px;
   margin-right: 50px;
   font-family: 'Galdeano','Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
