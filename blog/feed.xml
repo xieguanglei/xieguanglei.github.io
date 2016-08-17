@@ -4,7 +4,7 @@
         <description><![CDATA[一叶障目 一叶知秋]]></description>
         <link>http://xieguanglei.github.io/blog/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Mon, 15 Aug 2016 12:47:59 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 17 Aug 2016 11:05:24 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[React 实践心得：key 属性的原理和用法]]></title>
