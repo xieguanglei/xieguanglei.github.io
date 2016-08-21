@@ -14,7 +14,6 @@ const UserList = props => (
 
 React 会在控制台打印出报警信息：
 
-
 > Warning: Each child in an array or iterator should have a unique "key" prop. Check the render method of `App`. See https://fb.me/react-warning-keys for more information.
 
 
@@ -104,7 +103,8 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <Router createElement={App.createElement} history={syncHistoryWithStore(hashHistory, store)}>
+        <Router createElement={App.createElement} 
+                history={syncHistoryWithStore(hashHistory, store)}>
           <Route path="/" component={Home}>
             <IndexRoute component={Index}/>
             <Route path="users/:userId" component={UserDashboard}/>

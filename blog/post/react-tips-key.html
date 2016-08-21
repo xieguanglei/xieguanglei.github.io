@@ -102,7 +102,8 @@ var element = React.createElement(
   render() {
     return (
       &lt;Provider store={store}&gt;
-        &lt;Router createElement={App.createElement} history={syncHistoryWithStore(hashHistory, store)}&gt;
+        &lt;Router createElement={App.createElement} 
+                history={syncHistoryWithStore(hashHistory, store)}&gt;
           &lt;Route path=&quot;/&quot; component={Home}&gt;
             &lt;IndexRoute component={Index}/&gt;
             &lt;Route path=&quot;users/:userId&quot; component={UserDashboard}/&gt;
