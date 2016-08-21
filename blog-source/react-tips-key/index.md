@@ -1,5 +1,4 @@
 # React 实践心得：key 属性的原理和用法
-
 我们知道，React 元素可以具有一个特殊的属性 key，这个属性不是给用户自己用的，而是给 React 自己用的。如果我们动态地创建 React 元素，而且 React 元素内包含数量或顺序不确定的子元素时，我们就需要提供 key 这个特殊的属性。
 
 如果你有下面这样的代码：
@@ -15,7 +14,9 @@ const UserList = props => (
 
 React 会在控制台打印出报警信息：
 
+
 > Warning: Each child in an array or iterator should have a unique "key" prop. Check the render method of `App`. See https://fb.me/react-warning-keys for more information.
+
 
 你必须为数组中的元素提供唯一的 `key` 属性，就像下面这样：
 
@@ -38,7 +39,6 @@ const UserList = props => (
 
 实际上，如果真的认为上述第3种的后一种方案也无不可，那可是大错特错了。为什么呢：
 
-* 如果元素是有状态的，比如在 `componentDidMount` 后要去发个请求，获取一些关于张三的更详细的信息，那么当我们更新元素，把 user 从张三换成李四的时候，是不会触发 `componentDidMount` 的，你也许就需要在 `componentWillReceiveProps` 之类的方法里去做更晦涩的操作。
 * 考虑这种情况：`[{name: '张三'}, {name: '李四'}]` => `[{name: '李四'}, {name: '张三'}]`，难道也需要把张三的元素更新成李四的，李四的元素更新成张三的吗？
 
 那么，为数组中的元素传一个唯一的 key（比如用户的 ID），就很好地解决了这个问题。React 比较更新前后的元素 key 值，如果相同则更新，如果不同则销毁之前的，重新创建一个元素。
@@ -74,8 +74,46 @@ var element = React.createElement(
 
 > 初学 React 时还容易产生另一个困惑，那就是为什么 JSX 不支持 if 表达式来有选择地输出（不能这样：`{if(yes){ <div {...props}/> }}`），而必须采用三元运算符来完成这项工作（必须这样：`{yes ? <div {...props}/>} : null`）。那是因为，React 需要一个 null 去占住那个元素本来的位置。
 
-曾经，我天真的以为 key 这个元素只应在数组中使用。直到我在一个复杂的项目中写出了及其恶心的 `componentWillReceiveProps`方法（那个组件不在数组中）。我尝试寻找销毁和重建组件，触发 componentDidMount 方法，重置 state，然后才突然发现 key 这个属性已经在那里了。
+曾经，我天真的以为 `key` 这个元素只应在数组中使用。直到我在一个复杂的项目中写出了及其恶心的 `componentWillReceiveProps`方法。我尝试寻找销毁和重建组件，触发 `componentDidMount` 方法，重置 `state`，然后才突然发现 `key` 这个属性已经在那里了。
 
-我想说：**为了组件内部逻辑的清晰，你几乎应该在任何复杂的有状态组件（尤其是有具体对应对象的）上使用`key`属性，**这样做，才能在合适的时候触发组件的销毁与重建，还给组件一个健康的生命周期。
+举个例子，我们有一个展示用户信息的 `UserDashboard` 组件。传给组件的 `props` 只有用户的 基本信息（ID，姓名等），而有关用户的详细信息（比如当前是否在线等）是需要请求过来的。组件内的一些操作（比如尝试与该用户聊天）也会使用请求，组件本身也有各种状态（比如是否显示聊天框）。
+
+整个界面上最多只有一个 `UserDashboard`，但某些操作（比如点击旁边的 `UserList`）可能会切换 `UserDashboard` 的目标用户，那么问题就来了：当目标用户切换的时候，`UserDashboard` 仅仅是一个普通的**更新**操作，触发的是 `componentWillReceiveProps`，`shouldComponentUpdate`，`componentWillUpdate`，`componentDidUpdate` 这一套方法。我们需要在 `componentWillReceiveProps` 中做太多的事情：检测这次 props 的更新是否改变了用户的 ID，如果是的话，我们需要检查 `UserDashboard` 发出去的请求是否都得到了响应，对还未收到响应的请求注销其响应函数（否则上一个用户的在线状态有可能显示在这一个用户上）；我们还要更新 `UserDashboard` 上的几乎所有状态（切换用户的时候总要把聊天框关闭吧）；如果我们还不幸地用的 `ref` 做了一些神奇的 hack，那么你还要去手动把之前做的事情复原回来，这简直要成一团乱麻了！当 `UserDashborad` 的逻辑，你的 `componentWillReceiveProps` 方法里会充斥着晦涩难懂的只有你能看懂的代码（两周后你自己也看不懂了）。
+
+解决方案是什么？就是用 `key` 属性。在 JSX 中使用 `UserDashboard` 的时候，不仅把 `userInfo` 传入，把 `userInfo.id` 作为名为 `key` 的 `props` 传入（尽管 `UserDashboard` 不是数组中的组件）。这样切换目标用户的时候，`key` 属性也变了，React 会自动销毁之前的组件，用一个全新的组件来渲染新的用户：我们可以从容地在 `componentWillUnmount` 里作清理工作（注销请求的响应函数，防止其更新一个 unmounted component），至于重置 `state` 这些工作已经不需要做了，由于组件不再是更新，而是销毁和重建，已经是天然完成的。
+
+当然，你可以质疑这样做是否会影响性能。我认为，只要目标用户的切换不够频繁，对性能的影响是很小的。如果不使用 `key` 触发组件的销毁和重建，任由组件自行「更新」，每次切换时更新的内容也是很多的。这时，我们使用 `key` 带来的性能损耗是完全可以接受的，而带来的收益却非常大。
+
+所以，我想说的结论是：为了组件内部逻辑的清晰，你几乎应该在任何复杂的有状态组件（尤其是有具体**对应**对象的）上使用`key`属性（只要 `key` 属性的改变不是很频繁），这样做，才能在合适的时候触发组件的销毁与重建，组件才能有一个健康的生命周期。
+
+> 题外话
+
+> 配合 react-router 时，通常要为 route 组件赋 key，但通常情况下我们是没法传 props 给 route 组件的。解决的方案是 `createElement` 方法，如下所示。
+
+> ```
+class App extends Component {
+  static createElement = (Component, ownProps) => {
+    const {userId} = ownProps.params;
+    switch (Component) {
+      case UserDashboard:
+        return <Component key={userId} {...ownProps}/>;
+      default:
+        return <Component {...ownProps}/>;
+    }
+  };
+  render() {
+    return (
+      <Provider store={store}>
+        <Router createElement={App.createElement} history={syncHistoryWithStore(hashHistory, store)}>
+          <Route path="/" component={Home}>
+            <IndexRoute component={Index}/>
+            <Route path="users/:userId" component={UserDashboard}/>
+          </Route>
+        </Router>
+      </Provider>
+    )
+  }
+}
+```
 
 （完）
