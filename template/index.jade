@@ -8,12 +8,12 @@ block siteinfo
     title= blog.title
 
 block style
-    link(href='assets/index.css' rel='stylesheet')
+    link(href='blog/assets/index.css' rel='stylesheet')
 
 block header
     #header
         h1#title
-            a(href='./index.html')= blog.title
+            a(href='/')= blog.title
         .links
             a(href=blog.feed_url target='_blank')
                 .iconfont.icon-rss
@@ -26,4 +26,4 @@ block main
             div.post
                 span.date= post.date.getUTCFullYear()+'/'+(post.date.getUTCMonth()+1)+'/'+post.date.getUTCDate()
                 span.title
-                    a(href='post/'+post.key+'.html')= post.title
+                    a(href='blog/post/'+post.key+'.html')= post.title

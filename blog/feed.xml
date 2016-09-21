@@ -2,9 +2,9 @@
     <channel>
         <title><![CDATA[一叶斋]]></title>
         <description><![CDATA[一叶障目 一叶知秋]]></description>
-        <link>http://xieguanglei.github.io/blog/</link>
+        <link>http://xieguanglei.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 21 Aug 2016 02:57:24 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 21 Sep 2016 10:07:14 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[React 实践心得：key 属性的原理和用法]]></title>
@@ -105,7 +105,7 @@ var element = React.createElement(
 </code></pre></blockquote>
 <p>（完）</p>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/post/react-tips-key.html</link>
+            <link>http://xieguanglei.github.io/post/react-tips-key.html</link>
             <guid isPermaLink="false">react-tips-key</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Mon, 15 Aug 2016 00:00:00 GMT</pubDate>
@@ -293,7 +293,7 @@ const mapDispatchToProps = (dispatch, ownProps) =&gt; {
 </ul>
 </blockquote>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/post/react-tips-connect.html</link>
+            <link>http://xieguanglei.github.io/post/react-tips-connect.html</link>
             <guid isPermaLink="false">react-tips-connect</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Sun, 14 Aug 2016 00:00:00 GMT</pubDate>
@@ -561,7 +561,7 @@ render() {
 </ul>
 <p>很显然，上面的第二种实现方案确实比第一种的质量高很多。</p>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/post/react-tips-children.html</link>
+            <link>http://xieguanglei.github.io/post/react-tips-children.html</link>
             <guid isPermaLink="false">react-tips-children</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Thu, 04 Aug 2016 00:00:00 GMT</pubDate>
@@ -747,7 +747,7 @@ context.drawImage(canvasOffscreen, x, y);
 <li>使用 Worker 和拆分任务的方法避免复杂算法阻塞动画运行。</li>
 </ol>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/post/canvas-best-practice-performance.html</link>
+            <link>http://xieguanglei.github.io/post/canvas-best-practice-performance.html</link>
             <guid isPermaLink="false">canvas-best-practice-performance</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate>
@@ -859,7 +859,7 @@ context.draw(左臂)
 <p>最后广告一下吧，<a href="http://gama.taobao.net">Gama</a> 现在也已经有了骨骼动画模块 <a href="http://gama.taobao.net/3/detail.html?name=skeleton">Gama Skeleton</a>，接入方便，使用简单，开箱即用，立等可取。</p>
 <p>（完）</p>
 ]]></description>
-            <link>http://xieguanglei.github.io/blog/post/skeleton.html</link>
+            <link>http://xieguanglei.github.io/post/skeleton.html</link>
             <guid isPermaLink="false">skeleton</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Wed, 25 Nov 2015 00:00:00 GMT</pubDate>
