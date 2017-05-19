@@ -146,3 +146,17 @@ body{
 .icon-author:before { content: "\e602"; }
 .icon-rss:before { content: "\e600"; }
 .icon-github:before { content: "\e601"; }
+
+@media only screen and (max-device-width: 480px){
+  #header{
+    display: none;
+  }
+  #main{
+    margin-left: 0;
+  }
+  #post .main{
+    max-width: none;
+    margin: 0 20px;
+  }
+
+}
