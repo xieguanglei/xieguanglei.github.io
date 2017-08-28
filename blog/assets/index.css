@@ -102,6 +102,7 @@ body{
 }
 #post .main pre{
   font-family: 'Source Code Pro light' ,'Consolas', 'Courier', sans-serif;
+  overflow: auto;
 }
 #post .main code{
   font-family: 'Source Code Pro light' ,'Consolas', 'Courier', sans-serif;
@@ -158,5 +159,7 @@ body{
     max-width: none;
     margin: 0 20px;
   }
-
+  #post .main pre{
+    font-size: 30px;
+  }
 }
