@@ -52,17 +52,19 @@
 <p>勉之！</p>
 <p>（完）</p>
 </div>
-          <!--.ds-thread(class='comment' data-thread-key=post.key data-title=post.title)-->
-          <!---->
-          <!--script(type='text/javascript').-->
-          <!--    var duoshuoQuery = {short_name:"xieguanglei"};-->
-          <!--    (function() {-->
-          <!--        var ds = document.createElement('script');-->
-          <!--        ds.type = 'text/javascript';ds.async = true;-->
-          <!--        ds.src = '//static.duoshuo.com/embed.js';-->
-          <!--        ds.charset = 'UTF-8';-->
-          <!--        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);-->
-          <!--    })();-->
+          <div id="disqus_thread" style="margin-top: 50px"></div>
+          <script>
+            var disqus_config = function () {
+            this.page.url = location.href;
+            this.page.identifier = 'test';
+            };
+            (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://guanglei.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+          </script>
         </div>
       </div>
     </div>

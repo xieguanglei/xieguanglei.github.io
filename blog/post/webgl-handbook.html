@@ -238,17 +238,19 @@ gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 </ul>
 <p>最后再夹杂一点私货吧。读书期间我曾花了小半年时间翻译了一本<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920">WebGL的书</a>，也就是上面的第3本。这本书确实相当靠谱，网上各种教程里很多没说清楚的东西，这本书说得很清楚，而且还提供了一份很完整的API文档。翻译这本书的过程也使我受益匪浅。如果有同学愿意系统学一下WebGL的，建议购买一本(文青建议买<a href="http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920/ref=sr_1_1?ie=UTF8&amp;qid=1409015819&amp;sr=8-1&amp;keywords=webgl+programming+guide">英文版</a>)。</p>
 </div>
-          <!--.ds-thread(class='comment' data-thread-key=post.key data-title=post.title)-->
-          <!---->
-          <!--script(type='text/javascript').-->
-          <!--    var duoshuoQuery = {short_name:"xieguanglei"};-->
-          <!--    (function() {-->
-          <!--        var ds = document.createElement('script');-->
-          <!--        ds.type = 'text/javascript';ds.async = true;-->
-          <!--        ds.src = '//static.duoshuo.com/embed.js';-->
-          <!--        ds.charset = 'UTF-8';-->
-          <!--        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);-->
-          <!--    })();-->
+          <div id="disqus_thread" style="margin-top: 50px"></div>
+          <script>
+            var disqus_config = function () {
+            this.page.url = location.href;
+            this.page.identifier = 'test';
+            };
+            (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://guanglei.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+          </script>
         </div>
       </div>
     </div>
