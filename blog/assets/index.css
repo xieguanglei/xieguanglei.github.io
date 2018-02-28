@@ -148,7 +148,7 @@ body{
 .icon-rss:before { content: "\e600"; }
 .icon-github:before { content: "\e601"; }
 
-@media only screen and (max-device-width: 480px){
+@media only screen and (max-device-width: 640px){
   #header{
     display: none;
   }
@@ -158,8 +158,15 @@ body{
   #post .main{
     max-width: none;
     margin: 0 20px;
+    font-size: 52px;
   }
+
   #post .main pre{
-    font-size: 30px;
+    font-family: 'Consolas', 'Courier', sans-serif;
+    overflow: auto;
+  }
+  #post .main code{
+    font-family: 'Consolas', 'Courier', sans-serif;
+    line-break: auto;
   }
 }
