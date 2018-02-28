@@ -158,7 +158,11 @@ body{
   #post .main{
     max-width: none;
     margin: 0 20px;
-    font-size: 52px;
+    font-size: 32px;
+  }
+
+  #post .main img{
+    width: 100%;
   }
 
   #post .main pre{
