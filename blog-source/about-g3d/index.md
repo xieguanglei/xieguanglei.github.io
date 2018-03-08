@@ -1,5 +1,7 @@
 # G3D —— Hybrid 环境下的 WebGL 3D 渲染引擎
 
+> G3D 是一款开源 3D 渲染引擎，目前由我开发和维护。这篇宣传最初发表于[淘宝前端团队博客](http://taobaofed.org/blog/2018/03/05/intro-to-g3d/)。这里是个人博客上保存的一份备份。
+
 G3D 是一款基于 WebGL 的 JavaScript 3D 渲染引擎，借助 GCanvas，G3D 可以运行在 Weex，ReactNative 等 hybrid 环境下。G3D 由淘宝终端团队推出，并于 2018 年 3 月与 GCanvas 同时宣布正式开源。
 
 那么就会有同学问了，G3D 和 three.js 有什么不同呀？G3D 和 GCanvas 究竟是什么关系啊？这篇文章，就聊一聊 G3D 这个产品的来龙去脉。
