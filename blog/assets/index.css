@@ -153,11 +153,50 @@ body{
 
 @media only screen and (max-device-width: 640px){
   #header{
+    /* display: none; */
+    position: static;
+
+    width: 100vw;
+    height: 10vw;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    line-height: 10vw;
+  }
+  #header #title{
+    margin: 0;
+    padding: 0;
+    padding-left: 5vw;
+    text-align: left;
+  }
+  #header #title a{
+    font-size: 50px;
+  }
+  #header .links{
     display: none;
   }
   #main{
     margin-left: 0;
   }
+
+  #posts{
+    width: 90vw;
+    padding-top: 5vw;
+    padding-bottom: 15vw;
+    font-size: 32px;
+  }
+  #posts .post{
+    margin-top: 32px;
+  }
+  #posts .post .date{
+    display: block;
+    font-size: 3rem;
+  }
+  #posts .post .title a{
+    text-decoration: none;
+    font-weight: bolder;
+    font-size: 50px;
+  }
+
   #post .main{
     max-width: none;
     margin: 0 20px;
