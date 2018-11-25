@@ -135,8 +135,8 @@ body{
 
 
 @font-face {font-family: "iconfont";
-  src: url('iconfont.woff?t=1470046241') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1470046241') format('truetype') /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  src: url('iconfont.woff') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf') format('truetype') /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
 }
 
 .iconfont {
@@ -147,7 +147,7 @@ body{
   margin-bottom: 10px;
   font-style:normal;
 }
-.icon-author:before { content: "\e602"; }
+.icon-author:before { content: "\e616"; }
 .icon-rss:before { content: "\e600"; }
 .icon-github:before { content: "\e601"; }
 

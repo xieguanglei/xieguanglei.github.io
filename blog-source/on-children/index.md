@@ -76,7 +76,7 @@
 > 
 > So He loves also the bow that is stable.
 > 
-> **附上冰心先生翻译的版本**
+> **附上冰心先生翻译的版本：**
 > 
 > ## 论孩子
 > 
