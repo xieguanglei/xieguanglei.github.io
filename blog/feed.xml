@@ -4,23 +4,8 @@
         <description><![CDATA[一叶障目 一叶知秋]]></description>
         <link>http://xieguanglei.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 25 Nov 2018 15:38:43 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Nov 2018 15:58:06 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
-        <item>
-            <title><![CDATA[关于]]></title>
-            <description><![CDATA[<h1 id="-">关于博主</h1>
-<p>你好，欢迎来到我的博客。</p>
-<p>我的姓名是「谢光磊」，出生于 1988 年。目前，我是一名程序员，居住在浙江杭州。</p>
-<p>2011 年我本科毕业于南京大学地理系，2014 年硕士毕业于中国科学院遥感应用研究所。</p>
-<p>毕业后，我一直供职于淘宝网至今，我在阿里内部的花名是「叶斋」。目前我主要从事前端图形渲染相关的工作；同时我维护着开源 WebGL 3D 渲染引擎 <strong><a href="https://alibaba.github.io/G3D/">G3D</a></strong>。</p>
-<p>我有轻微的强迫症和代码洁癖；我喜欢读书，偶尔写作（机缘巧合，我曾有幸翻译过 《WebGL编程指南》等 <strong><a href="https://book.douban.com/subject_search?search_text=谢光磊">三本书籍</a></strong>）；我享受打扫屋子、陪伴家人和独处；无所事事的时候，我经常在 <strong><a href="https://www.zhihu.com/people/yezhai/activities">知乎</a></strong> 消磨时间。</p>
-<p>你可以通过电子邮件 xieguanglei@hotmail.com 联系到我。</p>
-]]></description>
-            <link>http://xieguanglei.github.io/post/about.html</link>
-            <guid isPermaLink="false">about</guid>
-            <dc:creator><![CDATA[谢光磊]]></dc:creator>
-            <pubDate>Sat, 24 Nov 2018 00:00:00 GMT</pubDate>
-        </item>
         <item>
             <title><![CDATA[「译」论孩子]]></title>
             <description><![CDATA[<h1 id="-">「译」论孩子</h1>
@@ -603,6 +588,424 @@ void main(){
             <guid isPermaLink="false">about-g3d</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Wed, 07 Mar 2018 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Dalaran —— 开箱即用的 Webpack]]></title>
+            <description><![CDATA[<h1 id="dalaran-webpack">Dalaran —— 开箱即用的 Webpack</h1>
+<p>不知不觉已经到了 2018 年，Webpack / Babel 早已是前端标配。但是每次新开一个项目，都要重新配置一遍环境，实在是痛苦不堪。然而每个项目的情况，并不存在一个包治百病的 Webpack 配置，而且有时开发环境里还需用到 Webpack 之外的其他工具。所以，我花了一些时间开发了一个开箱即用的 Webpack 任务工厂，既能够减少配置 Webpack 及周边工具的痛苦，又保持了相当的灵活性。我把这个工具命名为 dalaran （达拉然）。</p>
+<p>工具地址：<a href="https://github.com/xieguanglei/dalaran">github</a> <a href="https://www.npmjs.com/package/dalaran">dalaran</a></p>
+<p><strong>以下是 Dalaran 中文文档：</strong></p>
+<p>Dalaran 是一个帮助你简化 Webpack 配置的轻量级工具。与其他重量级开发环境框架相比，dalaran 把「定义自己开发流程」的权力交还给了你自己，你需要使用 <a href="https://gulpjs.com/">Gulp</a> 来管理任务。</p>
+<blockquote>
+<p>Dalaran（达拉然）的名字来源于网络游戏「魔兽世界」中的魔法城市，达拉然。</p>
+</blockquote>
+<p>下面是使用文档：</p>
+<p>Dalaran 可以帮助你做：</p>
+<ul>
+<li>对 webpack 配置默认的 loader 和 plugin，对 babel 配置默认的 preset。</li>
+<li>根据默认或者自定义的规则找到入口文件和打包目录。</li>
+<li>无需配置（或少量配置）即可在 karma 和 chrome 里运行测试用例。</li>
+<li>无需配置（或自定义配置）即可使用 eslint 检查代码拼写。</li>
+<li>使用 webpack-dev-middleware 和 express 提供开发环境。</li>
+<li>在发布模块或部署脚本之前，对代码进行编译或打包。</li>
+</ul>
+<h2 id="-">使用方法</h2>
+<p>基本上，你可以使用 dalaran 来：</p>
+<ul>
+<li>开发一个前端应用（Application）。</li>
+<li>开发一个前端库（Library）。</li>
+</ul>
+<p>你需要进行的任务包括开发（dev），构建（build）/编译（compile），测试（test）。推荐使用 gulp 来管理这些任务。</p>
+<p>你的 gulpfile 大概是这样的：</p>
+<pre><code class="lang-javascript">const gulp = requir(&#39;gulp&#39;);
+const dalaran = requre(&#39;dalaran&#39;);
+
+const libTasks = dalaran.libraryTasks({...options});
+
+gulp.task(&#39;dev&#39;, libTasks.dev);
+gulp.task(&#39;test&#39;, libTasks.test);
+
+gulp.task(&#39;prepare&#39;, function(){
+    // 自定义的任务
+})
+</code></pre>
+<h2 id="-library-">开发一个前端库（Library）</h2>
+<p>Dalaran 为开发前端库提供了 4 个任务：dev，build，compile 和 test。</p>
+<p>调用 <code>tasks.libraryTasks(options)</code> 来创建这些任务。</p>
+<h3 id="options">options</h3>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+<th>类型</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>port</td>
+<td>开发服务器端口</td>
+<td>Number</td>
+<td>3000</td>
+</tr>
+<tr>
+<td>base</td>
+<td>项目的根目录</td>
+<td>Sting</td>
+<td>process.cwd()</td>
+</tr>
+<tr>
+<td>entry</td>
+<td>前端库的入口文件</td>
+<td>String</td>
+<td>&#39;./src/index.js&#39;</td>
+</tr>
+<tr>
+<td>src</td>
+<td>源码目录</td>
+<td>String</td>
+<td>&#39;./src&#39;</td>
+</tr>
+<tr>
+<td>lib</td>
+<td>编译（为 es5 以发布到 npm）后代码存放目录</td>
+<td>String</td>
+<td>&#39;./lib&#39;</td>
+</tr>
+<tr>
+<td>demo</td>
+<td>demo 页目录（用于开发或功能演示）</td>
+<td>String</td>
+<td>&#39;./demo&#39;</td>
+</tr>
+<tr>
+<td>dist</td>
+<td>构建产物存放目录（UMD 类文件）</td>
+<td>String</td>
+<td>&#39;./dist&#39;</td>
+</tr>
+<tr>
+<td>umdName</td>
+<td>UMD 库名</td>
+<td>String</td>
+<td>&#39;foo&#39;</td>
+</tr>
+<tr>
+<td>devSuffix</td>
+<td>开发环境打包后文件的后缀名（除外<code>.js</code>）</td>
+<td>String</td>
+<td>&#39;bundle&#39;</td>
+</tr>
+<tr>
+<td>buildSuffix</td>
+<td>构建时打包后文件的后缀名（除外<code>.js</code>）</td>
+<td>String</td>
+<td>&#39;min&#39;</td>
+</tr>
+<tr>
+<td>react</td>
+<td>是否转译 JSX</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>loaders</td>
+<td>额外的自定义 webpack loaders</td>
+<td>Array</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>plugins</td>
+<td>额外的自定义 webpack plugins</td>
+<td>Array</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>babelPolyfill</td>
+<td>是否需要引入 babelPolyfill</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>devCors</td>
+<td>开发服务器是否开启资源跨域</td>
+<td>Boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>watchTest</td>
+<td>测试任务是否为 watch 模式</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>testEntryPattern</td>
+<td>测试文件的路径模式</td>
+<td>String</td>
+<td>&#39;src/<em>*/</em>.spec.js&#39;</td>
+</tr>
+<tr>
+<td>eslint</td>
+<td>是否开启 eslint</td>
+<td>Boolean</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-">目录结构</h3>
+<p>默认情况下，项目的目录结构大致如下所示：</p>
+<pre><code>project
+│   README.md
+│   package.json
+│   gulpfile.js
+└───demo
+│       foo.html
+│       foo.js
+│       bar.html
+│       bar.js
+└───dist
+│       foo.min.js
+└───lib
+│   │   index.js
+│   └───foo
+│           foo.js
+└───src
+    │   index.js
+    └───foo
+            foo.js
+            foo.spec.js
+</code></pre><h3 id="dev-">dev 任务</h3>
+<pre><code>gulp.task(&#39;dev&#39;, libTasks.dev);
+</code></pre><p>将需要调试的 demo 页面放置在默认为 &#39;./demo&#39; 的目录下。具有相同名称的 html 和 js 文件即可以构成一个 demo 页面，比如 <code>foo.html</code> 和 <code>foo.js</code> 就组成了名为 <code>foo</code> 的 demo 页面。HTML 文件大致如下所示：</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script src=&quot;./foo.bundle.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>你可以任意更改该 html 文件，唯一需要记住的是，页面需要包含如下 script 标签 <code>&lt;script src=&quot;/foo.bundle.js&quot;&gt;&lt;/script&gt;</code>，也就是以 <code>foo.js</code> 为入口打包出的文件。后缀名 <code>bundle</code> 可以在 <code>devSuffix</code> 中修改。</p>
+<p><code>foo.js</code> 大致如下所示：</p>
+<pre><code>import MyLib from &#39;../src/index&#39;;
+// demo code
+</code></pre><p>运行 <code>gulp dev</code>，dalaran 会自动打开你的浏览器并打开 <code>http://127.0.0.1:3000</code> （如果你不指定其他端口的话），此时你会看到你的 demo 页面列表。</p>
+<p>点击 demo 页面的 <code>link</code> 链接，就可以进入开发调试环境了。</p>
+<p>注意，eslint 是默认开启的，dalaran 提供了一份默认的 eslint 配置。如果你在根目录下放置了一个自定义的 .eslintrc，则会覆盖默认的配置。</p>
+<h3 id="test-">test 任务</h3>
+<p>通过配置 <code>testEntryPattern</code> 参数，dalaran 可以在 Karma 和 Chrome 里运行测试用例。测试文件的示例（比如 <code>foo.spec.js</code>）如下所示：</p>
+<pre><code class="lang-javascript">import expect from &#39;expect&#39;;
+import MyLib from &#39;../src/index&#39;;
+
+describe(&#39;mylib&#39;, function () {
+
+    it(&#39;mylib should be ok&#39;, function(){
+        expect(!!MyLib).toBeTruthy();
+    });
+
+});
+</code></pre>
+<p>运行 <code>gulp test</code> 测试结果会输出到命令行。</p>
+<h3 id="build-">build 任务</h3>
+<pre><code class="lang-javascript">gulp.task(&#39;build&#39;, libTasks.build);
+</code></pre>
+<p>运行 <code>gulp build</code> 将会以模块的入口文件（默认为&#39;./src/index.js&#39;）打包出一个 UMD 风格的 js 文件并放置在 <code>dist</code> 目录下。你需要提供一个 <code>umdName</code> 选项，该文件将被命名为 <code>${umdName.toLowercase()}.${buildSuffix}.js</code>。如果你通过 script 标签加载并运行该 js 文件，就可以使用 <code>window.${umdName}</code> 变量获取到该模块。</p>
+<h3 id="compile-">compile 任务</h3>
+<pre><code class="lang-javascript">gulp.task(&#39;build&#39;, libTasks.build);
+</code></pre>
+<p>如果你的源码仅包含 js 文件（也就是说，你不会通过一些额外的 loader 来加载 <code>.less</code>, <code>.txt</code>, <code>.jpg</code> 等文件），你就可以将 es6 / jsx 代码编译为 es5，然后发布到 npm 上供他人进一步使用。这样做的好处是，如果你的库依赖了其他 npm 库，就不会将其打包进去（UMD 则会）。编译后的文件，被放置在 <code>lib</code> 目录下（你可以通过 <code>lib</code> 选项来修改）。</p>
+<p>运行 <code>gulp compile</code>, 编译任务会很快完成。</p>
+<h2 id="-application-">开发一个前端应用（Application）</h2>
+<p>Dalaran 为开发前端应用提供了 3 个任务：dev，build 和 test。</p>
+<p>你需要调用 <code>tasks.applicationTasks(options)</code> 来创建这些任务。</p>
+<h3 id="options">options</h3>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>description</th>
+<th>type</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>port</td>
+<td>开发服务器端口</td>
+<td>Number</td>
+<td>3000</td>
+</tr>
+<tr>
+<td>base</td>
+<td>项目的根目录</td>
+<td>Sting</td>
+<td>process.cwd()</td>
+</tr>
+<tr>
+<td>src</td>
+<td>源码目录</td>
+<td>String</td>
+<td>&#39;./src&#39;</td>
+</tr>
+<tr>
+<td>demo</td>
+<td>应用的页面目录</td>
+<td>String</td>
+<td>&#39;./demo&#39;</td>
+</tr>
+<tr>
+<td>dist</td>
+<td>构建产物存放目录</td>
+<td>String</td>
+<td>&#39;./dist&#39;</td>
+</tr>
+<tr>
+<td>devSuffix</td>
+<td>开发环境打包后文件的后缀名（除外<code>.js</code>）</td>
+<td>String</td>
+<td>&#39;bundle&#39;</td>
+</tr>
+<tr>
+<td>buildSuffix</td>
+<td>构建时打包后文件的后缀名（除外<code>.js</code>）</td>
+<td>String</td>
+<td>&#39;bundle&#39;</td>
+</tr>
+<tr>
+<td>react</td>
+<td>是否转译 JSX</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>loaders</td>
+<td>额外的自定义 webpack loaders</td>
+<td>Array</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>plugins</td>
+<td>额外的自定义 webpack plugins</td>
+<td>Array</td>
+<td>[]</td>
+</tr>
+<tr>
+<td>babelPolyfill</td>
+<td>是否需要引入 babelPolyfill</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>devCors</td>
+<td>开发服务器是否开启资源跨域</td>
+<td>Boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>watchTest</td>
+<td>测试任务是否为 watch 模式</td>
+<td>Boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>testEntryPattern</td>
+<td>测试文件的路径模式</td>
+<td>String</td>
+<td>&#39;src/<em>*/</em>.spec.js&#39;</td>
+</tr>
+<tr>
+<td>commonsChunk</td>
+<td>是否开启 commonsChunk Plugin</td>
+<td>Boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>publicPath</td>
+<td>应用部署路径的 path</td>
+<td>String</td>
+<td>&#39;./&#39;</td>
+</tr>
+<tr>
+<td>eslint</td>
+<td>是否开启 eslint</td>
+<td>Boolean</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<p>与开发前端库时的选项相比，有几点区别：</p>
+<ol>
+<li>不需要指定 entry 选项，入口会从 demo 目录内分析出来。</li>
+<li>不需要提供 umdName 选项。</li>
+<li>不需要提供 lib 目录。</li>
+<li><code>buildSuffix</code> 的默认值是 <code>bundle</code> 而不是 <code>min</code>。</li>
+<li>可以使用 <code>commonsChunk</code> 选项开启该插件。</li>
+</ol>
+<h3 id="-">目录结构</h3>
+<p>项目的根目录的结构大致如下所示：</p>
+<pre><code class="lang-bash">project
+│   README.md
+│   package.json
+│   gulpfile.js
+└───demo
+│       foo.html
+│       foo.js
+│       bar.html
+│       bar.js
+└───dist
+│       foo.html
+│       foo.bundle.js
+│       bar.html
+│       bar.bundle.js
+└───src
+    │   index.js
+    └───foo
+            foo.js
+            foo.spec.js
+</code></pre>
+<p>Compared with library tasks, there are 2 main differences. </p>
+<p>与开发前端库相比，主要有两点区别：</p>
+<ol>
+<li>不再需要 lib 目录。</li>
+<li>dist 目录中的内容，像是 demo 目录的映射一样。（开发前端库时，此目录下只有一个 UMD 文件）。</li>
+<li>如果你开启了 commonsChunk 插件，则 html 中也需要包含该插件提取出的公共内容。就像这样：</li>
+</ol>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script src=&quot;./commons.bundle.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;./foo.bundle.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="dev-">dev 任务</h3>
+<p>Dev 任务与开发前端库时完全一致。</p>
+<h3 id="test-">test 任务</h3>
+<p>Test 任务与开发前端库时完全一致。</p>
+<h3 id="build-">build 任务</h3>
+<p>与开发前端库时相比，build 任务有些不同。此时，build 任务将会对 demo 目录下的每一个页面的入口 js 文件进行打包，同时也会将 html 文件复制到 dist 目录下。你可以将 dist 目录中打包后的 js 部署到静态资源服务器（比如使用内容分发网络）上，然后在自己的页面里加载这个 js 文件。当然，你也可以将整个 dist 目录部署在静态文件服务器上（比如使用 gh-pages），这也行得通。</p>
+<blockquote>
+<p>注意，开发前端应用时，是没有 compile 任务的。</p>
+</blockquote>
+<h2 id="-">如果你仍然有疑问</h2>
+<p>你可以查看本仓库 <code>packages</code> 目录中的内容，该目录下有 4 个子目录，每一个都表示一个项目。你可以试着把它们运行起来，以了解 dalaran 是如何工作的。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/post/dalaran-the-webpack-tool.html</link>
+            <guid isPermaLink="false">dalaran-the-webpack-tool</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Sat, 03 Mar 2018 00:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>
