@@ -4,7 +4,7 @@
         <description><![CDATA[一叶障目 一叶知秋]]></description>
         <link>http://xieguanglei.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 05 Dec 2018 15:01:55 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 05 Dec 2018 15:07:03 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[WebGL 纹理详解]]></title>
@@ -44,10 +44,10 @@ gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 </code></pre>
-<p>下图是 CLAMP 的情况：</p>
-<p><img src="https://gw.alicdn.com/tfs/TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg" alt="clamp"></p>
 <p>下图是 REPEAT 的情况：</p>
-<p><img src="https://gw.alicdn.com/tfs/TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg" alt="repeat"></p>
+<p><img src="https://gw.alicdn.com/tfs/TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg" alt="repeat"></p>
+<p>下图是 CLAMP 的情况：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg" alt="clamp"></p>
 <blockquote>
 <p>有一点需要注意的是，REPEAT 模式对纹理图片的尺寸有要求，宽度和高度必须为 2 的整数次幂，如 32x32 或 1024x256 的图片都是符合要求的，但 500x512 或 300x300 是不符合的。我们可以将控件中的 size 从 512 改成 300，这时 Demo 将加载这张图片的一个尺寸为 300x300 的替代品作为纹理。如果 Wrap 为 CLAMP，我们会发现稍微纹理模糊了一些，但是如果 Wrap 为 REPEAT，则会报警并黑屏。</p>
 </blockquote>

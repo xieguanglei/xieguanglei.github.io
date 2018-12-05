@@ -49,13 +49,13 @@ gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 ```
 
-下图是 CLAMP 的情况：
-
-![clamp](https://gw.alicdn.com/tfs/TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg)
-
 下图是 REPEAT 的情况：
 
-![repeat](https://gw.alicdn.com/tfs/TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg)
+![repeat](https://gw.alicdn.com/tfs/TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg)
+
+下图是 CLAMP 的情况：
+
+![clamp](https://gw.alicdn.com/tfs/TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg)
 
 > 有一点需要注意的是，REPEAT 模式对纹理图片的尺寸有要求，宽度和高度必须为 2 的整数次幂，如 32x32 或 1024x256 的图片都是符合要求的，但 500x512 或 300x300 是不符合的。我们可以将控件中的 size 从 512 改成 300，这时 Demo 将加载这张图片的一个尺寸为 300x300 的替代品作为纹理。如果 Wrap 为 CLAMP，我们会发现稍微纹理模糊了一些，但是如果 Wrap 为 REPEAT，则会报警并黑屏。
 
