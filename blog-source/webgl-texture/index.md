@@ -35,7 +35,7 @@ gl.uniform1i(...);
 vec4 color = texture2D(texture, vec2(x, y));
 ```
 
-通常，从纹理上取色的坐标 x 和 y 的值均在 0~1 之间。Wrap 配置项规定了当取色坐标的坐标取值在 (0, 1) 之外（即试图从纹理图片之外取色）时，应该如何取色。Wrap 有两种：切割(CLAMP)和重复(REPEAT)。我们可以操作上面的 Demo，调整 scale 的值使得纹理图片缩小一些，然后切换 Wrap 配置项为 CLAMP 或 REPEAT，可以发现：当选项置为 CLAMP 时，从纹理外部取色会落到对应的纹理的边缘，比如 `texture2D(texture, vec2(2.2, 0.5))` 的值会等于 `texture2D(texture, vec2(1.0, 0.5))`；而选项置为 REPEAT 时，纹理会「平铺」开来，从外部取色会把取色坐标按1取模，映射到纹理内部，比如 `texture2D(texture, vec2(2.2, 0.5))` 的值会等于 `texture2D(texture, vec2(0.2, 0.5))`。
+通常，从纹理上取色的坐标 x 和 y 的值均在 0~1 之间。Wrap 配置项规定了当取色坐标的坐标取值在 (0, 1) 之外（即试图从纹理图片之外取色）时，应该如何取色。Wrap 有两种：切割(CLAMP)和重复(REPEAT)。我们可以操作上面的 Demo，调整 scale 的值使得纹理图片缩小一些，然后切换 Wrap 配置项为 CLAMP 或 REPEAT，可以发现：当选项置为 CLAMP 时，从纹理外部取色会落到对应的纹理的边缘，比如 `texture2D(texture, vec2(2.2, 0.5))` 的值会等于 `texture2D(texture, vec2(1.0, 0.5))`；而选项置为 REPEAT 时，纹理会「平铺」开来，从外部取色会把取色坐标按1取模，映射到纹理内部，比如 `texture2D(texture, vec2(2.2, 0.5))` 的值会等于 `texture2D(texture, vec2(0.2, 0.5))`。
 
 切换 Wrap 配置项的代码如下：
 
