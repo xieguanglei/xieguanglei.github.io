@@ -10,4 +10,8 @@
 
 我有轻微的强迫症和代码洁癖；我喜欢读书，偶尔写作（机缘巧合，我曾有幸翻译过 《WebGL编程指南》等 **[三本书籍](https://book.douban.com/subject_search?search_text=谢光磊)**）；我享受打扫屋子、陪伴家人和独处；无所事事的时候，我经常在 **[知乎](https://www.zhihu.com/people/yezhai/activities)** 消磨时间。
 
+这就是我：
+
+![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/photos/xieguanglei.jpg)
+
 你可以通过电子邮件 xieguanglei@hotmail.com 联系到我。
