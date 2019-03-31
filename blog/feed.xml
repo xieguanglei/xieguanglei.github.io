@@ -4,8 +4,47 @@
         <description><![CDATA[一叶障目 一叶知秋]]></description>
         <link>http://xieguanglei.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 05 Dec 2018 16:13:26 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 31 Mar 2019 05:19:15 GMT</lastBuildDate>
         <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[在线学区房地图：一个业余项目]]></title>
+            <description><![CDATA[<h1 id="-">在线学区房地图：一个业余项目</h1>
+<p>利用周末的时间做了一个 side project，可以在线展示各小学的施教区范围，可作购买学区房之前决策参考之用，非常直观！写篇文章介绍下用法吧，哈哈。</p>
+<p>首先界面长成这样，点击 <strong><a href="https://xieguanglei.github.io/schools-map/">直达链接</a></strong> 即可访问。网站是开源的，托管在 <a href="https://github.com/xieguanglei/schools-map">github</a> 上。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/1.png" alt=""></p>
+<p>数据上目前仅做了杭州的西湖区和滨江区；用户可以在这张地图上直接绘图，然后把绘图数据发 ISSUE 或者 PR 来添加或更新数据。</p>
+<h2 id="-">用法</h2>
+<h3 id="-">浏览学区划分</h3>
+<p>直接进入网站，即可浏览默认区域（杭州市西湖区）的学区房划分。鼠标拖拽（按住左键移动）可平移地图，鼠标滚轮可放大缩小地图。每个学校的学区范围用淡蓝色的多边形覆盖在地图上，可以很直观地看到哪些小区属于这个小学的施教区。</p>
+<p>网站可以支持多个区域的数据，可以点击菜单栏中的「区域选择」来选择显示另一个区域的学区划分。（滨江区仅完成了 4 所较热门小学的学区。）</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/2-o.png" alt=""></p>
+<h3 id="-">绘制数据和提交</h3>
+<p>用户可以在平台上直接绘制自己关心的学区数据，然后通过 PR 或 issue 选择提交到 github 仓库。绘制需要用到绘制工具栏：</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/3-o.png" alt=""></p>
+<p>四个按钮的作用分别为「绘图」、「撤销」、「导出」、「清除」。</p>
+<p>点击「绘图」按钮，会分别提示你输入绘制的区域名称、绘制的学校名称，然后鼠标就会从「手」形变成「十字」形，这提示你可以在地图上进行绘图操作了。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/4-o.png" alt=""></p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/5-o.png" alt=""></p>
+<p>在地图上依次单击选点，勾勒出学区范围的形状（正在绘图的区块是红色的）；在完成最后一个点时，使用双击表示勾勒绘图操作完成，学区的范围转为蓝色，并附上了包含学校名称的标记。这样，一所学校的施教区就绘制完成了（这里示例中的学区是我随意勾勒的，并不是真实数据）。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/6-o.png" alt=""></p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/7-o.png" alt=""></p>
+<p>再次点击「绘图」按钮，一所接一所学校地完成其所属学区的绘制操作。如果对绘图结果不满意，可以点击「撤销」按钮取消上一次绘制的内容。绘图过程中关闭页面重新打开，不会丢失已绘制的数据。</p>
+<p>点击「导出」按钮将下载一份文本文件，其中包含了你的绘图数据。你可以通过访问 issue 页将此附件提交给我，或者直接通过 PR 来提交数据的更改。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/8-o.png" alt=""></p>
+<p>点击「清除」按钮即可清空你之前所有的绘图数据。如果你已经完成了提交，或者想要绘制一个新的区域，你需要先清除之前的绘制数据。</p>
+<h2 id="-">声明</h2>
+<ul>
+<li>此地图的学区划分为 Github 上的网友个人整理而成，完全存在划分不准确甚至错误的可能性。本工具提供的信息仅供参考，不承担任何由信息错误导致损失的责任，用户请自行验证信息的真实性。</li>
+<li>本工具纯粹为兴趣制作，不产生任何盈利。本地图由 Baidu 地图非商用 SDK 支持。</li>
+</ul>
+<h2 id="-">感想</h2>
+<p>偶尔做做业余项目感觉不错，有种呼吸新鲜空气的感觉。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/post/schools-map.html</link>
+            <guid isPermaLink="false">schools-map</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Sat, 30 Mar 2019 00:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[WebGL 纹理详解]]></title>
             <description><![CDATA[<h1 id="webgl-">WebGL 纹理详解</h1>
@@ -717,49 +756,6 @@ void main(){
             <guid isPermaLink="false">using-shader-to-optimize-page</guid>
             <dc:creator><![CDATA[谢光磊]]></dc:creator>
             <pubDate>Thu, 10 May 2018 00:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[G3D —— Hybrid 环境下的 WebGL 3D 渲染引擎]]></title>
-            <description><![CDATA[<h1 id="g3d-hybrid-webgl-3d-">G3D —— Hybrid 环境下的 WebGL 3D 渲染引擎</h1>
-<blockquote>
-<p>G3D 是一款开源 3D 渲染引擎，目前由我开发和维护。这篇宣传最初发表于<a href="http://taobaofed.org/blog/2018/03/05/intro-to-g3d/">淘宝前端团队博客</a>。这里是个人博客上保存的一份备份。</p>
-</blockquote>
-<p>G3D 是一款基于 WebGL 的 JavaScript 3D 渲染引擎，借助 GCanvas，G3D 可以运行在 Weex，ReactNative 等 hybrid 环境下。G3D 由淘宝终端团队推出，并于 2018 年 3 月与 GCanvas 同时宣布正式开源。</p>
-<p>那么就会有同学问了，G3D 和 three.js 有什么不同呀？G3D 和 GCanvas 究竟是什么关系啊？这篇文章，就聊一聊 G3D 这个产品的来龙去脉。</p>
-<p><a href="https://alibaba.github.io/G3D/">G3D 官网</a>，<a href="https://alibaba.github.io/GCanvas/">GCanvas 官网</a></p>
-<h2 id="-g3d">为什么有 G3D</h2>
-<p>G3D 的起源要从 GCanvas 说起。</p>
-<p>GCanvas 在 Weex 和 ReactNative 环境下提供了浏览器环境中 Canvas 的绘图能力，手机淘宝 App 的 Weex 容器已经内置了 GCanvas。和 Canvas 一样，GCanvas 的绘图能力包括 2d 上下文和 webgl 上下文的绘图能力。2d 上下文相对较为简单，可以直接拿来使用；而 webgl 上下文比较复杂，从 webgl API 到真正的 3d 应用之间往往还需要一层 3d 渲染引擎，社区中的 three.js，babylon.js 等就是这类 3d 渲染引擎中的翘楚。</p>
-<p>GCanvas 开发团队曾尝试把 three.js 和 babylon.js 接入到 GCanvas 环境中来，遇到了一些困难：</p>
-<ul>
-<li>社区中的 webgl 渲染引擎依赖了大量的 DOM API 和原生对象，在 Weex 与 ReactNative 环境中不存在这些 API 与原生对象。开发团队也曾尝试对 Babylon.js 和 three.js 进行改造，但发现成本比较高，而且后续跟进原版项目 bugfix 与功能迭代的难度也比较大。</li>
-<li>如 GCanvas 文档所述， GCanvas 目前仅支持 WebGL API 的一个子集。直接引入 Babylon.js 和 three.js，在 GCanvas环境下还暂时无法正常工作。</li>
-<li>由于 three.js 和 babylon.js 的体积已经比较巨大，其中很多功能在手机淘宝的业务场景中暂时用不到。因此，即使能够成功改造，巨大的 js 体积也会拖垮手淘中很多页面的性能。</li>
-</ul>
-<p>所以，GCanvas 开发团队决定从零开始开发一个小型的 WebGL 渲染引擎 G3D，并以此作为 GCanvas 3D 能力的辅助。可以预见，G3D 和 GCanvas WebGL 将会是相辅相成，互相促进，共同发展；并且在较长一段时间内，G3D 将是使用 GCanvas WebGL 能力，除了直接操作原生 WebGL API 之外的唯一选择。</p>
-<h2 id="g3d-">G3D 有哪些功能</h2>
-<p>G3D 具有 3D 渲染引擎的基本功能：</p>
-<ul>
-<li>定义场景，定义透视相机。</li>
-<li>光照方面，目前支持 1)环境光；2)平行光；3)点光；4)穹顶光。</li>
-<li>材质方面，目前支持 1)基于冯氏反射模型的冯式面材质（朗伯面是冯氏面的一种特殊情况）；2) 非光照材质。</li>
-<li>几何体方面，目前支持直接创建的几何体包括立方体，球体，圆柱，圆锥，折线；当然更多情况下是可以通过解析模型数据创建几何体。</li>
-<li>模型解析方面，目前支持 1) OBJ/MTL 模型；2) STL 模型这两种模型格式。</li>
-<li>交互：支持 3D点选/拖拽（由于 GCanvas framebuffer 仍未正常，此功能仅在浏览器中有效）。</li>
-<li>动画：支持骨骼动画和蒙皮动画。</li>
-</ul>
-<p>值得注意的是，由于 G3D 需要运行在 Hybrid 环境下，无法依赖 DOM API，所以与 three.js，babylon.js 等浏览器环境的引擎相比，G3D 无法支持诸如声音播放，文件加载等非渲染核心功能。举例来说，如果使用 three.js 加载模型，只需要调用相关方法传入模型的 url 即可，three.js 会自动加载和解析模型；但在使用 G3D 时，你需要手动获取该文件的内容（Hybrid 与浏览器会不一样），然后将内容字符串传入 G3D.MeshBuilder 的相关方法。</p>
-<h2 id="g3d-">G3D 的未来</h2>
-<p>目前 G3D 已经在淘宝 3D 定制等业务中有所使用，在未来的半年到一年里，G3D 主要的目的有两个：</p>
-<ul>
-<li>追赶 Babylon.js 和 three.js 的高阶功能，如阴影、Shader材质、预处理、法线纹理、光线追踪等等，在其过程中推动 GCanvas WebGL 的完善，同时赋能业务和社区。</li>
-<li>进一步打通 G3D 与建模-动画工具链的通道，完善模型-材质数据结构，提升渲染效果，达到「（Blender 等工具中）所见即（G3D渲染出）所得」的开发体验，最大程度地降低 3D 项目的开发成本。</li>
-</ul>
-]]></description>
-            <link>http://xieguanglei.github.io/post/about-g3d.html</link>
-            <guid isPermaLink="false">about-g3d</guid>
-            <dc:creator><![CDATA[谢光磊]]></dc:creator>
-            <pubDate>Wed, 07 Mar 2018 00:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>
