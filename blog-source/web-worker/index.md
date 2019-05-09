@@ -100,7 +100,7 @@ Worker 的 JavaScript 上下文与主线程的上下文是隔离的。最直白�
 * Worker 中支持的操作：
   * `navigator` 和 `location` 对象（只读）；
   * `XMLHttpRequest` 对象，用来发起请求；
-  * 计时器相关，包括 `setTimeout`/`clearTimeout`，`setInterval`/`clearInterval` 和 `requestAnimationFrame`/`cancelAnimationFrame`；
+  * 计时器相关，包括 `setTimeout` / `clearTimeout`，`setInterval` / `clearInterval` 和 `requestAnimationFrame` / `cancelAnimationFrame`；
   * `importScripts`，引入 Worker 的依赖；
   * `Worker` 本身，用以在 Worker 中继续创建 Worker。
 
