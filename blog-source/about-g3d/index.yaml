@@ -1,5 +1,7 @@
 key: about-g3d
 title: G3D —— Hybrid 环境下的 WebGL 3D 渲染引擎
 date: 2018-03-07
-
+keywords:
+  - G3D
+  - webgl
 highlight: true

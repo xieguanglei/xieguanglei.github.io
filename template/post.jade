@@ -5,6 +5,8 @@ block siteinfo
         meta(name='author' content=blog.author)
     if blog.keywords
         meta(name='keywords' content=blog.keywords)
+    if post.keywords
+        meta(name='keywords' content=post.keywords)
     title= blog.title+'|'+post.title
 
 block style
