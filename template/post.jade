@@ -17,19 +17,15 @@ block header
         h1#title
             a(href='/')= blog.title
         .links
-            a(href=blog.feed_url target='_blank')
-                .iconfont.icon-rss
-            a(href=blog.github_url target='_blank')
-                .iconfont.icon-github
-            a(href=blog.about_url target='_blank')
-                .iconfont.icon-author
+            for key in Object.keys(blog.links)
+                a(href=blog.links[key] target='_blank')
+                    .iconfont(class='icon-'+key)
 
 block main
     div#post
         div.main
             h3.date= post.date.getUTCFullYear()+'/'+(post.date.getUTCMonth()+1)+'/'+post.date.getUTCDate()
             div!= post.main
-            include comment
 
 append script
     if post.highlight

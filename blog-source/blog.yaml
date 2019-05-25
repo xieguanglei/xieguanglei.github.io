@@ -6,8 +6,12 @@ keywords:
 author: 谢光磊
 github: xieguanglei
 email: xieguanglei@hotmail.com
-
 feed_url: http://xieguanglei.github.io/blog/feed.xml
 site_url: http://xieguanglei.github.io/
-github_url: http://github.com/xieguanglei
-about_url: /blog/post/about.html
+
+links:
+  rss: http://xieguanglei.github.io/blog/feed.xml
+  github: http://github.com/xieguanglei
+  author: /blog/post/about.html
+
+ga_tracking_id: UA-73144174-1
