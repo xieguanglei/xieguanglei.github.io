@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[一叶斋]]></title>
+        <description><![CDATA[一叶障目 一叶知秋]]></description>
+        <link>http://xieguanglei.github.io/</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Sat, 25 May 2019 13:22:05 GMT</lastBuildDate>
+        <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[《奥德玛》全奖杯通关心得]]></title>
+            <description><![CDATA[<h1 id="-">《奥德玛》全奖杯通关心得</h1>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-5-23/CC.jpg" alt=""></p>
+<p>《奥德玛》是一款画面精美，气氛轻松的 2D 横版动作手游，与《里奥的财富》是同一家游戏开发商生产的。在骗氪手游满天飞的时代（即便《炉石传说》、《皇室战争》等高质量大厂手游也在骗氪道路上越走越远），这款 50 元即可买断的小游戏堪称清流。我花了三四天的零碎时间通关了这款游戏，又耗费了一周多拿到了所有的奖杯，有些心得不妨记录下来。</p>
+<h2 id="-">故事</h2>
+<p>奥德玛是维京部落中的一个孤儿。他不像其他维京人那样勇猛好斗，反而好吃懒做，因而引起了部落族长的不满，被赶出了部落。奥德玛在梦境中获得了召唤蘑菇的超能力，并决定去冒险。玩家将操作奥德玛在森林、雪原、火山等场景中探险，在森林女巫的帮助下，找到自己失去已久的好朋友瓦斯克，击败邪恶的魔王洛克，并拯救族人。</p>
+<h2 id="-">基本操作</h2>
+<p>和大部分横版动作游戏一样，玩家需要控制主角（即奥德玛）移动、跳跃、攻击。整个游戏分四个场景，每个场景由若干个关卡组成（包含一个 BOSS 关卡），每个关卡中都分布着数个存储点，当你不幸阵亡时，游戏将从最近的一个存储点开始。这个设定非常现代（我记得《里奥的财富》也使用这个设定），大大提升了玩家的容错率，也为关卡的难度和趣味性提供了空间。这款游戏每个关卡都有独特的主题，可玩性很高。</p>
+<blockquote>
+<p>还记得古老的《超级玛丽》的设定吗？三条命用完后，玩家需要从第一关开始，大部分人都没有见过最终 BOSS。</p>
+</blockquote>
+<p>主角有两颗代表血量的「心」。被怪物、尖刺、锯齿等碰到会损失一颗心，如果失去全部心，你就阵亡了。</p>
+<p>主角的攻击有两种方式，「挥舞武器」和「跳起后踩踏」，后者是从横版动作游戏鼻祖《超级玛丽》中就具有的设定（真是经典）。在故事中，作为维京人的奥德玛是不会跳跃的，直到奥德玛获得了超能力 —— 每次他想要跳跃时，便有一颗蘑菇从他脚下长出来，把他推到空中（真是个无厘头的背景故事啊），所以在游戏中，每次跳跃，奥德玛脚下都会长出一颗蘑菇来。当你落在垂直墙壁时，可以立刻再次起起跳，这种俗称「连跳」的操作允许你在「深井」中上下自如。另一个常用的小技巧是，在空中挥舞武器会使帮助你在空中停留片刻，延迟落下的时机。</p>
+<h2 id="-">收集要素</h2>
+<p>游戏中，你需要收集「金币」，「秘密金币」，「梦境」和「限时挑战」。</p>
+<ul>
+<li><strong>金币</strong>：金币分布你经过的道路上，击杀怪物也会获得金币。当你在一个关卡中获取了足够多（经我观察，似乎是此关卡最大金币数量减少 2 ~ 3 枚）的金币，此关卡的金币徽章会点亮。</li>
+<li><strong>秘密金币</strong>：秘密金币分布在一些不易到达的地方（岔路尽头），如果不小心很容易错过。每个关卡有三枚秘密金币，如果你获得了全部的秘密金币，那么此关卡的秘密金币徽章会点亮。</li>
+<li><strong>梦境</strong>：有些关卡里有一株「梦境花」，靠近梦境花会进入梦境。梦境是一个特别精巧的小关卡，完成梦境后，此关卡的梦境徽章会点亮。</li>
+<li><strong>限时挑战</strong>：另一些关卡（没有梦境的）可以进行限时挑战，如果你在规定的时间内跑完了整个关卡，此关卡的限时挑战徽章会点亮。</li>
+</ul>
+<h2 id="-">武器和盾牌</h2>
+<p>游戏开始时，奥德玛装备着「父亲的斧头」和「母亲的盾牌」。此后，可使用在游戏中收集到的金币，从商人处购买若干种武器和盾（大约收集 80% 左右的金币，即可买完游戏中的全部 5 件武器和 4 件盾牌）。</p>
+<ul>
+<li><strong>父亲的斧头：奥德玛已故父亲传下来的武器。</strong> 最普通的武器，没有特效。</li>
+<li><strong>征服之剑：锋利而致命的短剑，专为杀人而打造。</strong> 攻速很快，可以向上攻击，对付从头顶落下来的怪物。</li>
+<li><strong>旋风锤：利用风的力量打退敌人。</strong> 攻击时会产生旋风，把敌人向外推，使其难以靠近。</li>
+<li><strong>埃基尔之矛：轻型武器，可以从远距离外投向敌人。</strong> 可以投掷出去，甚至可以利用滞空时间投掷出去，后期处理一些平台上的怪物非常方便。</li>
+<li><strong>神圣之斧：对持有者施与正义的魔法，伤害周围的敌人。</strong> 攻击时产生两个火球围绕自己旋转，伤害靠近的敌人。</li>
+</ul>
+<p>盾牌虽然名为「盾牌」，但并不能帮你抵挡伤害。关于盾牌的用法，我也是进行到第二个场景时才明白的。盾牌的特效在你垂直下落撞击到地面（跳跃后在半空中突然向下）的瞬间才触发的。</p>
+<ul>
+<li><strong>母亲的盾牌：从前属于奥德玛已故母亲的坚固盾牌。</strong> 最普通的盾牌，没有特效。</li>
+<li><strong>灼热之盾：产生火球伤害敌人。</strong> 特效是发出两个小火球，伤害旁边的敌人。</li>
+<li><strong>冰霜盾：暂时冻结你的敌人。</strong> 特效是冻结旁边的敌人，使其 1 秒左右不能行动。</li>
+<li><strong>伊米儿之盾：利用大地之力击退敌人的盾牌。</strong> 特效类似旋风锤，将敌人向外推。</li>
+</ul>
+<h2 id="boss-">BOSS 战心得</h2>
+<ul>
+<li>场景 1：巨魔 BOSS，其实是跑酷关，而且中途有保存点，没什么难度。</li>
+<li>场景 2：海怪 BOSS，注意在船上的阶段，用<strong>灼热之盾</strong>的特效来清理被海怪抛上船的小怪，就没什么难度了。</li>
+<li>场景 3：石头人 BOSS，也没什么难度，躲好地刺，BOSS 冲过来的时候利用墙壁连跳来躲即可。</li>
+<li>场景 4：魔王洛肯，分三个阶段，第三阶段 BOSS 分身，容错率比较低。最好在进第三阶段时保持满血和一个盾，然后求速战速决。</li>
+</ul>
+<h2 id="-">奖杯心得</h2>
+<p>游戏的奖杯都比较简单，基本上把「收集要素」中的内容全部收集完就可以了。</p>
+<p>3-5 关（即第 3 个场景第 5 关），骑野猪，拿限时挑战比较难，尤其是最后两个存储点之间容错很低，我费了很久才拿下这关的限时挑战。</p>
+<p>有一个成就「飞毛腿」比较难一点，要求提前 30 秒完成某一关的时间挑战，我推荐 4-4 关（即第 4 个场景第 4 关），这一关难度在于迷宫很绕，但是没什么需要考验操作的地方（阵亡浪费的时间很多），所以只要把迷宫怎么走记牢，一路跳怪，就比较容易做到提前 30 秒完成了。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/post/oddmar-game.html</link>
+            <guid isPermaLink="false">oddmar-game</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Thu, 23 May 2019 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Web Worker 详解]]></title>
+            <description><![CDATA[<h1 id="web-worker-">Web Worker 详解</h1>
+<p>Web Worker（以下简称 Worker）是 JavaScript 多线程编程的解决方案。通过创建一个 Worker，Web 页面（或称「主线程」、「宿主页面」）可以在不阻塞主线程的前提下，执行一些比较费时的任务。在这 2019 年春天，Worker 的浏览器兼容性已经相当好了，但此前我还未有机会（或必要性）在生产环境使用 Worker。前段时间，为了调研 <a href="https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas">OffScreen Canvas</a> 的技术方案，我仔细研究了一下 Worker，不妨记录下来备忘；如果能帮助到读者，即是意外之喜了。</p>
+<p><img src="https://img.alicdn.com/tfs/TB1XVooUSrqK1RjSZK9XXXyypXa-1257-282.png" alt=""></p>
+<h2 id="messagechannel">MessageChannel</h2>
+<p>MessageChannel（消息管道）是用来传递消息的基础类。在浏览器内部，Worker （应该是）继承了 MessageChannel 。看看 MessageChannel 怎么用：</p>
+<pre><code class="lang-javascript">const c = new MessageChannel();
+
+c.port1.onmessage = e =&gt; console.log(`port_1 receive: ${e.data}`);
+c.port2.onmessage = e =&gt; console.log(`port_2 receive: ${e.data}`);
+
+c.port1.postMessage(&quot;hello from port_1&quot;);
+// =&gt; port_2 receive: hello from port_1
+
+c.port2.postMessage(&quot;hello from port_2&quot;);
+// =&gt; port_1 receive: hello from port_2
+</code></pre>
+<p>如上所示，从 <code>port1</code> 发出的消息被 <code>port2</code> 监听到；反之，从 <code>port2</code> 发出的消息也被 <code>port1</code> 监听。在同一个 JavaScript 上下文中，MessageChannel 似乎没有什么存在的必要；而 MessageChannel 的妙处即在于，它可以<strong>跨越不同的 JavaScript 上下文</strong>传输消息。例如，<a href="https://github.com/mdn/dom-examples/tree/master/channel-messaging-basic">这个例子</a>演示了一个 iframe 中的页面是如何与它的宿主页面进行通信的。</p>
+<blockquote>
+<p>注意，如果在发送消息时，另一个端口（port）上没有监听函数，那么 MessageChannel 会<strong>缓存消息</strong>，直到另一个端口上挂载了监听函数（此时依次收到之前缓存的所有消息）。</p>
+</blockquote>
+<p>本文所关心的，是 JavaScript 主线程与 Worker， 以及不同 Worker 之间，如何进行通信。</p>
+<h2 id="worker-">Worker 基本用法</h2>
+<p>通常，需要把主线程代码和 Worker 代码分别写在两个文件中，如下所示：在主线程通过 URL（即 <code>worker-add.js</code>）加载 Worker 代码并创建 Worker。完成创建后，调用 <code>postMessage</code> 方法向 Worker 内发送一个消息，内容（或称消息体）为 JSON 对象 <code>{ a: 1, b: 2 }</code>。然后注册监听函数，将 Worker 返回的消息中的 <code>sum</code> 字段打印出来。</p>
+<pre><code class="lang-javascript">// main.js
+const worker = new Worker(&#39;worker-add.js&#39;);
+worker.postMessage({ a: 1, b: 2 });
+worker.onmessage = e =&gt; {
+    console.log(`message received: ${e.data.sum}`)
+}
+</code></pre>
+<p>Worker 的 JavaScript 上下文中存在全局对象 <code>self</code>，它代表这个 Worker 的上下文，可以通过向 <code>self</code> 注册 <code>onmessage</code> 函数以监听外部传入的消息。这个例子在收到主线程传来的消息后，将消息体（<code>e.data</code>）的字段 <code>a</code> 和字段 <code>b</code> 相加，并把结果作为字段 <code>sum</code> 发送回主线程：</p>
+<pre><code class="lang-javascript">// worker-add.js
+self.onmessage = e =&gt; {
+    const { a, b } = e.data;
+    self.postMessage({ sum: a + b });
+};
+</code></pre>
+<p>这样，整个例子就完成了一次加法运算。主线程将加法的两个参数传入 Worker，Worker 负责进行运算并返回结果，主线程打印出 <code>message received: 3</code>。</p>
+<p>如果某个时候，不再需要此 Worker 了，可以调用 <code>worker.terminate()</code> 强制结束 Worker。注意，Worker 中不会有机会进行清理工作。</p>
+<h3 id="-worker-">内联 Worker（通过字符串创建）</h3>
+<p>有时，因为某些工程上的原因（或者干脆是为了省事儿），有些人也通过包含 Worker 代码的字符串来创建 Worker：将代码字符串转化为 Blob 和 URL，然后再「加载」它。而且，一个常见的实践是，利用「<code>Function.prototype.toString()</code> 恰好返回函数体代码」这一特性来获取包含 Worker 代码的字符串。</p>
+<pre><code class="lang-javascript">// 我认为不太合适的做法
+function createWorker(workerFuncStr) {
+    const src = `(${workerFuncStr})(self);`;
+    const blob = new Blob([src], {type: &#39;application/javascript&#39;});
+    const url = URL.createObjectURL(blob);
+    return new Worker(url);
+}
+
+const worker = createWorker(self =&gt; {
+    self.onmessage = e =&gt; {
+        const { a, b } = e.data;
+        self.postMessage({ sum: a + b });
+    };
+});
+</code></pre>
+<p>我认为，在比较正式的项目中，应尽量避免使用这种创建 Worker 的方式。例子中的 <code>createWorker</code> 方法令人毫无防备，它容易使我们自然地认为传入的函数会被执行，函数中可访问闭包中的其他变量——可实际上，这个函数只是一段字符串。</p>
+<p>Worker 不可避免地会存在依赖，也许 <a href="https://github.com/webpack-contrib/worker-loader">Webpack worker loader</a> 是更好的选择。甚至，可以利用 <a href="https://webpack.js.org/plugins/split-chunks-plugin">SplitChunks 机制</a>与 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts"><code>importScript</code></a> 来允许 Worker 与主线程共享某些依赖。</p>
+<h3 id="-">初始化参数</h3>
+<p>创建 Worker 时，除了 Worker 代码的 URL，还可以传入一些<a href="https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker#Parameters">参数</a>：</p>
+<pre><code class="lang-javascript">new Worker(url, {name: &quot;classic&quot;, credentials: &quot;omit&quot;, name: &quot;worker-1&quot;})
+</code></pre>
+<ul>
+<li><code>type</code>：Worker 的格式类型。默认为 <code>classic</code>，标准里说还可以是 <code>module</code>，估计是预留给浏览器原生模块方案用的。但是经过试验，就连 Chrome 也不支持 <code>module</code>。</li>
+<li><code>credentials</code>：来源合法性类型，默认是 <code>omit</code>。目前我还不会有跨域 worker 的需求，所以没有细究。</li>
+<li><code>name</code>：名称，默认为空。如果创建 Worker 时指定了名称，那么 Worker 内的上下文 <code>self</code> 上将存在相同值的 <code>name</code> 字段。此参数多少有点用处（或者便利性）吧。</li>
+</ul>
+<h3 id="worker-">Worker 的上下文</h3>
+<p>Worker 的 JavaScript 上下文与主线程的上下文是隔离的。最直白的体现是：Worker 中无法访问 DOM API，无法直接操作宿主页面。宿主页面也无法通过 <code>postMessage</code> 把 DOM API 传递过去。详细地<sup><a href="https://www.html5rocks.com/en/tutorials/workers/basics/">1</a><sup>：</p>
+<ul>
+<li>Worker 中不支持的操作：<ul>
+<li>使用 DOM API。</li>
+</ul>
+</li>
+<li>Worker 中支持的操作：<ul>
+<li><code>navigator</code> 和 <code>location</code> 对象（只读）；</li>
+<li><code>XMLHttpRequest</code> 对象，用来发起请求；</li>
+<li>计时器相关，包括 <code>setTimeout</code> / <code>clearTimeout</code>，<code>setInterval</code> / <code>clearInterval</code> 和 <code>requestAnimationFrame</code> / <code>cancelAnimationFrame</code>；</li>
+<li><code>importScripts</code>，引入 Worker 的依赖；</li>
+<li><code>Worker</code> 本身，用以在 Worker 中继续创建 Worker。</li>
+</ul>
+</li>
+</ul>
+<h2 id="postmessage">PostMessage</h2>
+<p>如果不同的线程间不能通信，那么 Worker 的意义将被大大削弱。遵循 <code>MessageChannel</code> 接口，Worker 使用 <code>postMessage</code> 方法与宿主页面或其他 Worker 进行通信。</p>
+<p><code>postMessage</code> 可以发送那些能够被 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#Supported_types"><strong>结构克隆算法</strong></a>（structured clone algorithm）所克隆的对象。具体地说，包括：</p>
+<ul>
+<li>除 <code>Symbol</code> 以外的 5 种原始类型变量：数值、字符串、布尔值、<code>undefined</code>、<code>null</code>；</li>
+<li><code>Map</code> 和 <code>Set</code> 对象；</li>
+<li><code>Date</code> 对象；</li>
+<li><code>RegExp</code> 对象；</li>
+<li><code>Blob</code> 和 <code>File</code> 对象；</li>
+<li><code>ArrayBuffer</code> 和 <code>ArrayBufferView</code> （如 <code>Float32Array</code>，<code>Uint16Array</code> 等）；</li>
+<li><code>ImageData</code> 对象；</li>
+<li>由以上类型对象组成的 <code>Array</code> 或 <code>Object</code>；换言之，<code>Array</code> 中的项或 <code>Object</code> 中的属性，只能是上述类型的值或对象，一种通俗的说法是 &quot;<strong>plain object</strong>&quot; 或 &quot;<strong>plain array</strong>&quot;。</li>
+</ul>
+<p>对于 <code>Object</code> 类型的对象，即使其内部存在环状引用，也不影响被发送。</p>
+<pre><code class="lang-javascript">// main.js
+const o1 = {o2: null}, o2 = {o1: o1};
+o1.o2 = o2;
+const worker = new Worker(&#39;worker.js&#39;);
+worker.postMessage(o1); // OK!
+
+// worker.js 
+self.onmessage = e =&gt; {
+    const o1 = e.data;
+    console.log(o1.o2.o1 === o1); // =&gt; true
+};
+</code></pre>
+<p>最重要的是，Worker 中接收到的数据对象，全部是从主线程发送的消息体中<strong>深度克隆</strong>得来的，两者虽然长得一模一样，事实上却是两个独立的实例，后续即使对其中一个对象进行修改，不会影响到另一个对象。</p>
+<pre><code class="lang-javascript">// worker.js
+self.onmessage = e =&gt; {
+    const obj = e.data;
+    obj.val = 2;
+    console.log(`worker : obj.val is changed to ${obj.val}`);
+    self.postMessage(null);
+};
+
+// main.js
+const obj = { val: 1 };
+
+const worker = new Worker(&#39;worker.js&#39;);
+worker.postMessage(obj);
+worker.onmessage = e =&gt; {
+    console.log(`main thread : obj.val is still ${obj.val}`);
+}
+
+// output
+// &gt; worker : obj.val is changed to 2
+// &gt; main thread : obj.val is still 1
+</code></pre>
+<p><img src="https://img.alicdn.com/tfs/TB1xWG2UYvpK1RjSZPiXXbmwXXa-522-350.png" alt=""></p>
+<h2 id="-">引用传递</h2>
+<p>深度克隆的好处是保护了线程的安全，付出的代价是空间和时间。一些通信发生极为频繁的场景无法承担这样的代价，此时需要以<strong>引用传递</strong>的方式来通信。浏览器中，实现了 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Transferable">Transferable</a> 接口的对象可以被引用传递。具体地，包括 <code>ArrayBuffer</code>，<code>MessagePort</code>，<code>ImageBitmap</code> 和 <code>OffscreenCanvas</code>。</p>
+<p>引用传递的本质是共享内存，即传递的是一个指针，内存数据无需发生变化。但是，为了线程安全考虑，当一段数据从源上下文传入目标上下文后，就<strong>无法</strong>在源上下文中再次访问这段内存了：</p>
+<pre><code class="lang-javascript">// worker.js
+self.onmessage = e =&gt; {
+    const buffer = e.data;
+    const array = new Float32Array(buffer);
+    array[0] = 5, array[2] = 7;
+    self.postMessage(buffer, [buffer]);
+};
+
+// main.js
+const array = new Float32Array([1, 2, 3, 4]);
+
+const worker = new Worker(&#39;/basic-worker.js&#39;);
+
+console.log(`before post : ${array.length} - ${array}`);
+worker.postMessage(array.buffer, [array.buffer]);
+console.log(`after post : ${array.length}`);
+
+worker.onmessage = e =&gt; {
+    const retrArray = new Float32Array(e.data);
+    console.log(`after retrieval : ${retrArray.length} - ${retrArray}`)
+}
+
+// output : 
+// &gt; before post : 4 - 1,2,3,4
+// &gt; after post : 0
+// &gt; after retrieval : 4 - 5,2,7,4
+</code></pre>
+<p>上面这个例子，主线程创建了类型化的 32 位浮点数组（<code>Float32Array</code>），其值为 <code>[1.0,2.0,3.0,4.0]</code>。本质上，它是一段 16 字节长的内存（<code>ArrayBuffer</code>），每个 32 位浮点数占 4 个字节。发送之前，我们将其打印出来：<code>before post : 4 - 1,2,3,4</code>。</p>
+<p>使用 <code>postMessage</code> 把这段内存数据发送给 Worker：此时，<code>postMessage</code> 接收<strong>两个</strong>参数，形如 <code>worker.postMessage(message, [transfer])</code> 。除了常规的第一个参数 <code>message</code>，还通过第二个参数（为一个数组） <code>[transfer]</code> 来指定「哪些数据需要<strong>传递引用</strong>」这一信息。若不在 <code>[transfer]</code> 中指定，那么这个 <code>buffer</code> 就会像普通的数据那样进行深度克隆。比如，<code>worker.postMessage({b1: buffer1, b2: buffer2}, [buffer2]);</code> 就会对 <code>buffer1</code> 进行深度克隆，而对 <code>buffer2</code> 进行引用传递。</p>
+<p>为了线程安全，当一段内存数据被以引用传递的方式发送出去后，在当前上下文就无法再访问了。对类型化数组如 <code>Float32Array</code> 而言，具体的表现是，它会成为一个去势（neutered）的数组（可以理解为成了一个空壳），其长度为 0，此时打印数组的结果是 <code>after post : 0</code>（尝试访问/打印元素将导致抛出异常）。</p>
+<p>Worker 线程拿到这段内存，并按照 <code>Float32Array</code> 的格式来解析它。接着，改写其中的值，把第 1 个和第 3 个元素改成 5 和 7，最后同样以引用传递的形式把它发回给主线程。</p>
+<p>主线程拿回了这段内存，按照 <code>Float32Array</code> 重新解析这段内存（可以理解给内存套壳，开销很低；注意，之前的壳是不能复用的，需要重新套壳），并将解析得到的数组打印出来，结果是 <code>after retrieval : 4 - 5,2,7,4</code>。可见，数据被 Worker 线程篡改了。</p>
+<p><img src="https://img.alicdn.com/tfs/TB18Wi1U4TpK1RjSZR0XXbEwXXa-524-579.png" alt=""></p>
+<h2 id="-worker-">多 Worker 间通信</h2>
+<p>不仅主线程和 Worker 线程间可以通信，不同的 Worker 之间也可以通信，这是通过 MessageChannel 实现的。<code>MessageChannel</code> 对象上存在两个 成员属性：<code>port1</code> 和 <code>port2</code>，它们均是 <code>MessagePort</code> 对象。<code>MessagePort</code> 也实现了 <code>Transferable</code> 接口，我们可以像传递 <code>ArrayBuffer</code> 那样把 <code>MessagePort</code> 传入 Worker 中：</p>
+<pre><code class="lang-javascript">// worker1.js
+let port;
+const handleInit = (data) =&gt; {
+    port = data.port;
+};
+
+const handleTransfer = (data) =&gt; {
+    port &amp;&amp; port.postMessage({
+        type: &#39;TRANSFER&#39;,
+        message: data.message + &#39; through worker1;&#39;
+    })
+};
+
+self.onmessage = function (e) {
+
+    const handleMessage = e.data.type === &#39;INIT&#39; ?
+        handleInit : handleTransfer;
+
+    handleMessage(e.data);
+}
+
+// worker2.js
+self.onmessage = function (e) {
+    const port = e.data.port;
+
+    port.onmessage = function (e) {
+        self.postMessage({
+            type: &#39;TRANSFER&#39;,
+            message: e.data.message + &#39; through worker2.&#39;
+        });
+    }
+}
+
+// main.js
+const worker1 = new Worker(&quot;worker1.js&quot;);
+const worker2 = new Worker(&quot;worker2.js&quot;);
+
+const channel = new MessageChannel();
+worker1.postMessage({ type: &#39;INIT&#39;, port: channel.port1 }, [channel.port1]);
+worker2.postMessage({ type: &#39;INIT&#39;, port: channel.port2 }, [channel.port2]);
+
+worker1.postMessage({ type: &#39;TRANSFER&#39;, message: &quot;Hello from main thread;&quot; });
+worker2.onmessage = function (e) {
+    console.log(e.data.message);
+}
+
+// output
+// &gt; Hello from main thread; through worker1; through worker2.
+</code></pre>
+<p>上面的例子中，主线程创建了两个 Worker：<code>worker1</code> 和 <code>worker2</code>；然后，创建了 <code>MessageChannel</code> 对象，并将它的 <code>port1</code> 和 <code>port2</code> 分别传递给 <code>worker1</code> 和 <code>worker2</code>。</p>
+<p>接着，主线程把将字符串 <code>&quot;Hello from main thread;&quot;</code> 发送给 <code>worker1</code>；<code>worker1</code> 收到此字符串后，加上了 <code>&quot; through worker1;&quot;</code>，并（通过之前传过去的 <code>port1</code>）发送给 <code>worker2</code>；<code>worker2</code> 在收到（从之前传过去的 <code>port2</code> 中监听到）此字符串后，又添加上 <code>&quot; through worker2.&quot;</code>，最后发送给主线程。我们在主线程中打印出最后得到的消息字符串，为 <code>&quot;Hello from main thread; through worker1; through worker2.&quot;</code>。</p>
+<p><img src="https://img.alicdn.com/tfs/TB1xOm9U3DqK1RjSZSyXXaxEVXa-684-477.png" alt=""></p>
+<p>MessagePort 只能被通过传递引用的方式发送到 Worker 中。与 ArrayBuffer 类似，其被传递到另一个 JavaScript 上下文之后，留在原上下文中的对象便成了空壳，试图调用其上的 <code>postMessage</code> 方法将导致抛出异常。</p>
+<h2 id="-worker-">在 Worker 线程中绘图</h2>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas">Offscreen Canvas</a> 的出现使得在 Worker 中进行绘图成为可能。由于 <code>OffScreenCanvas</code> 也实现了 <code>Transferable</code> 接口，主线程能够将 OffScreenCanvas 的引用传递至 Worker 线程。同样，当 offscreenCanvas 被传递到 Worker 中后，留在主线程里的对象便成了空壳，试图调用其上的任何方法都将导致抛出异常。</p>
+<pre><code class="lang-javascript">// worker.js
+self.onmessage = e =&gt; {
+    const canvas = e.data;
+    const ctx = canvas.getContext(&#39;2d&#39;);
+    ctx.fillStyle = &#39;#FF0000&#39;;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+// main.js
+const canvas = document.querySelector(&#39;canvas&#39;);
+const offscreenCanvas = canvas.transferControlToOffscreen();
+
+const worker = new Worker(&#39;canvas-worker.js&#39;);
+worker.postMessage(offscreenCanvas, [offscreenCanvas]);
+</code></pre>
+<blockquote>
+<p>OffScreen（离屏）Canvas 可以被直接创建，也可从普通 Canvas 中创建而来，它的用法不是本文的重点。</p>
+</blockquote>
+<p>上面这个例子把页面上一个普通的 Canvas 的控制权转交给了离屏 Canvas，然后将离屏 Canvas 以引用传递的方式发送给 Worker。然后，在 Worker 中进行绘制操作，为 Canvas 区域涂满红色。</p>
+<h3 id="-">图片加载</h3>
+<p>绘图，自然涉及图片资源的加载。传统方式是通过 <code>Image</code> 对象来加载图片以及绘图。然而，Worker 中不存在 <code>Image</code> 对象（也许是因为 <code>Image</code> 过于上层，与 DOM 的关联之处过多），这就需要一种更新、更接近底层的方法来加载图片：通过 <code>fetch</code> 方法直接获取二进制（即 <code>Blob</code> 对象）的图片数据，并转化为 <code>ImageBitmap</code> 对象用以绘图。</p>
+<pre><code class="lang-javascript">// worker.js
+self.onmessage = e =&gt; {
+    const canvas = e.data;
+    const ctx = canvas.getContext(&#39;2d&#39;);
+
+    fetch(yourUrl,).then(response =&gt; response.blob())
+        .then(blob =&gt; createImageBitmap(blob))
+        .then(bitmap =&gt; ctx.drawImage(bitmap, 0, 0));
+}
+</code></pre>
+<p><code>ImageBitmap</code> 是 <code>Image</code> 或 <code>HTMLImageElement</code> 背后的某种存在，或者说是去除了 DOM 功能（如 <code>onload</code>、<code>style</code> 等等）后的 <code>Image</code> ，表示存储 <code>Image</code> 中像素数据的那一块内存区域。在 Canvas 相关的操作中，大部分涉及到 <code>Image</code> 的方法，在接收 <code>Image</code> 参数的时候，也接收 <code>ImageBitmap</code> 对象。如 <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage#Parameters">CanvasRenderingContext2D#drawImage</a> 或 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D#Parameters">WebGLRenderingContext/texImage2D</a>。同样，ImageBitmap 作为一块内存区域，也可以被以引用传递的方式在 Worker 和主线程间传递。如果绘图操作逻辑需要进一步细粒度的拆分，也许可以利用这一特性来交换绘图过程中产生的中间结果。</p>
+<p>注意：OffScreenCanvas 的浏览器兼容性比 Worker 要差很多。</p>
+<p><img src="https://img.alicdn.com/tfs/TB1SdvLU4naK1RjSZFtXXbC2VXa-1260-283.png" alt=""></p>
+<h2 id="-">小结</h2>
+<p>以上即是我对 Web Worker 相关技术进行调研的梳理和总结，记录下来备忘。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/post/web-worker.html</link>
+            <guid isPermaLink="false">web-worker</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Sun, 05 May 2019 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[在线学区房地图：一个业余项目]]></title>
+            <description><![CDATA[<h1 id="-">在线学区房地图：一个业余项目</h1>
+<p>利用周末的时间做了一个 side project，可以在线展示各小学的施教区范围，可作购买学区房之前决策参考之用，非常直观！写篇文章介绍下用法吧，哈哈。</p>
+<p>首先界面长成这样，点击 <strong><a href="https://xieguanglei.github.io/schools-map/">直达链接</a></strong> 即可访问。网站是开源的，托管在 <a href="https://github.com/xieguanglei/schools-map">github</a> 上。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/1.png" alt=""></p>
+<p>数据上目前仅做了杭州的西湖区和滨江区；用户可以在这张地图上直接绘图，然后把绘图数据发 ISSUE 或者 PR 来添加或更新数据。</p>
+<h2 id="-">用法</h2>
+<h3 id="-">浏览学区划分</h3>
+<p>直接进入网站，即可浏览默认区域（杭州市西湖区）的学区房划分。鼠标拖拽（按住左键移动）可平移地图，鼠标滚轮可放大缩小地图。每个学校的学区范围用淡蓝色的多边形覆盖在地图上，可以很直观地看到哪些小区属于这个小学的施教区。</p>
+<p>网站可以支持多个区域的数据，可以点击菜单栏中的「区域选择」来选择显示另一个区域的学区划分。（滨江区仅完成了 4 所较热门小学的学区。）</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/2-o.png" alt=""></p>
+<h3 id="-">绘制数据和提交</h3>
+<p>用户可以在平台上直接绘制自己关心的学区数据，然后通过 PR 或 issue 选择提交到 github 仓库。绘制需要用到绘制工具栏：</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/3-o.png" alt=""></p>
+<p>四个按钮的作用分别为「绘图」、「撤销」、「导出」、「清除」。</p>
+<p>点击「绘图」按钮，会分别提示你输入绘制的区域名称、绘制的学校名称，然后鼠标就会从「手」形变成「十字」形，这提示你可以在地图上进行绘图操作了。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/4-o.png" alt=""></p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/5-o.png" alt=""></p>
+<p>在地图上依次单击选点，勾勒出学区范围的形状（正在绘图的区块是红色的）；在完成最后一个点时，使用双击表示勾勒绘图操作完成，学区的范围转为蓝色，并附上了包含学校名称的标记。这样，一所学校的施教区就绘制完成了（这里示例中的学区是我随意勾勒的，并不是真实数据）。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/6-o.png" alt=""></p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/7-o.png" alt=""></p>
+<p>再次点击「绘图」按钮，一所接一所学校地完成其所属学区的绘制操作。如果对绘图结果不满意，可以点击「撤销」按钮取消上一次绘制的内容。绘图过程中关闭页面重新打开，不会丢失已绘制的数据。</p>
+<p>点击「导出」按钮将下载一份文本文件，其中包含了你的绘图数据。你可以通过访问 issue 页将此附件提交给我，或者直接通过 PR 来提交数据的更改。</p>
+<p><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/8-o.png" alt=""></p>
+<p>点击「清除」按钮即可清空你之前所有的绘图数据。如果你已经完成了提交，或者想要绘制一个新的区域，你需要先清除之前的绘制数据。</p>
+<h2 id="-">声明</h2>
+<ul>
+<li>此地图的学区划分为 Github 上的网友个人整理而成，完全存在划分不准确甚至错误的可能性。本工具提供的信息仅供参考，不承担任何由信息错误导致损失的责任，用户请自行验证信息的真实性。</li>
+<li>本工具纯粹为兴趣制作，不产生任何盈利。本地图由 Baidu 地图非商用 SDK 支持。</li>
+</ul>
+<h2 id="-">感想</h2>
+<p>偶尔做做业余项目感觉不错，有种呼吸新鲜空气的感觉。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/post/schools-map.html</link>
+            <guid isPermaLink="false">schools-map</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Sat, 30 Mar 2019 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[WebGL 纹理详解]]></title>
+            <description><![CDATA[<h1 id="webgl-">WebGL 纹理详解</h1>
+<p>Buffer（数据缓冲区）与 Texture（纹理）是 WebGL 程序的两大数据来源。Buffer 可以通过 ArrayBuffer 或更语义化的 TypedArray 来构造；而 Texture 在大多数情况下，是通过 Image 对象来构造的。在构造和使用 Texture 的过程中，需要确定很多<strong>选项</strong>来以不同的方式构造 Texture；这些选项之间有着各种各样的关系，或互相依赖，或互相排斥，或互相影响。最近，我又重新梳理了一遍我所用到的 WebGL 纹理各种参数的影响，稍作整理，以防遗忘。</p>
+<p>为此，我专门编写了一个 Demo，如下所示。Demo 页的右上角有一个使用 <a href="https://github.com/dataarts/dat.gui">dat.GUI</a> 生成的控件，其中列举了影响纹理的一些选项。这篇文章将逐个讨论这些选项的作用和相互关系。</p>
+<p><a class="jsbin-embed" href="https://jsbin.com/boxazam/latest/embed?output&height=512px">JS Bin on jsbin.com</a></p>
+<h2 id="wrap">Wrap</h2>
+<p>在 JavaScript 中，创建纹理的基本流程大约如下所示：</p>
+<pre><code class="lang-javascript">// 激活纹理单元
+gl.activeTexture(...);
+
+// 创建和绑定
+const texture = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, texture);
+
+// 参数设置
+gl.texParameteri(...);
+gl.texParameteri(...);
+
+// 填充纹理的内容
+gl.texImage2D(..., image);
+
+// 通过纹理单元将纹理传送给着色器程序
+gl.uniform1i(...);
+</code></pre>
+<p>然后，在着色器中，使用一个坐标 (x,y) 从纹理上取色。</p>
+<pre><code class="lang-glsl">vec4 color = texture2D(texture, vec2(x, y));
+</code></pre>
+<p>通常，从纹理上取色的坐标 x 和 y 的值均在 0~1 之间。Wrap 配置项规定了当取色坐标的坐标取值在 (0, 1) 之外（即试图从纹理图片之外取色）时，应该如何取色。Wrap 有两种：切割(CLAMP)和重复(REPEAT)。我们可以操作上面的 Demo，调整 scale 的值使得纹理图片缩小一些，然后切换 Wrap 配置项为 CLAMP 或 REPEAT，可以发现：当选项置为 CLAMP 时，从纹理外部取色会落到对应的纹理的边缘，比如 <code>texture2D(texture, vec2(2.2, 0.5))</code> 的值会等于 <code>texture2D(texture, vec2(1.0, 0.5))</code>；而选项置为 REPEAT 时，纹理会「平铺」开来，从外部取色会把取色坐标按1取模，映射到纹理内部，比如 <code>texture2D(texture, vec2(2.2, 0.5))</code> 的值会等于 <code>texture2D(texture, vec2(0.2, 0.5))</code>。</p>
+<p>切换 Wrap 配置项的代码如下：</p>
+<pre><code class="lang-javascript">// CLAMP
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+// REPEAT
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+</code></pre>
+<p>下图是 REPEAT 的情况：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg" alt="repeat"></p>
+<p>下图是 CLAMP 的情况：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg" alt="clamp"></p>
+<blockquote>
+<p>有一点需要注意的是，REPEAT 模式对纹理图片的尺寸有要求，宽度和高度必须为 2 的整数次幂，如 32x32 或 1024x256 的图片都是符合要求的，但 500x512 或 300x300 是不符合的。我们可以将控件中的 size 从 512 改成 300，这时 Demo 将加载这张图片的一个尺寸为 300x300 的替代品作为纹理。如果 Wrap 为 CLAMP，我们会发现稍微纹理模糊了一些，但是如果 Wrap 为 REPEAT，则会报警并黑屏。</p>
+</blockquote>
+<h2 id="flipy">FlipY</h2>
+<p>FlipY 是 WebGL 的一个全局配置项（准确地说，它的名称是 UNPACK_FLIP_Y_WEBGL），在本文的范畴中，它主要影响了 <code>texImage2D()</code> 方法的行为。</p>
+<p>按照 OpenGL 的惯例，当着色器调用 <code>texture2D(t, st)</code> 方法从纹理中取色时，传入的取色坐标 <code>st</code> 的原点是左下角。换言之，如果传入的坐标是 (0, 0)，那么 OpenGL 期望取到的是左下角的那个像素的颜色。但是，由于在 Web 上图片数据的存储是从左上角开始的，传入坐标 (0,0) 时，实际上会取到左上角坐标的值。如果我们设置了 <code>FlipY</code> 配置项，那么在向纹理中加载数据的时候，就会对数据作一次翻转，使纹理坐标原点变为左下角。</p>
+<p>开启 FlipY 的代码是：</p>
+<pre><code class="lang-javascript">gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+</code></pre>
+<p>在 Demo 中，默认情况下 FlipY 配置项是勾选的，如果你勾选取消，会发现纹理图片被翻转了。下图是取消 FlipY 配置后的情况。</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1dFuJtVzqK1RjSZSgXXcpAVXa-600-379.jpg" alt="cancel-flipY"></p>
+<h2 id="min_filter-mag_filter">MIN_FILTER 和 MAG_FILTER</h2>
+<p>一个纹理是由离散的数据组成的，比如一个 2x2 的纹理是由 4 个像素组成的，使用 (0,0)、(0, 1) 等四个坐标去纹理上取样，自然可以取到对应的像素颜色；但是，如果使用非整数坐标到这个纹理上去取色。比如，当这个纹理被「拉近」之后，在屏幕上占据了 4x4 一共 16 个像素，那么就会使用 (0.33,0) 之类的坐标去取值，如何根据离散的 4 个像素颜色去计算 (0.33,0) 处的颜色，就取决于参数 MAG_FILTER。在 WebGL 中设置这两个项的代码如下所示：</p>
+<pre><code class="lang-javascript">gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+gl.texParameteri(
+    gl.TEXTURE_2D, 
+    gl.TEXTURE_MIN_FILTER, 
+    gl.LINEAR_MIPMAP_LINEAR
+);
+</code></pre>
+<p>MAG_FILTER 有两个可选项，NEAREST 和 LINEAR。顾名思义，NEAREST 就是去取距离当前坐标最近的那个像素的颜色，而 LINEAR 则会根据距离当前坐标最近的 4 个点去内插计算出一个数值，如图所示。</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1hgfJt3HqK1RjSZFEXXcGMXXa-600-481.png" alt="MAG_FILTER"></p>
+<p>显然 NEAREST 的运行速度更快，但 LINEAR 的效果更好。使用 NEAREST 时，当纹理被拉得比较近，颗粒感会比较明显，而使用 LINEAR 则会顺滑一些。你可以切换右上角空间上的 MAG_FILTER 选项，然后拖动 scale 滑块将纹理放大，体会一下两者的差别。</p>
+<p>下图是 MAG_FILTER 为 NEAREST 的效果：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1l_nZtYvpK1RjSZFqXXcXUVXa-600-421.png" alt="MAG_FILTER_NEAREST"></p>
+<p>下图是 MAG_FILTER 为 LINEAR 的效果：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1I2_St4TpK1RjSZR0XXbEwXXa-600-419.png" alt="MAG_FILTER_LINEAR"></p>
+<p>MAG_FILTER 作用于将纹理拉近/放大的情形，而当纹理远离/缩小的时候，起作用的是 MIN_FILTER。MIN_FILTER 有以下 6 个可选配置项：</p>
+<ul>
+<li>NEAREST</li>
+<li>LINEAR</li>
+<li>NEAREST_MIPMAP_NEAREST</li>
+<li>NEAREST_MIPMAP_LINEAR</li>
+<li>LINEAR_MIPMAP_NEAREST</li>
+<li>LINEAR_MIPMAP_LINEAR</li>
+</ul>
+<p>前两个配置项和 MAG_FILTER 的含义和作用是完全一样的。但问题是，当纹理被缩小时，原纹理中并不是每一个像素周围都会落上采样点，这就导致了某些像素，完全没有参与纹理的计算，新纹理丢失了一些信息。假设一种极端的情况，就是一个纹理彻底缩小为了一个点，那么这个点的值应当是纹理上所有像素颜色的平均值，这才比较合理。但是 NEAREST 只会从纹理中取一个点，而 LINEAR 也只是从纹理中取了四个点计算了一下而已。这时候，就该用上 MIPMAP 了。</p>
+<h2 id="mipmap-min_filter">Mipmap 和 MIN_FILTER</h2>
+<p>为了在纹理缩小也获得比较好的效果，需要按照采样密度，选择一定数量（通常大于 LINEAR 的 4 个，极端情况下为原纹理上所有像素）的像素进行计算。实时进行计算的开销是很大的，所有有一种称为 MIPMAP（金字塔）的技术。在纹理创建之初，就为纹理创建好 MIPMAP，比如对 512x512 的纹理，依次建立 256x256（称为 1 级 Mipmap）、128x128（称为 2 级 Mipmap） 乃至 2x2、1x1 的纹理。实时渲染时，根据采样密度选择其中的某一级纹理，以此避免运行时的大量计算。</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1_0.ot9zqK1RjSZPxXXc4tVXa-501-503.png" alt="Mipmap"></p>
+<blockquote>
+<p>显而易见的是，使用 MIPMAP 同样需要纹理尺寸为 2 的整数次幂。</p>
+</blockquote>
+<p>WebGL 中，可以通过调用以下方法来生成 mipmap。</p>
+<pre><code class="lang-javascript">gl.generateMipmap(gl.TEXTURE_2D);
+</code></pre>
+<p>我们将控制面板中的 <code>generateMipmap</code> 打开，并把 scale 调到一个较小的值（比如 0.5），然后切换 MIN_FILTER 的各种设置，就可以观察到 mipmap 的效果了。</p>
+<p>下图是 MIN_FILTER 为 LINEAR 的效果（NEAREST 效果是类似的）：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1CmY0tVzqK1RjSZFvXXcB7VXa-600-420.png" alt="MIN_FILTER_LINEAR"></p>
+<p>下图是 MIN_FILTER 为 LINEAR_MIPMAP_NEAREST 的效果（LINEAR_MIPMAP_LINEAR 效果是类似的）：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB11zLZt9zqK1RjSZPcXXbTepXa-600-418.png" alt="MIN_FILTER_MIPMAP"></p>
+<p>可以看到当采用 MIPMAP 时，纹理平滑了很多（特别是头发部分）。</p>
+<blockquote>
+<p>MIN_FILTER 的默认值是 LINEAR_MIPMAP_NEAREST。在 XXX_MIPMAP_XXX 的格式中，前一个 XXX 表示在单个 MIPMAP 中取色的方式，与单独的 LINEAR 或 NEAREST 类似，而后一个 XXX 表示，随着采样密度连续变化（通常是因为缩放因子连续变化）时，是否在多层 MIPMAP 之间内插。使用 MIPMAP 时，后一个 LINEAR 比较重要，只要后者是 LINEAR，前者的意义其实并不特别大，所以默认选项 NEAREST_MIPMAP_LINEAR 也是最常用的。</p>
+</blockquote>
+<h2 id="-mipmap">自定义 Mipmap</h2>
+<p>我们可以使用 <code>gl.generateMipmap()</code> 方法来根据原始纹理生成一套 mipmap，这种生成的方式是默认的。但是实际上，我们还有一种更灵活的方式来自定义 Mipmap，那就是直接传入另一张图片。比如，这里我们使用的是一张 512x512 的 lena 图，调用 <code>gl.generateMipmap()</code> 会生成 256x256、128x128 直至 1x1 等一系列图片。但是，如果我们手头正好有一张 128x128 尺寸的图片，我们就可以强制指定这张图片作为原始纹理的 1 级 Mipmap。</p>
+<p><img src="https://gw.alicdn.com/tfs/TB17fknt9rqK1RjSZK9XXXyypXa-600-503.png" alt="Custom Mipmap"></p>
+<p>自定义 Mipmap 纹理的代码如下所示：</p>
+<pre><code class="lang-javascript">// 首先要调用此方法
+// 如果在 texImage2D 后调用，则定制的 mipmap 会被覆盖
+gl.generateTexture(gl.TEXTURE_2D);
+
+gl.texImage2D(
+    gl.TEXTURE_2D,
+    1,  // 就是这个参数指定几级 Mipmap
+    gl.RGBA,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    image // 尺寸必须严格符合指定级别 Mipmap 应有的尺寸
+);
+</code></pre>
+<p>当我们指定好自定义的 Mipmap 纹理后（即勾选 customMipmap），同时勾选 generateMipmap，并且保证 MIN_FILTER 在 XXX_MIPMAP_XXX 的配置上，此时拖动 scale 滑块，会发现在缩小过程中的某个过程，纹理会变成自定义图片。当 MIN_FILTER 在 XXX_MIPMAP_NEAREST 时，纹理是「突变」的；而当 MIN_FILTER 位于 XXX_MINMAP_LINEAR 时，纹理是「渐变」的，这也印证了前面关于 XXX_MIPMAP_XXX 的解释。</p>
+<p>下图是 MIN_FILTER 为 LINEAR_MIPMAP_NEAREST 时缩放的效果：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB11r3xt7voK1RjSZFDXXXY3pXa-500-316.gif" alt="CustomMipmap1"></p>
+<p>下图是 MIN_FILTER 为 LINEAR_MIPMAP_LINEAR 时缩放的效果：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1ctgvtYvpK1RjSZFqXXcXUVXa-500-316.gif" alt="CustomMipmap2"></p>
+<h2 id="srgb-">SRGB 扩展</h2>
+<p>RGB 颜色空间是为人眼设计的。但是人眼感光强度和真实光线的物理强度并不是线性关系，这是人眼的生理结构所决定的。比如，在人眼看来，屏幕上显示的白色 #FFFFFF 的亮度，是半灰色 #888888 亮度的 2 倍，但是两者真实的光线物理强度（直射下单位面积上受光照的功率）并不是 2 倍关系。所以，当着色器需要基于一些物理规律来计算颜色时，直接取纹理的颜色没有意义，需要作一次转换。</p>
+<p>一个经验是，将人眼感知的颜色归一化到 (0,1) 之间，然后取 2.2 次方幂，得到的结果与光线物理强度是呈线性关系的。如下所示，横轴是 RGB 色彩空间，蓝色直线是人眼的感光曲线，红色曲线是光线物理强度曲线。</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1QD7Xt3HqK1RjSZFEXXcGMXXa-297-286.png" alt="SRGB"></p>
+<p>SRGB 扩展所做的就是这件事，在用户调用 <code>texImage2D</code> 向纹理中传输数据时，将纹理的每个像素颜色取了自己的 2.2 次方幂。开启 SRGB 扩展的代码如下所示：</p>
+<pre><code class="lang-javascript">const SRGBExtension = gl.getExtension(&quot;EXT_SRGB&quot;);
+
+gl.texImage2D(
+    gl.TEXTURE_2D, 
+    0, 
+    // 接下来两个参数原本是 gl.RGBA
+    SRGBExtension.SRGB_ALPHA_EXT, 
+    SRGBExtension.SRGB_ALPHA_EXT, 
+    gl.UNSIGNED_BYTE, 
+    image
+);
+</code></pre>
+<p>在控件中勾选 SRGB，会发现纹理变暗了很多，因为颜色作为 [0,1] 之间的数值，取了自己的 2.2 次方幂，自然变小了。其实，如果不使用 SRGB 扩展，在着色器中也可以模拟。我们可以取消勾选 SRGB 选项，然后将 postProcess（后处理）项置为 c^2.2，画面也同样变暗了。postProcess 是这个 Demo 埋在 Shader 中的一个普通 uniform 变量，为最后颜色输出增加一个可选的环节（取自己的 2.2 次方幂，或者取自己的 1/2.2 次方幂）。</p>
+<p>着色器中有关 postProcess 的代码如下：</p>
+<pre><code class="lang-glsl">if(uPostProcess == 1){
+    gl_FragColor = vec4(pow(gl_FragColor.rgb, vec3(1.0/2.2)), 1.0);
+}else if(uPostProcess == 2){
+    gl_FragColor = vec4(pow(gl_FragColor.rgb, vec3(2.2)), 1.0);
+}
+</code></pre>
+<p>下图是 SRGB 模式的效果，postProcess 选择 c^2.2 能达到同样的效果。</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1Aqr8tZbpK1RjSZFyXXX_qFXa-600-419.png" alt="SRGB"></p>
+<p>当然，我们也可以勾选 SRGB，然后在 postProcess 中选择取 1/2.2 次方幂，这样输出的颜色和最初的几乎一样。SRGB 扩展将纹理颜色值压低，后处理又把输出的颜色值调亮，两者相互抵消。这正是 PBR 渲染的常用做法，先把纹理颜色从人眼颜色空间的纹理压低成物理空间，然后进行一系列物理规律运算，最后输出时再调亮成人眼颜色空间。</p>
+<p>下图是 SRGB + postProcess c^1/2.2 的效果，和不使用 SRGB 和 postProcess 的效果基本一致：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1Qr__tYvpK1RjSZFqXXcXUVXa-600-421.png" alt="SRGB_PostProcess"></p>
+<h2 id="tex_lod-">Tex_Lod 扩展</h2>
+<p>之前说过，从 Mipmap 中的哪一级纹理取色，取决于在此纹理上采样的密度。但是有了 Tex_Lod 扩展，可以不受此限制，在着色器中直接编码指定从某一级纹理取色。</p>
+<p>开启 Tex_Lod 扩展：</p>
+<pre><code class="lang-javascript">gl.getExtension(&quot;EXT_shader_texture_lod&quot;);
+</code></pre>
+<p>着色器中也需要加入开启 #extension 宏：</p>
+<pre><code class="lang-glsl">#extension GL_EXT_shader_texture_lod: enable
+</code></pre>
+<p>在着色器中，可调用 <code>texture2DLodExt</code> 函数来从指定级别的 Mipmap 上取色。</p>
+<pre><code class="lang-glsl">gl_FragColor = texture2DLodEXT(uTexture, st, uExtLodLevel);
+</code></pre>
+<p>在右上角的控制器中，确保 Mipmap 相关的选项都打开，然后打开 extLod，拖动 extLodLevel 滑块，可见虽然纹理本身没有在缩放，但是纹理似乎变模糊了，此时实际上就是取到级别较高的 Mipmap 中去了，因为 Mipmap 的级别越高，像素数量越少，在尺寸不变的情况下，就会变模糊了。</p>
+<p>下图是 extLod 开启后，在不依赖纹理的缩放导致采样密度变化的情况下，直接手动编码来从不同级别的 Mipmap 上取色的情况：</p>
+<p><img src="https://gw.alicdn.com/tfs/TB1xK7vtVYqK1RjSZLeXXbXppXa-500-316.gif" alt="extLod"></p>
+<h2 id="-">小结</h2>
+<p>至此，完成了上述所有配置项的讨论。</p>
+<p>（完）</p>
+<script async src="https://static.jsbin.com/js/embed.min.js?4.1.7"></script>]]></description>
+            <link>http://xieguanglei.github.io/post/webgl-texture.html</link>
+            <guid isPermaLink="false">webgl-texture</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Tue, 04 Dec 2018 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[「译」论孩子]]></title>
+            <description><![CDATA[<h1 id="-">「译」论孩子</h1>
+<blockquote>
+<p>今天在网上闲逛时，无意读到纪伯伦的诗《论孩子》（冰心翻译的版本）。这首诗之前应也曾读过，当时没有什么特别感受；但有了自己的孩子之后，再读此诗，竟有些不一样的感觉。冰心翻译的版本，我觉得有点过于直白，过于追求「直译」了，于是我再对照着英文原文，按着自己的理解意译了一个自己的版本，仅作娱乐。</p>
+<p><strong>以下是我的译文：</strong></p>
+</blockquote>
+<h2 id="-">论孩子</h2>
+<p>你的孩子，既是你的孩子，也不是你的孩子。</p>
+<p>她是生命的精灵，借你而来，却不因你而来；</p>
+<p>她陪伴你于左右，受你养育，却不从属于你。</p>
+<p>你可以给予她以关爱，却无法给予她以思想；</p>
+<p>你可以庇护她的身体，却不能庇护她的灵魂；</p>
+<p>因为她的灵魂，属于明天，那个你在梦中都无法到达的明天。</p>
+<p>你可以努力地模仿她，却无法迫使她模仿你，</p>
+<p>正如生命时钟不可倒转，昨日时光从未停留。</p>
+<p>你是弓，而她是搭在弓弦上的箭矢，</p>
+<p>神明已在暗中看清了命运，他用神力拉满弓弦，箭矢便轻快地飞向远方。</p>
+<p>愿你与她的缘分，成为生命中一场难忘欢愉，</p>
+<p>愿神明眷顾着你，也眷顾着她。</p>
+<p>（完）</p>
+<blockquote>
+<p><strong>附上原文：</strong></p>
+<h2 id="on-children">On Children</h2>
+<p>Your children are not your children.</p>
+<p>They are the sons and daughters of Life’s longing for itself.</p>
+<p>They come through you but not from you,</p>
+<p>And though they are with you, yet they belong not to you.</p>
+<p>You may give them your love but not your thought,</p>
+<p>For they have their own thoughts.</p>
+<p>You may house their bodies but not their soul,</p>
+<p>For their souls dwell in the house of tomorrow,</p>
+<p>Which you cannot visit, not even in your dreams.</p>
+<p>You may strive to be like them,</p>
+<p>But seek not to make them like you,</p>
+<p>For life goes not backward nor tarries with yesterday.</p>
+<p>You are the bows from which your children,</p>
+<p>As living arrows are sent forth.</p>
+<p>The archer sees the mark upon the path of the infinite,</p>
+<p>And He bends you with His might,</p>
+<p>That His arrows may go swift and far.</p>
+<p>Let your bending in the archer’s hand be for gladness;</p>
+<p>For even as He loves the arrow that flies,</p>
+<p>So He loves also the bow that is stable.</p>
+<p><strong>附上冰心先生翻译的版本：</strong></p>
+<h2 id="-">论孩子</h2>
+<p>你们的孩子，都不是你们的孩子，</p>
+<p>乃是「生命」为自己所渴望的儿女。</p>
+<p>他们是借你们而来，却不是从你们而来，</p>
+<p>他们虽和你们同在，却不属于你们。</p>
+<p>你们可以给他们以爱，却不可给他们以思想，</p>
+<p>因为他们有自己的思想。</p>
+<p>你们可以荫庇他们的身体，却不能荫庇他们的灵魂，</p>
+<p>因为他们的灵魂，是住在「明日」的宅中，那是你们在梦中也不能想见的。</p>
+<p>你们可以努力去模仿他们，却不能使他们来像你们，</p>
+<p>因为生命是不倒行的，也不与「昨日」一同停留。</p>
+<p>你们是弓，你们的孩子是从弦上发出的生命的箭矢。</p>
+<p>那射者在无穷之中看定了目标，也用神力将你们引满，使他的箭矢迅疾而遥远地射了出去。</p>
+<p>让你们在射者手中的「弯曲」成为喜乐吧；</p>
+<p>因为他爱那飞出的箭，也爱那静止的弓。</p>
+</blockquote>
+]]></description>
+            <link>http://xieguanglei.github.io/post/on-children.html</link>
+            <guid isPermaLink="false">on-children</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Fri, 23 Nov 2018 00:00:00 GMT</pubDate>
+        </item>
+    </channel>
+</rss>

@@ -3,7 +3,12 @@ node_js:
   - 9.11.2
 script:
   - git clone git@github.com:xieguanglei/amberpine.git
+  - git checkout master
+  - git merge source
   - cd amberpine
   - npm install
   - cd ../
   - node amberpine/src/cli.js
+  - git checkout master
+  - git add *
+  - git 
