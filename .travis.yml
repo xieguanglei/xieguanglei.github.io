@@ -9,5 +9,11 @@ script:
   - npm install
   - cd ../
   - node amberpine/src/cli.js
-  - git add .
-  - git commit
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: ./
+  github_token: $GITHUB_TOKEN
+  on:
+    branch: master
