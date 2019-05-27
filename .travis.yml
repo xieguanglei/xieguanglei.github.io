@@ -2,16 +2,15 @@ language: node_js
 node_js:
   - 9.11.2
 script:
-  - git clone https://github.com/xieguanglei/amberpine.git
-  - cd amberpine
-  - npm install
-  - cd ../
-  - node amberpine/src/cli.js
+  - npm install amberpine
+  - node_modules/.bin/abp
+  - cp .nojekyll dist
 branches:
   only:
   - source
 deploy:
   provider: pages
+  local_dir: dist
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   on:
