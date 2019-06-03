@@ -133,7 +133,7 @@ body{
 }
 
 #post{
-  padding: 20px;
+  padding: 20px 20px 100px 20px;
 }
 #post .main{
   max-width: 750px;
@@ -141,6 +141,9 @@ body{
 }
 #post .main img{
   max-width: 750px;
+}
+#post .main blockquote img{
+  max-width: 660px;
 }
 
 .iconfont {
