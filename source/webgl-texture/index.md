@@ -253,7 +253,3 @@ gl_FragColor = texture2DLodEXT(uTexture, st, uExtLodLevel);
 至此，完成了上述所有配置项的讨论。
 
 （完）
-
-
-
-<script async src="https://static.jsbin.com/js/embed.min.js?4.1.7"></script>
