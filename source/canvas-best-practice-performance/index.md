@@ -2,7 +2,7 @@
 
 Canvas 想必前端同学们都不陌生，它是 HTML5 新增的「画布」元素，允许我们使用 JavaScript 来绘制图形。目前，所有的主流浏览器都支持 Canvas。
 
-![Canvas兼容性](http://img.alicdn.com/tps/TB1YgYILpXXXXcXXFXXXXXXXXXX-764-261.jpg)
+![](http://img.alicdn.com/tps/TB1YgYILpXXXXcXXFXXXXXXXXXX-764-261.jpg)
 
 Canvas 最常见的用途是渲染动画。渲染动画的基本原理，无非是反复地擦除和重绘。为了动画的流畅，留给我渲染一帧的时间，只有短短的 16ms。在这 16ms 中，我不仅需要处理一些游戏逻辑，计算每个对象的位置、状态，还需要把它们都画出来。如果消耗的时间稍稍多了一些，用户就会感受到「卡顿」。所以，在编写动画（和游戏）的时候，我无时无刻不担忧着动画的性能，唯恐对某个 API 的调用过于频繁，导致渲染的耗时延长。
 
@@ -80,7 +80,7 @@ context.lineWidth = {}; // 600ms
 
 分层 Canvas 在几乎任何动画区域较大，动画较复杂的情形下都是非常有必要的。分层 Canvas 能够大大降低完全不必要的渲染性能开销。分层渲染的思想被广泛用于图形相关的领域：从古老的皮影戏、套色印刷术，到现代电影/游戏工业，虚拟现实领域，等等。而分层 Canvas 只是分层渲染思想在 Canvas 动画上最最基本的应用而已。
 
-![分层Canvas](http://img.alicdn.com/tps/TB1RgLULpXXXXatXVXXXXXXXXXX-667-309.png)
+![](http://img.alicdn.com/tps/TB1RgLULpXXXXatXVXXXXXXXXXX-667-309.png)
 
 分层 Canvas 的出发点是，动画中的每种元素（层），对渲染和动画的要求是不一样的。对很多游戏而言，主要角色变化的频率和幅度是很大的（他们通常都是走来走去，打打杀杀的），而背景变化的频率或幅度则相对较小（基本不变，或者缓慢变化，或者仅在某些时机变化）。很明显，我们需要很频繁地更新和重绘人物，但是对于背景，我们也许只需要绘制一次，也许只需要每隔 200ms 才重绘一次，绝对没有必要每 16ms 就重绘一次。
 
@@ -172,7 +172,7 @@ context.drawImage(canvasOffscreen, x, y);
 
 Web Worker 是好东西，性能很好，兼容性也不错。浏览器用另一个线程来运行 Worker 中的 JavaScript 代码，完全不会阻碍主线程的运行。动画（尤其是游戏）中难免会有一些时间复杂度比较高的算法，用 Web Worker 来运行再合适不过了。
 
-![Web Worker 兼容性](http://img.alicdn.com/tps/TB1qt_yLpXXXXcrXVXXXXXXXXXX-764-277.jpg)
+![](http://img.alicdn.com/tps/TB1qt_yLpXXXXcrXVXXXXXXXXXX-764-277.jpg)
 
 然而，Web Worker 无法对 DOM 进行操作。所以，有些时候，我们也使用另一种策略来优化性能，那就是将任务拆分成多个较小的任务，依次插入每一帧中去完成。虽然这样做几乎肯定会使执行任务的总时间变长，但至少动画不会卡住了。
 
@@ -200,3 +200,4 @@ Web Worker 是好东西，性能很好，兼容性也不错。浏览器用另一
 5. 通过计算和判断，避免无谓的绘制操作。
 6. 将固定的内容预先绘制在离屏 Canvas 上以提高性能。
 7. 使用 Worker 和拆分任务的方法避免复杂算法阻塞动画运行。
+

@@ -14,7 +14,7 @@
 
 \begin{equation}L_o(o)=L_e(o)+\int_\Omega L_i(i)\cdot F(i, o)\cdot \cos\theta\cdot di \end{equation}
 
-![渲染方程示意](http://img.alicdn.com/tfs/TB19602dEKF3KVjSZFEXXXExFXa-504-189.png)
+![](http://img.alicdn.com/tfs/TB19602dEKF3KVjSZFEXXXExFXa-504-189.png)
 
 解释：
 
@@ -28,13 +28,13 @@
 
 依照光线追踪的原理，我们沿着 $o$ 方向追踪到一处交点 $P$，就需要进行一次积分操作。在计算机程序中，积分是用求和模拟的，求和的次数越多（自变量的间隔越小），结果就越准确。假设每次积分都要进行 $n$ 次求和操作，那么当追踪的光线遇到第一个交点时，会发散成 $n$ 条光线；同时追踪这 $n$ 条光线，到下一个交点，每条光线又会发散成 $n$ 条光线……随着追踪深度的增加，计算开销的量级将按照指数级上升。
 
-![光线追踪原理](https://img.alicdn.com/tfs/TB1qxN8dB1D3KVjSZFyXXbuFpXa-319-237.png)
+![](https://img.alicdn.com/tfs/TB1qxN8dB1D3KVjSZFyXXbuFpXa-319-237.png)
 
 ## 蒙特卡洛方法
 
 蒙特卡洛方法（Monte Carlo method）是一种使用概率理论（通过大量随机数采样）进行数值计算以求取积分的方法。一个常用的有助理解的例子是：对「如何计算圆的面积」这个问题（圆的面积公式求取其实也是一个积分问题），蒙特卡洛的解法是「撒豆」：在包含圆的已知面积为 $S$ 的矩形内随机采样（撒豆）$N$ 次，统计豆在圆内的次数为 $M$，则圆的面积为 $S\cdot {M} / {N}$。
 
-![蒙特卡洛方法-撒豆示例](https://img.alicdn.com/tfs/TB1x2p8dBiE3KVjSZFMXXbQhVXa-251-251.png)
+![](https://img.alicdn.com/tfs/TB1x2p8dBiE3KVjSZFMXXbQhVXa-251-251.png)
 
 > 撒豆问题不仅可以解圆的面积，还可以解任意形状，甚至不规则形状的面积求取。
 
@@ -45,7 +45,7 @@
 1. 左侧表示函数 $f(x)$ 在区间 $[a, b]$ 的积分，即下图中的部分阴影部分面积。
 2. 此积分的值，可以这样求取：随机在 $[a, b]$ 区间取值，采样计算 $f(x)$，然后计算所有样本的均值并乘以区间的长度。当取样数量 $N$ 越大，最后的值就越接近真实的积分值。
 
-![蒙特卡洛方法](https://img.alicdn.com/tfs/TB1CQ0_dEGF3KVjSZFmXXbqPXXa-338-303.png)
+![](https://img.alicdn.com/tfs/TB1CQ0_dEGF3KVjSZFmXXbqPXXa-338-303.png)
 
 有同学可能会问（我也曾有此困惑），为什么不直接均等分采样，而要随机采样呢？其实，对于计算一维的函数 $f(x)$，区别确实不大，但对二维甚至更高维度的函数（此时需要求取重积分）如 $f(x,y)$，情况就不一样了。
 
@@ -60,7 +60,7 @@
 
 使用蒙特卡洛方法，对每一次反射或折射不再进行积分，而是随机选取一条可能的反射或折射光线进行追踪。然后在开始追踪的源头处，重复多次追踪操作以求取期望，这就是 SmallPT 光追的算法。简述一下具体步骤：
 
-![蒙特卡洛方法-光线追踪](http://img.alicdn.com/tfs/TB1oQmfdAWE3KVjSZSyXXXocXXa-404-306.png)
+![](http://img.alicdn.com/tfs/TB1oQmfdAWE3KVjSZSyXXXocXXa-404-306.png)
 
 1. 从每个像素 $P$ 处发出一条射线 $R$，其方向与入射到相机并产生该像素的光线相反。
 2. 求取此射线照射到的物体表面的点 $P_1$，即与场景中物体的交点；如有多个交点，取距离相机最近的那个。如果未求到交点，则返回背景色。
@@ -208,7 +208,7 @@ struct Vec {
 7. 归一化 `norm()`：$norm(V_1) = V_1 * \frac{1}{\sqrt {x_1^2+y_1^2+z_1^2}}$，其物理意义是保持矢量方向不变，将其长度缩放为单位长度 1。
 
 
-![矢量运算的物理意义](http://img.alicdn.com/tfs/TB1S5indBWD3KVjSZKPXXap7FXa-529-277.png)
+![](http://img.alicdn.com/tfs/TB1S5indBWD3KVjSZKPXXap7FXa-529-277.png)
 
 ## 射线
 
@@ -218,7 +218,7 @@ struct Vec {
 struct Ray { Vec o, d; Ray(Vec o_, Vec d_) : o(o_), d(d_) {} };
 ```
 
-![射线](https://img.alicdn.com/tfs/TB1rxmmdvWG3KVjSZFgXXbTspXa-298-123.png)
+![](https://img.alicdn.com/tfs/TB1rxmmdvWG3KVjSZFgXXbTspXa-298-123.png)
 
 ## 定义场景
 

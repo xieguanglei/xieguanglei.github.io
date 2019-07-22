@@ -79,6 +79,8 @@ body{
   display: inline-block;
   width: 80px;
   margin-right: 50px;
+  font-size: 18px;
+  color: #777;
   font-family: 'Galdeano','Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
 }
 #posts .post .title a{
@@ -87,6 +89,7 @@ body{
 
 #post .date{
   font-family: 'Galdeano','Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  color: #777;
 }
 #post .main table{
   border-top: 2px solid #7f8c8d;
@@ -138,6 +141,17 @@ body{
 #post .main{
   max-width: 750px;
   margin: auto;
+}
+#post .main figure{
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+#post .main figure figurecaption{
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: #888888;
 }
 #post .main img{
   max-width: 750px;

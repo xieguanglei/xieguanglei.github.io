@@ -78,7 +78,7 @@
 
 如图所示，u为旋转轴，旋转角度为σ，向量v旋转到w处。旋转到σ/2处为k（图中未标出）。
 
-![四元数证明](http://img.alicdn.com/tps/TB1x1EWLpXXXXcWXFXXXXXXXXXX-467-407.png)
+![](http://img.alicdn.com/tps/TB1x1EWLpXXXXcWXFXXXXXXXXXX-467-407.png)
 
 下面也用相同的字母指代四元数，如u就表示向量u的四元数形式((ux,uy,uz),0)。
 

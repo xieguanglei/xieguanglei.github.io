@@ -30,7 +30,8 @@ Browserify 将其打包生成了这样一个文件。外面这层代码进行过
   function getModule(index, u) {
     // 如果 map 中找不到
     //   如果 originMap 中也找不到，就报错
-    //   如果 originMap 中找到了，就先去把 originMap 里面的模块执行一遍，放在 map 中，并返回
+    //   如果 originMap 中找到了，就先去把 originMap 里面的模块执行一遍，
+    //      其结果放在 map 中，并返回
     // 如果 map 中找到了，直接返回
     if (!map[index]) {
       if (!originMap[index]) {
@@ -55,7 +56,7 @@ Browserify 将其打包生成了这样一个文件。外面这层代码进行过
     return map[index].exports
   }
   // Browserify 有多重模式，可以包装成供各种模式加载的模块文件。
-  // 在其他模式下，Browserify 还会在再外面包一层 shim，这里应该是给外面一层 shim 用的。
+  // 在其他模式下，Browserify 还会在再外面包一层 shim
   var i = typeof require == "function" && require;
   // 预先取一下入口模块
   for (var j = 0; j < arr.length; j++) {

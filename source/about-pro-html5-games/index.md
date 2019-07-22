@@ -12,7 +12,7 @@
 
 [4]:http://www.apress.com/9781430247104
 
-![cover](https://img.alicdn.com/tps/TB1n9gJKpXXXXaFapXXXXXXXXXX-400-400.jpg)
+![](https://img.alicdn.com/tps/TB1n9gJKpXXXXaFapXXXXXXXXXX-400-400.jpg)
 
 链接：[亚马逊][亚马逊] [京东][京东]
 

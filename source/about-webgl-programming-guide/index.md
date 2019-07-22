@@ -4,7 +4,7 @@
 
 [WebGL Programming Guide](http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920)这本书出自任职于索尼的图形学专家松田浩一（Kouichi Matsuda）博士，和任职于卑诗大学的Rodger Lea博士之手。这本书详细地讲解了WebGL原生API的几乎每个细节，讲解了三维图形学的诸多基础知识，对于没有图形学基础却又希望探索WebGL领域的前端工程师们，是一本不可多得的好书。感谢电子工业出版社博文视点编辑部的任晓露编辑对我的信任，使我得以将此书翻译为中文。
 
-![WebGL Programming Guide](https://img.alicdn.com/tps/TB18qDdLpXXXXaQXVXXXXXXXXXX-387-500.jpg)
+![](https://img.alicdn.com/tps/TB18qDdLpXXXXaQXVXXXXXXXXXX-387-500.jpg)
 
 链接：[亚马逊][亚马逊] [京东][京东]
 

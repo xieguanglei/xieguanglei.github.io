@@ -8,7 +8,7 @@
 
 用到的素材，额，其实是他大卸八块后的样子。
 
-![奔跑的小龙素材](http://img.alicdn.com/tps/TB1rZG9KFXXXXX3XFXXXXXXXXXX-369-272.jpg)
+![](http://img.alicdn.com/tps/TB1rZG9KFXXXXX3XFXXXXXXXXXX-369-272.jpg)
 
 骨骼动画主要被用游戏场景中，做 Logo 、彩蛋也不错（比如 2014 年双 11 的喵喵舞就是天猫的同学基于骨骼动画原理实现的）。其实，在 CSS `transform` 或 Canvas 的帮助下，Web 前端播放骨骼动画，可谓举手之劳矣。
 
@@ -16,7 +16,7 @@
 
 骨骼当然不是随便排列的，它们需要以树状结构组织起来。
 
-![骨骼解析](http://img.alicdn.com/tps/TB17XvsKFXXXXXoXXXXXXXXXXXX-500-400.png)
+![](http://img.alicdn.com/tps/TB17XvsKFXXXXXoXXXXXXXXXXXX-500-400.png)
 
 光有树状的结构还是远远不够的，每片骨骼还需要描述 **自身的位移是多少（x，y），旋转的角度是多少（θ）** 。注意， **骨骼的位移和角度是相对「父骨骼」（的坐标系）而言的** 。
 
@@ -126,7 +126,7 @@ context.draw(左臂)
 
 如果还想做细腻一些，自然还有头部的摆动，毛发颤动，眼珠转动等等……而每一片骨骼的变化，只需要三五个关键帧。比如，示例骨骼动画（小龙跑步）的关键帧定义如下图所示。每个关键帧包含的信息包括：关键帧在动画周期中的位置，以及骨骼的变换参数。
 
-![小龙跑步关键帧](http://img.alicdn.com/tps/TB1BqHDKFXXXXaEXXXXXXXXXXXX-546-633.png)
+![关键帧](http://img.alicdn.com/tps/TB1BqHDKFXXXXaEXXXXXXXXXXXX-546-633.png)
 
 接下来，还有什么好说的呢？动画最基本的原理，就是随着时间更新对象的视觉状态。那么，对骨骼动画而言，就是在每一帧的时候，根据当前帧在一个动画周期内的位置，线性内插出每一片骨骼的位移和角度，然后算出全局的位移和角度，再画出来。
 
@@ -136,7 +136,7 @@ context.draw(左臂)
 
 这样，我们就能看到下面的情形了：参考 [Demo](http://jsbin.com/seyita/1/edit?html,output)。
 
-![奔跑的小龙](http://img.alicdn.com/tps/TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif)
+![](http://img.alicdn.com/tps/TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif)
 
 ## 其他
 

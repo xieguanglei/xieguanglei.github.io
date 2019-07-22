@@ -11,7 +11,7 @@ React 的初学者通常会犯一个错误是：不大会使用（甚至完全�
 * 用户的描述信息默认不显示，鼠标 hover 到用户头像上时，用气泡显示描述信息。
 * 点击「关注」按钮即可关注用户，随之按钮文案变成「取关」（取消关注）。
 
-![原型图](https://img.alicdn.com/tps/TB1_AceLXXXXXXHXpXXXXXXXXXX-200-271.png)
+![](https://img.alicdn.com/tps/TB1_AceLXXXXXXHXpXXXXXXXXXX-200-271.png)
 
 首先拆解一下上面的原型：
 
