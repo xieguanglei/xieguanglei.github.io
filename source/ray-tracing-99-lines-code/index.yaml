@@ -1,8 +1,7 @@
-key: ray-tracing-99-lines-code
-title: SmallPT —— 99 行代码光线追踪解析
 date: 2019-06-22
 keywords:
   - 光线追踪
+  - SmallPT
 
 highlight: true
 mathjax: true
