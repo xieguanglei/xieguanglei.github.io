@@ -515,7 +515,7 @@ if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
 
 ```c
 } else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
-        return obj.e + f.mult(radiance(Ray(x,r.d-n*2*n.dot(r.d)),depth,Xi));
+    return obj.e + f.mult(radiance(Ray(x,r.d-n*2*n.dot(r.d)),depth,Xi));
 ```
 
 ### 折射
