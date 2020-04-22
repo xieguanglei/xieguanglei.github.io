@@ -18,11 +18,11 @@
 
 解释：
 
-1. 此方程描述的问题是：从物体表面上的一点 $P$。 处，射入到观察者眼中的某条光线的强度，是如何确定的。
+1. 此方程描述的问题是：从物体表面上的一点 $P$ 处，射入到观察者眼中的某条光线的强度，是如何确定的。
 2. $L_o(o)$ 为射入观察者眼中的光线的颜色，即需要求取的值；$o$ 为出射方向。
 3. $L_e(o)$ 为物体表面在点 $P$ 向观察者方向自发射的光线的颜色（灯）。
 4. $L_i(i)$ 表示环境入射到点 $P$ 的光的颜色；$i$ **代表**入射方向（为计算方便，取真实入射方向的反方向，不影响**代表**关系，后面也简称为入射方向）。
-5. $F(i,o)$ 表示在给定 $i$ 和 $o$ 时，由 $i$ 方向的入射光产生的 $o$ 方向的出射光的强度，此函数与表面的性质有关，又称表面的 BRDF 函数。
+5. $F(i,o)$ 表示在给定 $i$ 和 $o$ 时，由 $i$ 方向的入射单位光强产生的 $o$ 方向的出射光的强度，此函数与表面的性质有关，又称表面的 BRDF 函数。
 6. $\theta$ 表示 $i$ 与表面法线的夹角。
 7. $\int_\Omega L_i(i)\cdot F(i, o)\cdot \cos\theta\cdot di$ 整个积分项表示：对半球（不透明材质）或全球（透明介质）内的所有入射方向 $i$ 进行积分，得到的 $o$ 方向的出射光强度。
 
@@ -377,7 +377,7 @@ int main(int argc, char *argv[]){
 
 而且，为了使渲染的质量更高一些（达到相同渲染质量所需的采样次数更小一些），这里对随机过程进行了优化：对随机数进行了一次 [tent 滤波](https://computergraphics.stackexchange.com/questions/3868/why-use-a-tent-filter-in-path-tracing)。此滤波函数将 $x$ 从 $[0,2]$ 区间映射到了 $[-1, 1]$，当 $x$ 为随机的值时，$f(x)$ 的分布更向中点值 $0$ 集中（从图中可以看出）。
 
-\begin{equation}f(x) = \left \\{ \begin{matrix} \sqrt{x-1} -1 \leftarrow x<1 \\\\ 1-\sqrt{2-x} \leftarrow x>1 \end{matrix} \right. \end{equation}
+\begin{equation}f(x) = \left \\{ \begin{matrix} \sqrt{x} -1 \leftarrow x<1 \\\\ 1-\sqrt{2-x} \leftarrow x>1 \end{matrix} \right. \end{equation}
 
 ![](https://img.alicdn.com/tfs/TB18tZDdxiH3KVjSZPfXXXBiVXa-242-266.png)
 
@@ -441,7 +441,7 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi){
 
 ### 求取交点和递归结束条件
 
-首先，对场景中的所有球体对象，尝试求取射线与之交点。函数 `intersect()` 负责做这件事：遍历 `speheres` 数组，依次调用 `sphere` 对象上的 `intersect()` 方法，并保留最小的正值 `t` 和对应球体在 `spheres` 数组中的索引 `i`。
+首先，对场景中的所有球体对象，尝试求取射线与之交点。函数 `intersect()` 负责做这件事：遍历 `spheres` 数组，依次调用 `sphere` 对象上的 `intersect()` 方法，并保留最小的正值 `t` 和对应球体在 `spheres` 数组中的索引 `i`。
 
 ```c
 inline bool intersect(const Ray &r, double &t, int &id){
