@@ -15,6 +15,8 @@
 
 *{
   font-family: 'Verdana', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
 
 html, body{
@@ -50,11 +52,11 @@ body{
   font-size: 16px;
   text-align: center;
   margin-left: -8px;
-  font-weight: normal;
 }
 #title > a{
   text-decoration: none;
   color: #ecf0f1;
+  font-weight: bold;
 }
 #header .links{
   margin-top: 10px;
@@ -85,6 +87,7 @@ body{
 }
 #posts .post .title a{
   text-decoration: none;
+  font-weight: normal;
 }
 
 #post .date{
