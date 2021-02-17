@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[一叶斋]]></title>
+        <description><![CDATA[一叶障目 一叶知秋]]></description>
+        <link>http://xieguanglei.github.io/</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Wed, 17 Feb 2021 06:09:08 GMT</lastBuildDate>
+        <atom:link href="http://xieguanglei.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Flutter Framework 源码解析（3）—— RenderTree 概述]]></title>
+            <description><![CDATA[<h1 id="flutter-framework-源码解析（3）-rendertree-概述">Flutter Framework 源码解析（3）—— RenderTree 概述</h1>
+<p>2019 年开始的 Flutter Framework 源码解析系列，一下子竟然搁置了接近两年。这两天过年，又想重新拾起来。仔细读了自己之前写的那两篇，幸好还能看懂，试了试电脑上的运行环境，居然也还能跑起来。近两年过去了，Flutter 升级到了 1.20，而我还是用的 1.2.2 版本，好在 UI 渲染的内核原理，想来不会发生什么大变化，所以这篇文章仍将基于老版本来进行。</p>
+<p>我们直接开始吧：</p>
+<p>两年前，我们讲到了 Layer —— 离 Engine 最近的一层。Layer 层之上是 RenderTree，这是 Flutter 渲染的核心：Flex 布局，绝对定位，文字排版，等等都是在 RenderTree 中完成的。本质上，你看到的每一个字、每一个色块、图片为什么出现在了屏幕的那个位置，就是由 RenderTree 决定。从这一层开始，我们会接触到一些和 CSS 中相通的概念。</p>
+<p>顾名思义，RenderTree 在运行时是一棵树，其中的每一个节点都是一个 RenderObject 对象。这棵树的根，一般是 RenderView 对象（RenderView 继承自 RenderObject）。</p>
+<h2 id="最简单的-demo">最简单的 Demo</h2>
+<p>我们从一个最简单的 demo 开始：</p>
+<pre><code class="language-dart"><span class="hljs-keyword">void</span> main(){
+
+  PipelineOwner pipelineOwner = PipelineOwner();
+
+  RenderView rv = RenderView(configuration: ViewConfiguration(
+    size: <span class="hljs-built_in">window</span>.physicalSize / <span class="hljs-built_in">window</span>.devicePixelRatio,
+    devicePixelRatio: <span class="hljs-built_in">window</span>.devicePixelRatio,
+  ), <span class="hljs-built_in">window</span>: <span class="hljs-built_in">window</span>);
+
+  rv.attach(pipelineOwner);
+  rv.scheduleInitialFrame();
+
+  RenderDecoratedBox rdb = RenderDecoratedBox(
+    decoration: BoxDecoration(color: Color.fromARGB(<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">255</span>))
+  );
+
+  rv.child = rdb;
+
+  <span class="hljs-built_in">window</span>.onDrawFrame = (){
+    pipelineOwner.flushLayout();
+    pipelineOwner.flushCompositingBits();
+    pipelineOwner.flushPaint();
+    rv.compositeFrame();
+  };
+  <span class="hljs-built_in">window</span>.scheduleFrame();
+}</code></pre>
+<p>在这个例子中，我们创建了一个 RenderView 对象 <code>rv</code>，又创建了一个 RenderDecoratedBox 对象 <code>rdb</code>,并且把 <code>rdb</code> 设置成为 <code>rv</code> 的子节点。具体的，这里我们把 <code>rdb</code> 赋值给了 <code>rv.child</code>，这是因为 RenderView 是「只可以有一个子节点」的 RenderObject；如果遇到那些可能有多个子节点的 RenderObject，比如后面要说的 RenderStack，就需要使用 insert 等相关方法来管理子节点了；当然，还有一部分 RenderObject 是不可以有子节点的。</p>
+<blockquote>
+<p>在正常的 Flutter 应用中，RenderTree 由更上游的模块维护，在这个例子中，我们手动创建和管理 RenderTree。</p>
+</blockquote>
+<p>其实在此之前，我们还创建了一个 PipelineOwner 对象 <code>pipelineOwner</code>，这是渲染管线主对象。在创建完 RenderView 对象后，我立刻把 <code>rv</code> 挂载到了 <code>pipelineOwner</code> 对象上。由于 <code>rv</code> 是根节点，所以后续的子节点都会自动与 <code>pipelineOwner</code> 产生关联。</p>
+<p><figure><img src="//img.alicdn.com/imgextra/i4/O1CN01hUxDwj24KQSKMnoHm_!!6000000007372-2-tps-480-200.png" alt="RenderTree"><figurecaption>RenderTree</figcaption></figure></p>
+<p>这是一棵最简单的 RenderTree 了。根节点 RenderView 对象 <code>rv</code> 的尺寸和屏幕一致，而 <code>rv</code> 的子节点，RenderDecoratedBox 对象 <code>rdb</code> 的尺寸也被拉伸为和 RenderView 相同，所以整个屏幕都是蓝色的。如下图所示：</p>
+<p><figure><img src="//img.alicdn.com/imgextra/i4/O1CN017BtfFi1sHQTMiOhXt_!!6000000005741-2-tps-300-633.png" alt="最简单的 Demo"><figurecaption>最简单的 Demo</figcaption></figure></p>
+<blockquote>
+<p>RenderView 和 RenderDecoratedBox，都继承自 RenderBox。Flutter 目前只有 RenderBox 这一种形状的 RenderObject，几乎所有的 RenderObject 对象都派生自 RenderBox（RenderObject 也许是为其他不规则形状预留的基类），所以在这篇文章里，RenderBox 和 RenderObject 基本是等价的。</p>
+</blockquote>
+<p>完成了 RenderTree 的构建，只是搭建好了一个数据结构。真正的渲染（包括布局、绘制、合成）是由 PipelineOwner 驱动的。</p>
+<p>因此，我们在 <code>window.onDrawFrame</code> 方法（如果你看过前两篇文章，应该已经熟悉这个方法了，我这里就是把他当做类似 Web 环境中的 <code>requestAnimationFrame</code> 来使用）中手动调用 PipelineOwner 上的各个方法来驱动渲染。具体的，我们依次调用了 <code>flushLayout</code>，<code>flushCompositingBits</code>，<code>flushPaint</code> 方法，来进行布局和绘制。所谓布局，就是确定 RenderTree 每个节点的位置和尺寸；所谓绘制，就是根据 RenderTree，生成一个或多个栅格图像（在这个例子中，只有一个），用于屏幕上的显示。</p>
+<h3 id="三部曲之一：flushlayout">三部曲之一：flushLayout</h3>
+<p>下面这段代码是 <code>flushLayout</code> 方法的核心逻辑：对 RenderObject 列表 <code>_nodesNeedingLayout</code> 按照深度进行排序（这个深度其实就是在 RenderTree 中节点的深度，比如这里 <code>rv</code> 的深度就是 0，<code>rdb</code> 是 1），并依次调用其中每个元素的 <code>_layoutWithoutResize</code> 方法，然后清空 <code>_nodesNeedingLayout</code>。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// PipelineOwner#flushLayout</span>
+<span class="hljs-keyword">void</span> flushLayout() {
+  <span class="hljs-keyword">while</span> (_nodesNeedingLayout.isNotEmpty) {
+    <span class="hljs-keyword">final</span> <span class="hljs-built_in">List</span>&lt;RenderObject&gt; dirtyNodes = _nodesNeedingLayout;
+    _nodesNeedingLayout = &lt;RenderObject&gt;[];
+    <span class="hljs-keyword">for</span> (RenderObject node <span class="hljs-keyword">in</span> dirtyNodes..sort(
+      (RenderObject a, RenderObject b) =&gt; a.depth - b.depth)
+    ) {
+      <span class="hljs-keyword">if</span> (node._needsLayout &amp;&amp; node.owner == <span class="hljs-keyword">this</span>)
+        node._layoutWithoutResize();
+    }
+  }
+}</code></pre>
+<p><code>_nodesNeedingLayout</code> 是 PipelineOwner 的内部成员属性，表示需要重新布局的节点；同时有 <code>_nodesNeedingCompositingBitUpdate</code> 和 <code>_nodesNeedingPaint</code> 列表，后面两个小节会用到。RenderTree 初始化完成后，这三个列表中都只有一个节点，那就是根节点 <code>rv</code>。运行过程中，如果某个时候只需要更新部分节点，那么这三个列表中就可能包含若干个在其他节点。</p>
+<p>在这个例子中，我们调用了 RenderView 的 <code>_layoutWithoutResize</code>。经过层层调用，最终实质调用的方法是 <code>performLayout</code> 方法。<code>performLayout</code> 是 RenderObject 留给派生类实现自身布局逻辑的方法。这个<strong>自身布局逻辑</strong>，就是 <strong>确定自己的 _size 属性（包含了 width 和 height）</strong>，所以你需要在 <code>performLayout</code> 中为更新 <code>_size</code>。RenderView 表示整个设备屏幕，所以 <code>performLayout</code> 方法逻辑就是：将自己的尺寸设置为<strong>屏幕的尺寸</strong>（也就是把 <code>configuration.size</code> 赋值给 <code>_size</code>）。<strong>然后</strong>（注意，还没有结束）命令子节点按照以下约束条件「紧贴着 RenderView 的尺寸（最大和窗口一样大，最小也和窗口一样大）」进行布局。</p>
+<blockquote>
+<p>BoxConstraint 是盒装布局的约束条件，包含两个矩形，一个最大矩形和一个最小矩形。当你调用一个 <code>RenderBox#layout</code> 并传入约束条件时，你期望这个 RenderObject 布局之后的尺寸，落在最大矩形和最小矩形之间。这一部分在后面在讲布局的时候会详细地讲解。</p>
+</blockquote>
+<pre><code class="language-dart"><span class="hljs-comment">// RenderView#performLayout</span>
+<span class="hljs-keyword">void</span> performLayout() {
+  _size = configuration.size;
+  <span class="hljs-keyword">if</span> (child != <span class="hljs-keyword">null</span>)
+      child.layout(BoxConstraints.tight(_size));
+}</code></pre>
+<p>RenderDecoratedBox 的 <code>performLayout</code> 方法由基类 RenderProxyBox 实现，逻辑是这样：如果没有子节点，就设置为约束条件的最小矩形；如果有子节点，就调用子节点的的 <code>layout</code> 并传入相同的约束条件，最后将自己的尺寸设置为子节点的尺寸，如下所示。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// RenderProxyBox#performLayout</span>
+<span class="hljs-keyword">void</span> performLayout() {
+  <span class="hljs-keyword">if</span> (child != <span class="hljs-keyword">null</span>) {
+    child.layout(constraints, parentUsesSize: <span class="hljs-keyword">true</span>);
+    size = child.size;
+  } <span class="hljs-keyword">else</span> {
+    performResize();
+  }
+}
+
+<span class="hljs-comment">// RenderBox#performResize：RenderProxy#performResize 由基类 RenderBox 实现</span>
+<span class="hljs-keyword">void</span> performResize() {
+  size = constraints.smallest;
+}</code></pre>
+<p>这段逻辑有点绕，但没关系，布局的时候会详细讲，现在要记住的是，RenderDecoratedBox 也会调用子节点的 layout，只不过现在 <code>rdb</code> 没有子节点，所以将自身的 <code>_size</code> 设置为了 <code>constraints.smallest</code>，也就是屏幕大小。又因为我们将 RenderDecoratedBox 的颜色设置为蓝色，所以程序运行的到的结果就是，整个屏幕全部呈现为蓝色。</p>
+<p>图：整个屏幕全部是蓝色。</p>
+<blockquote>
+<p>我们看到，调用 RenderTree 中某个节点的 <code>layout</code> 可能会逐级向下调用以这个节点为根的子树中的所有节点的 <code>layout</code>（当然这取决于派生类对 <code>performLayout</code> 的实现），所以 PipelineOwner 上的方法名是 <code>flushLayout</code>，是刷新、自上而下冲洗（就像瀑布一样）的意思。</p>
+</blockquote>
+<h3 id="三部曲之二：flushcompositingbits">三部曲之二：flushCompositingBits</h3>
+<p>第二步，调用 PipelineOwner 对象的 <code>flushCompositingBits</code> 方法。这个方法和 <code>flushLayout</code> 很类似，也是先对 <code>_nodesNeedingCompositingBitsUpdate</code> 进行深度排序，然后一次调用列表中每一项的 <code>_updateCompositingBits()</code> 方法，最后清除 <code>_nodesNeedingCompositingBitsUpdate</code>。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// PipelineOwner#flushCompositingBits</span>
+<span class="hljs-keyword">void</span> flushCompositingBits() {
+  _nodesNeedingCompositingBitsUpdate.sort(
+    (RenderObject a, RenderObject b) =&gt; a.depth - b.depth
+  );
+  <span class="hljs-keyword">for</span> (RenderObject node <span class="hljs-keyword">in</span> _nodesNeedingCompositingBitsUpdate) {
+    node._updateCompositingBits();
+  }
+  _nodesNeedingCompositingBitsUpdate.clear();
+}</code></pre>
+<p><code>RenderObject#_updateCompositingBits()</code> 方法如下。这个方法本质上没有做实质性的事情，只是更新了一些标记属性。具体的作用我们在后面的篇幅里再讨论，现在即使不看这个方法，也对本篇内容的理解没有影响。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// RenderObject#_updateCompositingBits</span>
+<span class="hljs-keyword">void</span> _updateCompositingBits() {
+  <span class="hljs-keyword">final</span> <span class="hljs-built_in">bool</span> oldNeedsCompositing = _needsCompositing;
+  _needsCompositing = <span class="hljs-keyword">false</span>;
+  visitChildren((RenderObject child) {
+    child._updateCompositingBits();
+    <span class="hljs-keyword">if</span> (child.needsCompositing)
+      _needsCompositing = <span class="hljs-keyword">true</span>;
+  });
+  <span class="hljs-keyword">if</span> (oldNeedsCompositing != _needsCompositing)
+    markNeedsPaint();
+}</code></pre>
+<h3 id="三部曲之三：flushpaint">三部曲之三：flushPaint</h3>
+<p>第三步，调用 PipelineOwner 对象的 <code>flushPaint</code> 方法。还是老套路，先对 <code>_nodesNeedingPaint</code> 列表按照深度进行排序，然后对其中的每一项，使用 PaintingContext 进行绘制，最后清空 <code>_nodesNeedingPaint</code>。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// PipelineOwner#flushPaint</span>
+<span class="hljs-keyword">void</span> flushPaint() {
+  <span class="hljs-keyword">final</span> <span class="hljs-built_in">List</span>&lt;RenderObject&gt; dirtyNodes = _nodesNeedingPaint;
+  _nodesNeedingPaint = &lt;RenderObject&gt;[];
+  <span class="hljs-keyword">for</span> (RenderObject node <span class="hljs-keyword">in</span> dirtyNodes..sort(
+    (RenderObject a, RenderObject b) =&gt; b.depth - a.depth)
+  ) {
+    PaintingContext.repaintCompositedChild(node);
+  }
+}</code></pre>
+<p>注意，这里调用了 PaintingContext 上的一个静态方法 <code>repaintCompositedChild</code>。此方法会基于当前的 RenderObject（在本例中就是 RenderView）创建一个 PaintingContext 实例（这个概念很重要），实例内新建一个 Recorder 对象和相应的 Canvas 对象（前两篇中有讲过这两个对象的使用方法）。经过层层调用，<code>repaintCompositedChild</code> 会调用 PaintingContext实质性地调用到 RenderObject 的 <code>paint</code> 方法。同样，<code>paint</code> 方法也是 RenderObject 预留给派生类实现自身绘制逻辑的，RenderView 的 <code>paint</code> 方法，就是继续调用子节点的 <code>paint</code> 方法。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// RenderView#paint</span>
+<span class="hljs-keyword">void</span> paint(PaintingContext context, Offset offset) {
+  <span class="hljs-keyword">if</span> (child != <span class="hljs-keyword">null</span>)
+    context.paintChild(child, offset);
+  }
+}
+
+<span class="hljs-comment">// RenderDecoratedBox#paint</span>
+<span class="hljs-keyword">void</span> paint(PaintingContext context, Offset offset) {
+  _painter ??= _decoration.createBoxPainter(markNeedsPaint);
+  <span class="hljs-keyword">final</span> ImageConfiguration filledConfiguration = 
+    configuration.copyWith(size: size);
+  <span class="hljs-keyword">super</span>.paint(context, offset);
+  _painter.paint(context.canvas, offset, filledConfiguration);
+}</code></pre>
+<p>和 <code>performLayout</code> 一样，大部分有子节点的 RenderObject，基本上都会调用子 RenderObject 的 paint 方法，并将 PaintingContext 实例传递下去。经过这个过程，PaintingContext 实例会从 RenderTree 的多个节点上收集绘制操作到 Recorder 中，并在 repaintCompositedChild 的最后，收集起来，生成 picture 挂载到 layer 上。</p>
+<blockquote>
+<p>每一个 RenderObject 都有一个 layer 属性，至少是一个 OffsetLayer。</p>
+</blockquote>
+<p>最终，我们基于 RenderView#layer 创建了一个 PaintingContext，实质性的绘制发生在 RenderDecoratedBox#paint 中。</p>
+<h3 id="最后一步：compositebits">最后一步：compositeBits</h3>
+<p>最后一步是调用 RenderView 的 <code>compositeFrame</code> 方法，内部的代码就是前两篇中讲过的生成 SceneBuilder 和根据 layer 生成 scene 的过程。比较简单。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// RenderView#compositeFrame</span>
+<span class="hljs-keyword">void</span> compositeFrame() {
+  <span class="hljs-keyword">final</span> SceneBuilder builder = SceneBuilder();
+  <span class="hljs-keyword">final</span> Scene scene = layer.buildScene(builder);
+  _window.render(scene);
+}</code></pre>
+<h3 id="总结">总结</h3>
+<p>对上面这个最简 Demo 的运行过程作一个简单的总结：</p>
+<p><img src="//img.alicdn.com/imgextra/i1/O1CN01ifA5Py1gHdGJOo0gz_!!6000000004117-2-tps-750-406.png" alt=""></p>
+<ol>
+<li>首先，构建以 RenderView 为根，且只有一个子节点 RenderDecoratedBox 的 RenderTree，进行一些初始化工作，保证 PipelineOwner 和 RenderTree 相连接。</li>
+<li>然后，运行 PipelineOwner 的 flushLayout 方法，依次调用 RenderView 和 RenderDecoratedBox 的 layout 方法，最终确定了这两个节点的尺寸 size。</li>
+<li>然后，运行 PipelineOwner 的 flushCompositingBits 方法。这个方法后面再讲，目前可以先无视。</li>
+<li>然后，运行 PipelineOwner 的 flushPaint 方法，依次调用 RenderView 和 RenderDecoratedBox 的 paint 方法（只有后者的 paint 中有实质性的绘制行为）。在这个过程中，RenderDecoratedBox 的 paint 方法中对 canvas 的调用被记录到了 RenderView 的 layer 中。</li>
+<li>最后，把 RenderView 的 layer 绘制到屏幕上。</li>
+</ol>
+<h2 id="局部更新-rendertree">局部更新 RenderTree</h2>
+<p>上面说过，初始化的时候，<code>_nodesNeedingXXX</code> 中只有作为根节点的 RenderView 对象。但是，在程序运行的过程中，随着用户的输入，RenderTree 也可以发生变化，变化后可能会有一些其他节点也进入 <code>_nodesNeedingXXX</code> 中，这时候 flushXXX 方法操作的对象就只有部分节点了，这也就是<strong>局部更新</strong>。</p>
+<p>下面这个例子就模拟了 RenderTree 局部更新的过程。在这个例子中，我们初始化了一个稍微复杂一点的 RenderTree。我们引入了 RenderRepaintBoundary，RenderStack 和 RenderConstrainedBox。</p>
+<p><img src="//img.alicdn.com/imgextra/i1/O1CN01g93Ahc1kJF7JjfK7o_!!6000000004662-2-tps-180-449.png" alt=""></p>
+<blockquote>
+<p>引入 RenderStack 和 RenderConstrainedBox 的原因是：在前一个例子中，RenderView 会强制的使用与设备屏幕完全相同的约束（约束的最大矩形和最小矩形都和设备屏幕一样，这种约束又称为 tight 类型约束）来对其子节点进行排版，不管你传入什么子节点，这个子节点本身 layout 之后的尺寸一定是和设备尺寸完全一样的。因此我们引入 RenderStack 来为下面的子节点「松绑」（loose），虽然 RenderStack 自己的尺寸被强制设定为和屏幕一样，但子节点就不必受这个约束了。这样 RenderConstrainedBox 对象 <code>rcb</code> 就能够为 RenderDecoratedBox 对象 <code>rdb</code> 重新规划尺寸了：初始化的时候设置为 <code>tight(100, 100)</code>。</p>
+<p>引入 RenderRepaintBoundary 的原因是为了简单地演示 layer 合成的过程。很快就会讲到。</p>
+</blockquote>
+<p>在程序运行 3 秒之后，我们为 RenderConstrainedBox 对象 <code>rcb</code> 重新设定约束条件，由 <code>tight(100,100)</code> 重新设置为 <code>tight(200,200)</code>。执行程序，最初屏幕左上角是一个玫红色小方块，3 秒之后突然变成之前的 4 倍大了。看到下面这段代码，是不是有一点点 DOM 操作的感觉了？</p>
+<pre><code class="language-dart"><span class="hljs-keyword">void</span> main(){
+
+  PipelineOwner pipelineOwner = PipelineOwner();
+
+  RenderView rv = RenderView(configuration: ViewConfiguration(
+    size: <span class="hljs-built_in">window</span>.physicalSize / <span class="hljs-built_in">window</span>.devicePixelRatio,
+    devicePixelRatio: <span class="hljs-built_in">window</span>.devicePixelRatio,
+  ), <span class="hljs-built_in">window</span>: <span class="hljs-built_in">window</span>);
+
+  rv.attach(pipelineOwner);
+  rv.scheduleInitialFrame();
+
+  RenderRepaintBoundary rrb = RenderRepaintBoundary();
+
+  RenderStack rs = RenderStack(textDirection: TextDirection.ltr);
+
+  RenderConstrainedBox rcb = RenderConstrainedBox(
+    additionalConstraints: BoxConstraints.tight(Size(<span class="hljs-number">100</span>, <span class="hljs-number">100</span>))
+  );
+  RenderDecoratedBox rdb = RenderDecoratedBox(
+    decoration: BoxDecoration(color: Color.fromARGB(<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">255</span>))
+  );
+
+  rv.child = rrb;
+  rrb.child = rs;
+  rs.insert(rcb);
+  rcb.child = rdb;
+
+  <span class="hljs-built_in">window</span>.onDrawFrame = (){
+    pipelineOwner.flushLayout();
+    pipelineOwner.flushCompositingBits();
+    pipelineOwner.flushPaint();
+    rv.compositeFrame();
+  };
+  <span class="hljs-built_in">window</span>.scheduleFrame();
+
+  <span class="hljs-keyword">new</span> Future.delayed(<span class="hljs-keyword">const</span> <span class="hljs-built_in">Duration</span>(milliseconds: <span class="hljs-number">3000</span>), (){
+    rcb.additionalConstraints = 
+      BoxConstraints.tight(Size(<span class="hljs-number">200</span>, <span class="hljs-number">200</span>));
+    <span class="hljs-built_in">window</span>.scheduleFrame();
+  });
+}</code></pre>
+<p><figure><img src="//img.alicdn.com/imgextra/i1/O1CN01klaxof2134bTCC5Tc_!!6000000006928-2-tps-741-634.png" alt="动态更新RenderTree"><figurecaption>动态更新RenderTree</figcaption></figure></p>
+<p>3 秒之后，当为 <code>rcb.additionalConstraints</code> 的这条语句还没有执行的时候，PipelineOwner 是内部是干净的：<code>_nodesNeedingXXX</code> 全部是空数组。当我们为 <code>rcb.additionalConstraints</code> 赋值的时候，触发 <code>additionalConstraints</code> 这个 setter，在其中调用 <code>RenderObject#markNeedsLayout</code> 方法，将 RenderStack 添加到了 <code>_nodesNeedingLayout</code> 中。</p>
+<blockquote>
+<p>为什么 <code>rcb</code> 上的 setter 会把 <code>rcb</code> 的 parent <code>rs</code> 而不是它自己放到 <code>_nodesNeedingLayout</code> 中呢？这和 <code>_relayoutBoundary</code> 有关，简单地说，每一个 RenderObject 都有一个排版边界 <code>layoutBoundary</code>，可能是自己，也可能是自己的父节点或父节点的父节点；这个排版边界表达的意思是：如果节点变化了，那么该从哪儿重新开始排版 —— 显然，如果某个节点的祖先节点的尺寸依赖了你的尺寸，那么这个节点变化后，祖先节点也得重新排版（这又引入另一个概念 parentUseSize）。这些在后续有关排版的篇幅里会详细讲。</p>
+<p>所以，<code>markXXX</code> 往往会向上追溯祖先节点的。</p>
+</blockquote>
+<pre><code class="language-dart"><span class="hljs-keyword">void</span> markNeedsLayout() {
+  <span class="hljs-keyword">if</span> (_relayoutBoundary != <span class="hljs-keyword">this</span>) {
+   markParentNeedsLayout();
+  } <span class="hljs-keyword">else</span> {
+   _needsLayout = <span class="hljs-keyword">true</span>;
+   owner._nodesNeedingLayout.add(<span class="hljs-keyword">this</span>);
+  }
+}</code></pre>
+<p>接下来，我们调用 <code>window.scheduleFrame</code>，这会在下一帧调用 <code>window.onDrawFrame</code>，又进入到三部曲的流程中。</p>
+<p>首先，执行 <code>flushLayout</code>，对 RenderStack 进行排版。排版完成后，在每次布局都会走到的 RenderObject#layout 公共方法中，对调用在 RenderStack 上调用 markNeedsPaint 方法，把 RenderRepaintBoundary 对象放到 <code>_nodesNeedingPaint</code> 中。</p>
+<blockquote>
+<p>为什么在 <code>rs</code> 上调用 <code>markNeedsPaint</code> 会把 RenderRepaintBoundary 对象 <code>rrb</code> 而不是 <code>rs</code> 自己放到 <code>_nodesNeedPaint</code> 中来呢？其实，和 <code>markNeedsLayout</code> 很像，<code>markNeedsPaint</code> 也会向上追溯祖先节点，直到 <code>_isRepaintBoundary</code> 为 <code>true</code> 的祖先节点（这里就是 RenderRepaintBoundary）。为了简化开销，我们会尽量把相同时机更新的内容分层绘制，然后合并以提高渲染性能。但是分层和合成本身也有开销。RenderRepaintBoundary 其实就是「用来对应一层的」RenderObject，背后对应的就是 PictureLayer。RenderRepaintBoundary 出现在哪里是人为指定，后面也会详细讲。</p>
+</blockquote>
+<p>接下来就是 <code>flushPaint</code> 了。这时候 <code>_nodesNeedingPaint</code> 中只有有一个元素 <code>rrb</code>，那么会基于 <code>rrb</code> 的 layer 生成一个 PaintingContext 实例来绘制，绘制的内容全部存储在 <code>rrb</code> 的 layer 中。</p>
+<p>最后就是调用 RenderView 的 <code>compositeBits</code>，把 <code>rv</code> 的 layer 绘制到屏幕上去。你可能会问，我们重绘明明是在 <code>rrb</code> 上进行的，为什么还是把 <code>rv</code> 的 layer 绘制到屏幕上呢？其实，在 PaintingContext 对象的 <code>paintChild</code> 方法中，有一个 <code>appendLayer</code>（所以直到这里，才和前一篇中 layer 的操作联系起来了）。也就是说，在 3 秒前第一次 flushPaint 的时候，<code>rrb</code> 的 layer 就已经是 <code>rv</code> 的 layer 的 child 了。</p>
+<pre><code class="language-dart"><span class="hljs-comment">// PaintingContext#paintChild</span>
+<span class="hljs-keyword">void</span> paintChild(RenderObject child, Offset offset) {
+ <span class="hljs-keyword">if</span> (child.isRepaintBoundary) {
+   stopRecordingIfNeeded();
+   _compositeChild(child, offset);
+ } <span class="hljs-keyword">else</span> {
+   child._paintWithContext(<span class="hljs-keyword">this</span>, offset);
+ }
+}
+
+<span class="hljs-comment">// PaintingContext#_compositeChild</span>
+<span class="hljs-keyword">void</span> _compositeChild(RenderObject child, Offset offset) {
+ child._layer.offset = offset;
+ appendLayer(child._layer);
+}</code></pre>
+<blockquote>
+<p>Layer 关系的解除也在 PaintingContext 中，具体的，在 <code>_repaintCompositedChild</code> 方法中有一句 <code>child._layer.removeAllChildren()</code> 的调用。</p>
+</blockquote>
+<p>最后对这个例子简单地总结一下：</p>
+<p><figure><img src="//img.alicdn.com/imgextra/i3/O1CN01xQ6IPs1wboZKGYJNF_!!6000000006327-2-tps-750-927.png" alt="动态更新RenderTree"><figurecaption>动态更新RenderTree</figcaption></figure></p>
+<ol>
+<li>初始化 RenderTree 并进行第一次渲染，与前一个例子的步骤一致。</li>
+<li>值得注意的是，在第一次渲染的 <code>flushPaint</code> 过程中，我们把 RenderRepaintBoundary 对象 <code>rrb</code> 的 layer 追加（append）到了 RenderView 的 layer 的子 layer 中。</li>
+<li>3 秒后，更新 <code>rcb.additionalConstraints</code>，通过 setter 调用 <code>markNeedsLayout</code>，将 <code>rs</code> 添加到 <code>_nodesNeedingLayout</code> 中。</li>
+<li>再次执行 <code>onDrawFrame</code>，首先调用 <code>flushLayout</code>；在 <code>rs</code> 执行 <code>layout</code> 方法过程中，调用 <code>markNeedsPaint</code>，将 <code>rrb</code> 添加到 <code>_nodesNeedingPaint</code> 中。</li>
+<li>接着调用 <code>flushPaint</code>，此时 <code>_nodesNeedingPaint</code> 只有 <code>rrb</code> 一个元素，所以这里实际上是对根为 <code>rrb</code> 的子树进行重绘。重绘过程与第一个 demo 中一致，实质上还是绘图命令还是从 <code>rdb</code> 中收集到的。重绘后的结果保存在 <code>rrb</code> 的 layer 上。</li>
+<li>最后把 <code>rv</code> 的 layer 绘制到屏幕上。因为之前的 <code>rrb</code> 的 layer 已经是 <code>rv</code> 的 layer 的子 layer 了，所以这一步就把更新后的结果也绘制到了屏幕上。</li>
+</ol>
+<p>这一篇就先讲这么多吧。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/post/flutter-code-chapter-03.html</link>
+            <guid isPermaLink="false">flutter-code-chapter-03</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Tue, 16 Feb 2021 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[2020 年，一名强迫症患者的编程随想]]></title>
+            <description><![CDATA[<h1 id="2020-年，一名强迫症患者的编程随想">2020 年，一名强迫症患者的编程随想</h1>
+<p>2020 年，我写了很多 TypeScript 代码。大概八月的时候，我开始逐渐记录一些编写代码过程中产生的细小想法，可惜九、十月后就没再坚持下去了，转眼到了年底，更没有心气继续，干脆把之前的稿子稍作整理直接放出来吧，不成体系，聊胜于无。</p>
+<h2 id="有-if-必有-else">有 if 必有 else</h2>
+<p>这一条也许争议很大，所以放在第一条。</p>
+<p>我尝试遵循的实践是：<strong>「有 if 必有 else」</strong>：如果你告诉我在某个条件下应该做什么，就应该同时告诉我不在这个条件下应该做什么 —— 即使什么都不做，也应该告诉我：「什么都不做」。</p>
+<p>这与一些编程实践是相违背的，比如 ES-Lint 中就有名为 no-else-return 的规则，它会把下面的 <code>foo1</code> 优化成 <code>foo2</code>。</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// ESLint 不喜欢 foo1</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo1</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">if</span> (x) {
+    <span class="hljs-keyword">return</span> y;
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">return</span> z;
+  }
+}
+
+<span class="hljs-comment">// ESLint 喜欢 foo2</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo2</span>(<span class="hljs-params"></span>)</span>{
+  <span class="hljs-keyword">if</span> (x) {
+    <span class="hljs-keyword">return</span> y;
+  }
+  <span class="hljs-keyword">return</span> z;
+}</code></pre>
+<p>可是在我看来，<code>foo1</code> 更好。因为 <code>foo1</code> 在我的脑海里是二叉树结构，而 <code>foo2</code> 在我的脑海里是线性结构。当我在脑海中模拟代码运行时，二叉树结构更容易追溯，可以帮助我迅速定位到目标，而线性结构需要我跑完整个流程。</p>
+<h2 id="无歧义的函数">无歧义的函数</h2>
+<p>我会观察一个函数的参数和返回值，然后思考：这个函数的输入，是否可以从输出反推而来。比如说加法，我们可以通过 1+2 得到 3，却不能通过 3 反推出用户输入的是 1+2 还是 0+3；比如 toLowerCase，我们可以将 Hello 转化为 hello，却不能从 hello 推算出输入是 HeLLo 还是 hEllo。</p>
+<p>如果一个函数的输出可以反推出输入，那么当反推出的结果和实际输入不符，算怎么一回事呢？日常开发中会有类似这样的函数：调用者传入用户的 ID，函数返回用户详情，其中包含了一个 id 字段，与用户传入的一定相同。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> user = getUser(‘<span class="hljs-number">001</span>’);
+<span class="hljs-comment">// user : { id: '001', name: 'foo', email: 'foo@bar.com' }</span></code></pre>
+<p>对于上面这个 getUser 函数，我们可以从返回值推算出其输入。试想 getUser 如果返回了一个 ID 为 002 的用户，调用者该如何自处呢？调用者会认为 user.id 和 传入的 id 一定是相同的，并不加区分地使用这两个变量，这不仅危险，还会使代码开始陷入混乱。</p>
+<p>我比较喜欢的做法是：getUser 就不要返回 id 字段（就算是更上游的模块返回了，也去手动把这个字段删掉），这样就不存在歧义了嘛。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> user = getUser(‘<span class="hljs-number">001</span>’);
+<span class="hljs-comment">// user : { name: 'foo', email: 'foo@bar.com' }</span></code></pre>
+<p>总之，如果一个函数可以从输出推算出输入，那么往往存在着冗余，而冗余会带来歧义的可能。</p>
+<h2 id="不用-foreach">不用 forEach</h2>
+<p>JavaScript 数组原型上有 map / reduce / filter / some / find / forEach 等方法，其中比较没用的是 forEach 方法了。不仅没用，它本身使用 callback 来遍历数组的形式，会带来一些讨厌的变化。比如：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">let</span> foo : <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span> ;
+
+<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> foo === <span class="hljs-string">'string'</span>) {
+  [<span class="hljs-string">'hello'</span>, <span class="hljs-string">'world'</span>].forEach(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(v + <span class="hljs-string">' '</span> + foo!.toLowerCase());
+  });
+}</code></pre>
+<p><code>console.log(v + &#39; &#39; + foo!.toLowerCase())</code> 语句中那个刺眼的感叹号是必须的：TypeScript 并不知道数组会在什么时候调用你的 callback（若不理解，可把 forEach 换成 setTimeout 试试）。</p>
+<p>用原生的 for ... of 代替 forEach 几乎没有任何负面的影响。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">let</span> foo : <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span> ;
+
+<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> foo === <span class="hljs-string">'string'</span>) {
+  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">const</span> v of [<span class="hljs-string">'hello'</span>, <span class="hljs-string">'world'</span>]){
+    <span class="hljs-built_in">console</span>.log(v + foo.toString());
+  }
+}</code></pre>
+<p>其实 map / reduce 等方法也有类似的问题，只是没办法，只能捏着鼻子写感叹号。</p>
+<h2 id="警惕层级过深的调用和引用">警惕层级过深的调用和引用</h2>
+<p>如果我们在项目中看到类似这样的代码：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> { foo } = bar.a.b.c.d.e();</code></pre>
+<p>或者类似这样的：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { foo } <span class="hljs-keyword">from</span> ‘./bar/a/b/c/d/e’;</code></pre>
+<p>这绝对是不正常的。这就好像一支军队中，坐镇在司令部的将军直接对阵地上的机枪手下达命令——当发生这样的事情之时，指挥系统一定出了什么问题。</p>
+<blockquote>
+<p>当然也存在 bar 模块通过无限 public 或者 export * 将模块内部的结构全部暴露了出来，可以理解为军队中的团长直接把某个机枪手的命令权交给了上级（司令）。</p>
+</blockquote>
+<h2 id="不要滥用可选参数">不要滥用可选参数</h2>
+<p>有些函数的每个参数都是可选的：</p>
+<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parse</span> (<span class="hljs-params">source?: Source, options?: Options</span>): <span class="hljs-title">Product</span> | <span class="hljs-title">null</span> </span>{
+  <span class="hljs-keyword">if</span> (isNil(value)) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+  }
+  <span class="hljs-comment">// 很多逻辑</span>
+}</code></pre>
+<p>在 JS 时代，我们习惯于为每个函数增加容错逻辑，保证它们不出错。这些容错逻辑，最后都变成了永远不会被执行到的死代码。</p>
+<p>现在是 TS 的时代了，函数不应该再做这些事了，把它们都抛给调用者吧（而且调用者也希望你这样做）！</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// parse 的第一个参数是必选的</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parse</span> (<span class="hljs-params">source: Source, options?: Options</span>): <span class="hljs-title">Product</span> </span>{
+  <span class="hljs-comment">// 很多逻辑</span>
+}
+
+<span class="hljs-comment">// 调用者 A</span>
+<span class="hljs-keyword">const</span> p1 = isNil(s1) ? parse(s1, opt) : <span class="hljs-literal">null</span>;
+
+<span class="hljs-comment">// 调用者 B</span>
+<span class="hljs-keyword">const</span> p2 = isNil(s2) ? parse(s2, opt) : defaultProduct;
+
+<span class="hljs-comment">// 调用者 C</span>
+assert(!isNil(s3));  <span class="hljs-comment">// 断言 s3 肯定存在</span>
+<span class="hljs-keyword">const</span> p3 = parse(s3, opt);</code></pre>
+<h2 id="让类型流动起来">让类型流动起来</h2>
+<p>很多 TypeScript 教程都提到过一句话：让类型在你的代码中「流动」。我是这样理解的：尽量不主动 import 类型，而是尽可能从上下文中推测出类型；借助模块间的依赖关系，让类型「自然地」流动，不要重新开辟管道。举个例子：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// parse.ts</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> IParsed {...};
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> parse = (source: <span class="hljs-built_in">string</span>): <span class="hljs-function"><span class="hljs-params">IParsed</span> =&gt;</span> {...}</code></pre>
+<p>调用的时候：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-keyword">type</span> { IParsed } <span class="hljs-keyword">from</span> <span class="hljs-string">'./parse'</span>;
+<span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">'./parse'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFoo</span>(<span class="hljs-params"></span>): <span class="hljs-title">IParsed</span> </span>{
+  <span class="hljs-keyword">return</span> parse(<span class="hljs-string">'foo'</span>);
+}</code></pre>
+<p>其实，<code>IParsed</code> 完全可以不 export 出来：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> ‘./utils’;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFoo</span>(<span class="hljs-params"></span>): <span class="hljs-title">ReturnType</span>&lt;<span class="hljs-title">typeof</span> <span class="hljs-title">parseDate</span>&gt; </span>{...}</code></pre>
+<p>虽然单个文件内写法变复杂了，但是模块与模块的依赖降低了。如果某一天，<code>parse</code> 模块中的 <code>IParsed</code> 改了名字，或者 <code>parse</code> 的返回值变成了 <code>IParsed | null</code>，第二种方法都能得到更加符合预期的结果。</p>
+<h2 id="不要提前赋值">不要提前赋值</h2>
+<p>ES6 引入的 spread 赋值很方便，但不要因此提前赋值，甚至养成「任何函数以 spread 赋值起手」的习惯。需要意识到，向上下文中添加一个变量，依然是有成本的。</p>
+<p>比如这段代码，提前赋值了 foo 和 bar，导致其起作用的上下文扩大了：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> { foo, bar } = value;
+<span class="hljs-keyword">if</span> (condition) {
+  <span class="hljs-comment">// 消费 foo，这里不需要 bar</span>
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-comment">// 消费 bar，这里不需要 foo</span>
+}</code></pre>
+<p>提前赋值有时候还会阻碍类型收窄：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">type</span> U = { t: <span class="hljs-string">'num'</span>, v: <span class="hljs-built_in">number</span> } | { t: <span class="hljs-string">'str'</span>, v: <span class="hljs-built_in">string</span> };
+
+<span class="hljs-keyword">declare</span> u: U;
+<span class="hljs-keyword">const</span> { t, v } = u;
+<span class="hljs-keyword">if</span> (t === <span class="hljs-string">'num'</span>) {
+  <span class="hljs-comment">// 在这里，v 还是 number | string，而不是预期的 number</span>
+  <span class="hljs-comment">// 使用 u.t === 'num'，u.v 就是 number 了</span>
+}</code></pre>
+<h2 id="一些其他的碎碎念">一些其他的碎碎念</h2>
+<p>还有几条的简单想法，不展开了。</p>
+<ul>
+<li>如果你从一个对象上取出了一个属性，并存在了一个临时常量中，请至少引用这个常量 2 次。</li>
+<li>用 <code>const</code>，不要用 <code>let</code>；有很多手段（三元运算符，甚至 IIFE）来让你避免使用 <code>let</code>，不到万不得已，不要用 <code>let</code>。</li>
+<li>用 <code>protected</code>，不用 <code>private</code>，除非你企图阻止其他人继承你的类。我喜欢省略 <code>public</code> 关键字，因为折叠起来真的分不清 <code>public</code> 或 <code>protected</code>。</li>
+<li>对外输出的函数，如 export 的函数，或者类上的 public 方法，请显式声明返回值类型，不要依赖类型推断。</li>
+<li>在单独处理边界 case 之前，先想一想能不能通过更普适的逻辑把边界条件「消化」掉。</li>
+</ul>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/post/programming-thoughts-2020.html</link>
+            <guid isPermaLink="false">programming-thoughts-2020</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Tue, 29 Dec 2020 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[钉钉表格，从零到一在线 Excel —— 2020 D2 论坛演讲（全文）]]></title>
+            <description><![CDATA[<h1 id="钉钉表格，从零到一在线-excel--2020-d2-论坛演讲（全文）">钉钉表格，从零到一在线 Excel —— 2020 D2 论坛演讲（全文）</h1>
+<blockquote>
+<p>以下是 2020 年 12 月 19 日在 D2 前端技术论坛上的分享全文。</p>
+</blockquote>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01fH9K8J1DxejWh1uzp_!!6000000000283-0-tps-720-405.jpg" alt=""></p>
+<p>大家好，我是来自钉钉的叶斋。感谢 D2 组委会，让我有机会在这里分享。我今天分享的主题是《钉钉表格 —— 从零到一打造在线 Excel》。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01HIlSKb1v50ZLPzqWY_!!6000000006120-0-tps-720-405.jpg" alt=""></p>
+<p>我们知道 Excel 是一款有着 30 年悠久历史，功能极为繁多复杂的桌面办公软件。</p>
+<p><img src="https://img.alicdn.com/imgextra/i3/O1CN018oTUDp1URSMAZaUx5_!!6000000002514-0-tps-720-405.jpg" alt=""></p>
+<p>近十年来，随着浏览器的进化，在 Web 端出现了一些对标 Excel 的产品，比如 Google Sheets，微软自家的 O365等等。钉钉表格也是其中之一。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01mR51Xn1qFTXl4M6rZ_!!6000000005466-0-tps-720-405.jpg" alt=""></p>
+<p>这款产品经过了接近一年的从 0 到 1 的研发，已经完成了 Excel 70% 的功能点，即将正式推出。这次的分享，我将从前端的视角，来谈谈研发这款产品中遇到的一些技术挑战，以及我们的应对策略。</p>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01AH9soG1TuwEdbr0Sx_!!6000000002443-0-tps-720-405.jpg" alt=""></p>
+<p>首先简单地看一下钉钉表格的模块组成，大体上分为五个部分：</p>
+<ol>
+<li>协同引擎，负责与服务器交换数据，保证多人能够在一张表格上工作。</li>
+<li>内核模型，可以理解为表格的本地数据库，提供高性能、正交的数据增删改查。</li>
+<li>控制器，可以理解为 service 层，大部分表格的业务逻辑发生在这里。</li>
+<li>表格组件，一个 React 组件，不包含菜单，工具栏，最主要的部分是由 Canvas 渲染的表格主界面。</li>
+<li>表格应用，最终用户看到的那个钉钉表格。</li>
+</ol>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01fnLVzN1ZPguSk8pSo_!!6000000003187-0-tps-720-405.jpg" alt=""></p>
+<p>接下来我带给大家三个故事：可扩展的表格、协同的表格、高性能的表格。希望能通过这三个故事，带大家一窥究竟。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01Q3VfAP29ynQwmTE2O_!!6000000008137-0-tps-720-405.jpg" alt=""></p>
+<p>第一个故事是，「可扩展的表格」。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN018lScze1hUkCiUm7A4_!!6000000004281-0-tps-720-405.jpg" alt=""></p>
+<p>表格最基础，最重要的数据模型，我们称之为「棋盘模型」。棋盘由行和列组成，行列的交点，就形成了一个单元格。非常简单，直观。通常，这个棋盘是由四叉树来实现的，但这里为了不过多展开，我们可以将其视为一个二维数组。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01Y40pY629FSDvco7KN_!!6000000008038-0-tps-720-405.jpg" alt=""></p>
+<p>接下来的问题是：如果我想要为单元格增加样式，比如我想设置单元格的背景色为红色，这时候该对棋盘模型做什么？</p>
+<p>一个自然的想法是，直接扩展棋盘中的单元格 cell，为其增加 style.background 属性；同理，我们可能设置单元格的值由公式计算而来，会自然想到在 cell 上增加 formula 属性；我们可能设置合并单元格，会在 cell 上增加 merge 属性，等等。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01C1iTuz1OCu4p3dNmt_!!6000000001670-0-tps-720-405.jpg" alt=""></p>
+<p>接下来，请大家想一下，如果这时用户在表格中插入了两个新列，我们需要做什么？我们需要把两个红色单元格中间新插入的那个单元格设置为红色，因为当插入的单元格两侧具有同样样式的时候，我们需要继承它；同理我们也需要更新公式引用区域的范围；还需要更新合并单元格的尺寸。</p>
+<p>大家看，这太麻烦了，不管你增加了什么特性，都得去响应行列操作。因为行列操作在棋盘模型中，是第一公民。你们觉得应该怎么解决这个问题？</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01CrLkH21W8L3Zb1ZVn_!!6000000002743-0-tps-720-405.jpg" alt=""></p>
+<p>我们仔细观察一下，就会发现不管是样式，公式还是合并单元格，都不是基于单元格组织的，他们本质上是基于棋盘中的一个矩形区域来组织的，这个矩形区域这是 Range。</p>
+<p>通过借鉴一些已有的成熟设计，我们引入了一个名为 RangeMan 模块，统一管理和维护 Range。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN0121yCmz1fveEwIgwMY_!!6000000004069-0-tps-720-405.jpg" alt=""></p>
+<p>不同的功能模块通过 RangeMan 向棋盘模型注入 Range，比如当用户选中两个相邻单元格并设置样式时，其实是为一个 Range 设置了样式；公式与合并单元格也是类似的。</p>
+<p>RangeMan 维护的数据，棋盘模型是完全感知不到的。只不过消费数据的时候，会把棋盘和各功能模块的数据组装并渲染。</p>
+<p><img src="https://img.alicdn.com/imgextra/i3/O1CN01xCpAaM1bp01jsXxFW_!!6000000003513-0-tps-720-405.jpg" alt=""></p>
+<p>然后重点来了：当行列发生增删时，RangeMan 会自动地更新：包括可能改变 Range 的位置和尺寸，甚至删除一些 Range。然后，消费端在渲染时，从各模块获取新的 Range 并体现在界面上。这就是 RangeMan 的原理。</p>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01wZI0911sfhS5oa9Ns_!!6000000005794-0-tps-720-405.jpg" alt=""></p>
+<p>RangeMan 即简单又强大，它是表格的核心逻辑和业务逻辑间的一道屏障，把两者彻底解耦。绝大部分表格的「业务功能」，包括筛选排序、条件格式等等等等，都是在 RangeMan 的基础上扩展而来的。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01iHy7fy1gEssACYAit_!!6000000004111-0-tps-720-405.jpg" alt=""></p>
+<p>这样，我们的第一个故事，可扩展的模块就讲完了。总结一下：</p>
+<ol>
+<li>首先，棋盘模型是核心，行列操作是第一公民。</li>
+<li>然后，引入 RangeMan 统一管理 Range：注册、更新、销毁。</li>
+<li>最后，基于 RangeMan 扩展表格的各个功能模块。</li>
+</ol>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01j05HEI1fV5Gbb1WQm_!!6000000004011-0-tps-720-405.jpg" alt=""></p>
+<p>第二个故事，是协同的表格。所谓协同，是指我们的表格支持多个用户在同一张表格上工作。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01kglYHf29APrtG3MPG_!!6000000008027-0-tps-720-405.jpg" alt=""></p>
+<p>传统的桌面表格软件是不支持协同的，它的模式非常简单：用户点击「保存」按钮，软件将表格数据写入磁盘。协同表格则要复杂得多，多个用户同时通过 CP 和 OP 与服务端进行数据交换。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01bAtfbJ1mUoL9YtxLz_!!6000000004958-0-tps-720-405.jpg" alt=""></p>
+<p>这里的 CP 是 Check Point 的简称，指的是全量的表格数据；OP 是 Operation 的简称，指的是单次表格操作。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01jl4t9f1dp7MMFi31z_!!6000000003784-0-tps-720-405.jpg" alt=""></p>
+<p>举个例子，当我们新建一个表格时，表格里什么都没有，这是一个空的 CP，版本是 v0。设置 [0,1] 单元格背景色就是一个 OP，版本是 s0。当 CP v0 执行了 OP s0，表格对应的状态，[0,1] 格就被染色了。我们可以接着执行一个 OP s1，在第一行后插入一行，表格状态也会发生变化。当积累的 OP 足够多（我们现在是每 50 个），或者用户手动保存了，或者用户一段时间没操作，我们会生成一个新的 CP，后面的 OP 就在新 CP 上累加了。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN0132NS1p1JuLZAg87ef_!!6000000001088-0-tps-720-405.jpg" alt=""></p>
+<p>OP 和 CP 的存在，是为了多人协同。具体协同是怎样做的呢？我再举个例子，假设现在有 A / B 两个用户，同时编辑一张空表格。A 作出了一个操作 OP1，设置 [0,1] 的背景色；B 作出了一个操作 OP2，在第一行后插入一行。由于 B 的网络比较好，OP2 先同步到了服务端，服务端执行了 OP2；这时候 A 的 OP1 也同步过来了，我想请大家思考下，你会怎么办？</p>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01AovesY1mc8g1zfFc2_!!6000000004974-0-tps-720-405.jpg" alt=""></p>
+<p>一个做法是，直接打回，告诉 A 你这个 OP 已经过时了。这时 A 会生成一个逆 OP1，恢复 [0,1] 的背景色。同时服务端会把 OP2 同步给 A，接着 A 会执行 OP2。然后，关键的一步来了：A 会基于 OP2 变换 OP1，也就是基于「在第一行后插入一行」这么一个 OP，去变换「设置 [0,1] 的背景色」这个 OP，得到新的 OP3，是设置 [0,2] 的背景色，然后再执行。当然，OP3 会依次同步给服务端和 B。</p>
+<p>这个算法叫做 GOT，好处是逻辑比较简单，但是有一个问题，在大规模密集协同下，打回率很高，OP 密集到一定程度时，可能一个网络稍微差一点的客户端，就一直在处理打回的 OP，无法收敛。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN0132NS1p1JuLZAg87ef_!!6000000001088-0-tps-720-405.jpg" alt=""></p>
+<p>接下来，我们介绍另一种算法：还会到刚刚的位置，当 A 的 OP1 同步到服务端时，有没有什么更好的做法？</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01NKCIbJ1q36qgXeOP6_!!6000000005439-0-tps-720-405.jpg" alt=""></p>
+<p>更好的做法就是：在服务端直接做变换，基于 OP2 变换 OP1，生成 OP3（也就是设置 [0,2] 的背景色），同时同步给 B。在客户端 A 呢，基于 OP1 变换 OP2，注意这里反过来了，我们基于设置背景色操作，去变换插入行操作。由于设置背景色对插入行操作是完全无影响的，所以得到的 OP4 依然是「在第一行后插入一行」，和 OP2 是完全等价的。A 执行 OP4，得到最终的结果。</p>
+<p>这个算法叫做 COT，它的上限更高，但是代价就是需要服务端和前端同时运行一份 OP 变换的逻辑。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01XPcypz1bNWGGRVIyb_!!6000000003453-0-tps-720-405.jpg" alt=""></p>
+<p>我想再问大家一个问题，协同算法里最重要的部分是什么？其实最重要的，就是图里蓝色的「OP 变换」，Operation Transformation，简称 OT。GOT 只在客户端运行 OT，而 COT 则要求在服务端和客户端同时运行 OT。</p>
+<p>在这个例子里面，我们只有 2 种 OP，那么其实是有 4 种 OT 算法。这是一个大的 switch case，每两种 OP 碰到一起，如何变换，都是需要通过硬编码来实现的。随着 OP 的种类越来越多（比如目前表格已经有 15 种 OP 了），OT 算法的规模会以平方级增长。运行在服务端的 OT 由 Java 同学实现，前端 OT 则由前端技术栈实现，如何保障一致性呢？</p>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01Bxft1G1I7VicNh8Pc_!!6000000000846-0-tps-720-405.jpg" alt=""></p>
+<p>WebAssembly，对，就是 WebAssembly。总之，我们用Rust来编写OT 算法，然后编译成 Assembly，同时分发给服务端和客户端，这样就保证了双端的一致。产品迭代过程中，如果产生了新类型的 OP，也只需要在 Rust 中单独实现，重新编译和分发。</p>
+<p><img src="https://img.alicdn.com/imgextra/i3/O1CN01rdw1AX1kHruymc8JB_!!6000000004659-0-tps-720-405.jpg" alt=""></p>
+<p>这样，第二个故事，协同的表格，就讲完了。总结一下：</p>
+<ol>
+<li>首先，OT 是协同的关键。</li>
+<li>上限更高的 COT 调度需要 OT 同时运行在服务端和前端。</li>
+<li>使用 Rust + WSAM 编码 OT 算法，保障一致性。</li>
+</ol>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01REFKV31LBa5TK0IQ7_!!6000000001261-0-tps-720-405.jpg" alt=""></p>
+<p>最后一个故事是，高性能的表格。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01bYdXqi1sLY1ZlNijk_!!6000000005750-0-tps-720-405.jpg" alt=""></p>
+<p>高性能是什么？我的理解是：长时间，高强度使用，用户感觉不到卡顿。而浏览器里的卡顿，通常和渲染相关。我们知道 DOM 是渲染 Web 应用的首选方案，但是最终我们决定使用 Canvas 来渲染表格的主界面。大家知道为什么吗？</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01K7m7Z728FckqdcTpA_!!6000000007903-0-tps-720-405.jpg" alt=""></p>
+<p>因为表格和普通网页的形式存在很大的差别，很多 DOM 模型支持的能力，表格是用不到的。这意味着，如果你用 DOM 来渲染表格，就会有很多开销不可避免地浪费在浏览器中的 DOM 渲染管线中。几十年来 DOM 标准的不断迭代，使得浏览器的 DOM 渲染管线成了一个极复杂，兼容性极强的模块，支持从内联 <code>&lt;b&gt;</code> 元素到 float 布局等诸多古老特性。这些东西，表格是完全用不上的。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01gurx1p1XmTNZx3bFm_!!6000000002966-0-tps-720-405.jpg" alt=""></p>
+<p>所以我们使用 Canvas，我们内部有一个「表格渲染管线」，基于 Canvas 实现。我们来看看管线内部的结构。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01U6alAO1JoOPuVjtkM_!!6000000001075-0-tps-720-405.jpg" alt=""></p>
+<p>首先管线内部是分层的，首先分为网格层，内容层和选区层，内容层内又分背景、文本、装饰三层，文本层前面是排版引擎。每一层可以单独渲染，然后再合成起来，输出到主界面。虚线是管线中流淌的数据流，马上出现的实线是控制流。</p>
+<ol>
+<li>首次渲染，需要重新排版，三层中的每一层都需要重新绘制。</li>
+<li>用户拖拽选区时，只有选区层需要重绘，因为选区的渲染很简单，此时开销是很小的。</li>
+<li>当用户改了单元格的值，需要重新排版（当然是增量的），内容层需要重绘。</li>
+<li>表格滚动的时候，每一层都需要重绘；但不需要重新排版。</li>
+</ol>
+<p>可以看到，渲染管线在发生不同的操作时，只重绘那些必要的图层，以此来保障性能。</p>
+<p>其实分层是任何渲染系统作性能优化时的一个最基本的手段。即使分层了，我们这个表格在滚动时的重绘开销依旧比较客观。因为单元格的数量是比较多的，每个格子里面的文本有可能是换行的，甚至还有富文本出现，导致绘制文本的次数非常多。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01B9yJX31NO478B6GnQ_!!6000000001559-0-tps-720-405.jpg" alt=""></p>
+<p>所以我们对文本层又专门作了优化：就是「双缓冲画布」的渲染方案。</p>
+<p>我们会准备两块缓冲画布，每一块都比视窗要大一圈，视窗里的内容，比如现在的 D2 区域，是从缓冲画布中裁剪出来的。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01y9EmhL1Rvjh9OqWCE_!!6000000002174-0-tps-720-405.jpg" alt=""></p>
+<p>如果这时候发生了滚动，视窗从 D2 区域缓缓向 D1 滚动，我们不需要重绘，只需要从缓冲画布中裁剪新的区域过来就可以。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01jHXtmz23YnFpLlUBL_!!6000000007268-0-tps-720-405.jpg" alt=""></p>
+<p>当滚动到一个阈值时，我们会在缓冲画布 2 上以 D1 区域为中心进行重绘，然后把视窗从缓冲画布 1 挪到缓冲画布 2，再清空第一块画布，这样就恢复到了初始状态，完成了一个循环。</p>
+<p>双缓冲画布的优势是，重绘的频率大大降低了，但单次重绘的开销却变大了。所以我们在有条件的浏览器中，把缓冲画布的渲染封到 web-worker 里，这样就比较好了。</p>
+<p>在表格渲染管线中，我们还遇到一个挑战，就是如何去对文本作排版。在 DOM 中，排版是浏览器替我们完成的：你在 div 里放一段文本，设置好 div 的宽度，浏览器会自动去折行，去对齐。使用 Canvas 之后，你就得自己手动做这件事了。我们表格内有一个小型的排版引擎，还挺有意思的，不妨也分享一下。</p>
+<p><img src="https://img.alicdn.com/imgextra/i1/O1CN01bdaIfW1RDlflcxKBO_!!6000000002078-0-tps-720-405.jpg" alt=""></p>
+<p>首先我们看一些基础知识。我们在 Canvas 中去画形状，比如画一个矩形的时候，是非常明确地知道，将要在哪一块区域绘制的，因为绘制的参数宽高就给出了答案。但是绘制文本的时候，你必须通过一些手段才能知道这些信息。通过对文本的测量，你才能知道文本你绘制的原点在哪，文本占据的怎样一块区域。</p>
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01pLYZgL26VXHbfaSYO_!!6000000007667-0-tps-720-405.jpg" alt=""></p>
+<p>有了这些知识，就可以进行排版了。假设我们现在要把这么一段文本排进上面这个单元格，首先根据单元格的宽度去把文本拆成若干行。这里是有分词的，第二行开头，Windows 的前几个字母可以排进第一行的，但是因为整个单词排不进去，就会被划到第二行。</p>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01P7IBHM1aQtZ7dNMrh_!!6000000003325-0-tps-720-405.jpg" alt=""></p>
+<p>拆成三行之后，会根据水平对齐和垂直对齐，比如图里的水平对齐是靠右对齐，垂直对齐是底部对齐，根据对齐方式测量出每一行文本的原点，原点的坐标就传给 fillText 方法来绘制了。</p>
+<p><img src="https://img.alicdn.com/imgextra/i3/O1CN01rGL6zL1Uzo3i1oL1g_!!6000000002589-0-tps-720-405.jpg" alt=""></p>
+<p>这就是整个排版和绘制的原理。这样，我的第三个故事，也就讲完了。总结一下：</p>
+<ol>
+<li>选择 canvas 渲染表格主界面。</li>
+<li>分层的表格渲染管线，减少重绘。</li>
+<li>双缓冲画布支持流畅滚动。</li>
+<li>自研小型排版引擎，支持单元格内折行、分词、对齐等样式。</li>
+</ol>
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01Rdn67t1DkNFPs5Glf_!!6000000000254-0-tps-720-405.jpg" alt=""></p>
+<p>这样，三个故事就全部讲完了。其实说了这么多，钉钉表格，从 0 到 1 的研发，究竟走了一条怎样的路呢？其实也很简单：</p>
+<ol>
+<li>向上，吸收和借鉴桌面软件的已有成熟设计，比如 RangeMan，渲染管线的思想，分词和排版算法。</li>
+<li>向下，整合前端领域最先进，最主流的技术，包括 WebAssembly，Worker，Canvas 等等。</li>
+</ol>
+<p>把它们聚合在一起，共冶一炉，锻造出钉钉表格这样一个超级复杂的 Web 应用。</p>
+<p>我的分享就到这里，再次感谢 D2 组委会。</p>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/post/2020-d2-speech.html</link>
+            <guid isPermaLink="false">2020-d2-speech</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Tue, 29 Dec 2020 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[风陵渡游记]]></title>
+            <description><![CDATA[<h1 id="风陵渡游记">风陵渡游记</h1>
+<blockquote>
+<p>2020 年国庆节期间，我和晓辰完成了一次短途自驾旅行。路线是我策划的：从郑州出发，沿途向西经过洛阳、三门峡、潼关，最终到达西安。这条路线所经过的地区，基本算是中华文明的核心腹地了。当我沿着连霍高速向西行驶，周围从一马平川的平原，变成起起伏伏的小丘陵，再变成黄土高原特有的「塬」和河谷相间的地形；当那些熟悉的和无数历史事件或者文学作品联系在一起的地名：许县、孟津、虎牢、偃师、河洛、函谷、潼关、风陵、华阴、渭城、蓝田、白鹿、灞桥，一个一个出现在路牌上；我时不时地会略微有些「热泪盈眶」，原来这个弱小的个体和这个文明，是如此息息相通。</p>
+<p>一路上，我们看了很多博物馆和古迹：郑州博物馆、杜甫故里、二里头遗址博物馆、白马寺、龙门石窟、虢国博物馆、风陵古渡、潼关、华山脚下、兵马俑、西安博物院。风陵古渡在这里面是最冷门的一个地方了，它甚至连「景点」都不太算得上。但这个地方却是我策划此次旅行的最初动力 —— 它在金庸迷心中的地位实在是太特殊了。我们颇费了一些周折才到达那里，在那里看了日落，然后又费了很大的周折才得以返回（返回途中还经过一个很有意思的 90 年代风格的风陵渡镇）。</p>
+</blockquote>
+<p><figure><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2020-10-8/1.jpg" alt="风陵渡日落"><figurecaption>风陵渡日落</figcaption></figure></p>
+<p>风陵渡其实是我这次关中旅行的最初目的，不仅因为它是晋地入关的必经之路，数不尽历史人物和事件的舞台，更因为它在金庸迷心中极为特殊的地位。</p>
+<p>所谓风陵渡口初相遇，一见杨过误终身。风陵渡是郭襄和杨过的初见之所。《神雕侠侣》以杨过小龙女分别的十六年为界，分为上下两个部分，而「风陵夜话」正是下半部分的第一回。杨龙分别十六年后，金庸借初出茅庐的郭襄的视角，引出已成为神雕大侠的杨过，以及后续襄阳大会、宋蒙战争等桩桩大事。杨过以三根金针为信物，答应满足郭襄三个愿望：摘下面具、参加郭襄的生日聚会、无论小龙女是否存活都不可以求死。杨过没能满足最后一个愿望 —— 他在得知小龙女在十六年前已死时，依然选择了跳崖（郭襄也跟着跳了，当然后面是机械降神情节，崖底的寒潭救了所有人）。《神雕》结书后，杨龙隐居，郭襄遍访杨龙不得，终落发出家开创峨眉一派。《倚天》万安寺中，灭绝向周芷若吐露倚天剑的历史，提及峨眉第二代掌门法号风陵师太，与风陵夜话遥相呼应，草蛇灰线，伏笔千里，令人唏嘘。</p>
+<p>怀着一颗朝圣的心，我来到风陵渡。从连霍高速秦东出口下高速，经过一个环岛，就可以直接上到风陵渡大桥。黄河由北向南流到这里，被山脉挡住去路，不得不折向东流去，形成了「几」字型黄河最后一笔的「弯」处。黄土高原的土质疏松，河谷深深地下切，把高原切成一块块四边陡峭，顶部平坦的高台，这就是「塬」。不同的塬之间可能相隔只有几百米，人们互相可以望见甚至喊话，但是如果想走过去，需要沿着陡峭的塬壁下到河谷里，再上到对岸的塬顶，路途比直线距离要远得多。</p>
+<p>风陵古渡口在河谷中，为了到达古渡口，我们遭遇了一段完全出乎意料的、惊险、令人印象深刻的沿塬壁下到河谷的经历。（平心而论，这段经历一点也不惊险，甚至有一点乏味。但是对于平淡生活中的人，这种「冒险」的机会实在太难得了）。</p>
+<p><figure><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2020-10-8/3.jpg" alt="西阳村西侧下塬的小路-来自Google地图"><figurecaption>西阳村西侧下塬的小路-来自Google地图</figcaption></figure></p>
+<p>当我们沿着风陵渡大桥到达黄河北岸时，我完全没有意识到我已经在塬上。长江下游二十余年的生活经验告诉我，只要沿着导航软件中的道路，就可以平稳地到达岸边。然而导航软件把我从大路导上了小路，最后导进了一个小村庄（后来我在地图上确认，这个村子就是芮城县西阳村）。狭窄的村道上，晒着谷子，停着各式摩托和三轮，有闲聊的老人和嬉闹的小孩，我不禁困惑，这条路真能带我到渡口去吗？我们从西阳村东侧的村口行驶到最西侧，在最后一排民房的，也就是地图上显示即将拐弯的地方，周围似乎一下子变开阔了，可是道路不见了，只有一个小凉亭立在道路的尽头。</p>
+<p>我们下了车，才发现凉亭的另一侧（东）是悬崖，凉亭北侧一堆麦杆背后，藏着一条略窄，略陡峭，没有围栏的小路，沿着悬崖向北延伸，看不清尽头。最终我们决定还是冒一次险，沿着小路继续向前。这条小路把我们送到了黄河的河谷中一条坑坑洼洼的烂泥路上。沿着这条烂泥路向南，我们向渡口行驶，路上没有其他车，路两边长满了野生灌木和杂草，右边（西）是黄河，在灌木杂草背后若隐若现，左边（东）就是西阳村所在的那块塬了，而且我发现每隔一两千米就会有一条类似的小路从塬顶垂落下来，夕阳从西边照过来，把塬壁照得金黄。我对晓辰说：「好看」，心里想：「真是壮观啊」，心里又想：「这条路可千万别断了」。</p>
+<p>又行驶了十几分钟，和几辆大卡车会车之后，我们上了一条柏油小路。这就在黄河边了，车向前行驶，黄河水就在车窗外哗哗地流。又走了一段，前面路边停着一辆小面包，六七个人坐在地上聊天；再向前，路边又停着两辆小车，又有五六个人分两三堆坐在路边，我知道，终于到风陵渡了。</p>
+<p>这里真是一个再普通再寻常不过的地方了，如果不是一块不起眼的「风陵古渡」的招牌，你丝毫不会把这里和繁华的交通要到联系起来。但是仔细地看，这里确实是目力所及范围内，黄河最窄的地方，而且也恐怕是方圆百里之内，黄河最窄的地方了。在现代桥梁技术出现之前，山西、河北甚至更远处的人想要到关中平原来，都必须从风陵渡渡河。对岸是说不上名字的山（查了一下叫凤凰山，还挺有名的），山腰上围着是高速公路，山顶矗立着两座风力电站，往西去可以看到潼关古城里建的仿古建筑，再向西南远眺，巍峨的太华山脉在云层中若影若现。我突然想到，虽然周围的环境 —— 这条柏油小路，农家乐，风陵渡大桥，对岸的「潼关古城」，风力电站，高速公路 —— 都是后来才有的，但是站在这里看到的山川轮廓，和古人看到的却没什么两样。且不说那些确凿记载在史料中的，和潼关、风陵渡有关的人物故事，就随便从中国古代史尤其是先秦汉唐史中找一个人出来，你都很难说他从未来过这里。秦灭六国，这里是必经之道吧；汉高祖提剑入咸阳，经过这里吧；李世民，是从太原起兵问鼎中原的，那妥妥是风陵渡的常客了。也就是说，李世民每次来往于太原老家和长安、洛阳之间，都必须经过这里，彼时他在渡口看到的这凤凰山，和我现在看到的凤凰山，轮廓是一模一样的啊！忽然，我有一种触摸到历史的感觉，我和无数的历史人物在某个维度上相遇了。</p>
+<p><figure><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2020-10-8/2.jpg" alt="小商店"><figurecaption>小商店</figcaption></figure></p>
+<p>风陵渡口不远处还有一个小商店，店主是一位老人，他正在斜靠在椅子上，专心地看一部喧闹的古装电视剧。看到我走进来，他看向我，笑着点了一下头，就又把目光挪回电视上了。窗外是哗哗的水流声，五千公里长的黄河在这里拐了一个直角弯，而离这个直角弯最近的人，就是这位看电视剧的老人了。征得他的同意后，我拍了一张照片，因为我觉得这背后有某种只能意会的哲学含义 —— 一个人魂牵梦绕的东西对另一个人而言，可能是最最司空见惯的。</p>
+<p><figure><img src="http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2020-10-8/5.jpg" alt="风陵渡火车站"><figurecaption>风陵渡火车站</figcaption></figure></p>
+<p>当太阳完全埋进云层里，我们决定返程。返程途径风陵渡镇，这是个九十年代风格的小镇。小镇中心的 T 字路口坐落着火车站、国营饭店、国营旅馆，简直可以作为九十年代电影的取景地。饭店和旅馆都已经被改成了普通名宅，但还保留着当年的门面，只有火车站还在使用。这是我见过最小的火车站，售票窗口只有一个，只在固定的几个时间窗口开放，候车厅不超过一百平，座椅不过十几个，墙上挂着那种九十年代字体印刷的列车时刻表，原来有几班慢车经停此站。车站里只有两个人拉着箱子在候车，此情此景，不由得想起了那篇小学课文《小站》。</p>
+<p>返程再次经过风陵渡大桥，桥面上堵车。天已经全黑了，向右侧车窗外望去，黑黢黢的，看不见黄河，更看不见远处的山峦，我听到广播里在讲什么「秦腔」。对哦，陕西除了「陕」，另一个简称是「秦」。我突然想到一个成语：「秦晋之好」，可不就是说的风陵渡这个地方嘛！</p>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/post/fenglingdu.html</link>
+            <guid isPermaLink="false">fenglingdu</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Thu, 08 Oct 2020 00:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[断言的作用]]></title>
+            <description><![CDATA[<h1 id="断言的作用">断言的作用</h1>
+<p>断言，即「十分肯定地说」。程序运行至某处，断言一个条件 —— 如果该条件不成立，立刻抛出异常。</p>
+<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">assert</span>(<span class="hljs-params">
+  condition: <span class="hljs-built_in">boolean</span>, 
+  message: <span class="hljs-built_in">string</span> = ‘Assert <span class="hljs-built_in">Error</span>’
+</span>) </span>{
+  <span class="hljs-keyword">if</span>(!conditon) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(message);
+  }
+}</code></pre>
+<p>我曾在 Flutter Framework 的代码中见识了大量的断言 —— 随便一个方法，开头就是好几条断言，彼时我觉得这些断言真是又丑又累赘。然而随着我也开始参与开发一些大型复杂项目，我却逐渐体会到断言带来的好处。</p>
+<p>在你编写一个大型系统中的模块时，你：</p>
+<ol>
+<li>在执行一个非常明确的任务。</li>
+<li>根本无法预估你的调用者会怎么调用你的模块。</li>
+</ol>
+<p>当然，你可以通过方法签名、接口等方式，告诉模块的调用者应该如何使用，但这远远不够。举个例子，你要实现一个函数，将形如 2020-9-4  的字符串转化为包含年、月、日字段的数据结构：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> IDate {
+  year: <span class="hljs-built_in">number</span>;
+  month: <span class="hljs-built_in">number</span>;
+  date: <span class="hljs-built_in">number</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parse</span>(<span class="hljs-params">source: <span class="hljs-built_in">string</span></span>): <span class="hljs-title">IDate</span> </span>{
+  <span class="hljs-keyword">const</span> [year, month, date] = source.split(<span class="hljs-string">'-'</span>).map(<span class="hljs-built_in">Number</span>);
+  <span class="hljs-keyword">return</span> { year, month, date };
+}</code></pre>
+<p>很简单，对吗？可是，如果用户传入空字符串，如果用户传入格式不符的字符串（如 hello world ），怎么办呢？很多人就会纷纷动起了歪脑筋：返回 null；返回三个字段都是 0 的数据；返回今天对应的日期等等。</p>
+<p>这里，我想问各位读者一个问题：你是否<strong>明确知道</strong>，在何种情形下，外部会传入一个非法字符串？如果你的答案是否，那么不如断言一下：「外面绝对不会传一个非法字符串」。如果外面真的传了空字符串，就会抛异常。</p>
+<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parse</span>(<span class="hljs-params">source: <span class="hljs-built_in">string</span></span>): <span class="hljs-title">IDate</span> </span>{
+  <span class="hljs-keyword">const</span> list = source.split(<span class="hljs-string">'-'</span>);
+  assert(list.length === <span class="hljs-number">3</span>);
+
+  <span class="hljs-keyword">const</span> [year, month, date] = list.map(<span class="hljs-built_in">Number</span>);
+
+  <span class="hljs-keyword">const</span> isInt = (n: <span class="hljs-built_in">number</span>): <span class="hljs-function"><span class="hljs-params">boolean</span> =&gt;</span> <span class="hljs-built_in">Math</span>.floor(n) === n;
+
+  assert(isInt(year));
+  assert(isInt(month) &amp;&amp; month &gt;= <span class="hljs-number">1</span> &amp;&amp; month &lt;= <span class="hljs-number">12</span>);
+  assert(isInt(date) &amp;&amp; date &gt;= <span class="hljs-number">1</span> &amp;&amp; date &lt;= <span class="hljs-number">31</span>);
+
+  <span class="hljs-keyword">return</span> { year, month, date };
+}</code></pre>
+<p>把简单的代码改复杂很容易，把复杂的代码改简单则困难得多。断言让你的代码<strong>只</strong>做「计划内」的事情，帮助你保持代码简单 —— 不是看上去最简单，而是逻辑简单。上面的两个例子，虽然前一个例子（没有断言的函数）更简短，但与后一个例子（有断言的函数）相比，它的行为更加难以预测，所以从逻辑上看，后一个例子更简单。</p>
+<p>试想，当你的调用者触发了这个异常，他会怎样做？他自然会先检查是不是自己用错了，如果他确实用错了，你的断言帮助他提前发现了一个 bug（全过程完全不需要你的额外参与，简直是异步沟通的典范）；如果不是他的错误，他必然有充分的理由来要求你来容错，他会来找你沟通，如果他说服了你，你会通过修改代码（包括将这条边界条件加入到单元测试中）来完成容错 —— 此时，你们对各模块的职责划分有了更清晰的认知，你已经「明确知道」外部在什么时候会传一个边界值了 —— 而修改代码的成本，实在太微不足道了。</p>
+<p>这个例子中的另一个常见的边界条件是，如果用户传入 undefined，该怎么办呢？「啊，因为传入 parse 方法的参数是另一个方法返回的，那个方法可能返回 undefined」，你的调用者如是说。其实如果你使用 TypeScript，用不着运行时的断言，静态类型检查就会报错了（参数类型不兼容）。</p>
+<p>其实，使用断言的背后是边界条件处理的方法论 。一个面向用户的产品，当然应该处理好自己的边界条件；但是在大型项目的初期，边界条件由哪个模块处理往往很模糊。此时，如果每个模块都去想当然地「妥善」处理自己的边界条件，会写出大量死代码（永远不会被执行到的代码），函数变得臃肿，可读性降低，可维护性变差，更可怕的是，某些原本应该出错的 case 不出错了，被开发者忽略了。反之，如果每个模块都最「强硬」地用断言抛异常的方式处理边界条件，几乎所有边界条件问题都会暴露出来，并合理地落实到各个模块中去，非常有利于项目的早期架构。
+断言的运行时特性
+类型检查发生在编译时，断言发生在运行时。因此，断言带来了很多便利的特性。首先是类型收窄（type narrowing）。TypeScript 的 asserts 关键字可以收窄类型，就像 if 分支条件一样：</p>
+<pre><code class="language-typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">assert</span>(<span class="hljs-params">
+  condition: <span class="hljs-built_in">boolean</span>, 
+  message: <span class="hljs-built_in">string</span> = ‘Assert <span class="hljs-built_in">Error</span>’
+</span>) : <span class="hljs-title">asserts</span> <span class="hljs-title">condition</span> </span>{
+  <span class="hljs-keyword">if</span>(!conditon) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(message);
+  }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params">bar: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span></span>) </span>{
+  <span class="hljs-comment">// 这里 bar 的类型是 string | number</span>
+  assert(<span class="hljs-keyword">typeof</span> bar === <span class="hljs-string">'string'</span>);
+  <span class="hljs-comment">// 这里 bar 的类型是 string</span>
+}</code></pre>
+<p>这个功能配合 type guard 非常好用。</p>
+<p>我常用的 assert 的另一个场景如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Foo {
+
+  bar: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span> = <span class="hljs-literal">null</span>;
+
+  init(bar: <span class="hljs-built_in">string</span>) {
+    assert(<span class="hljs-keyword">this</span>.bar === <span class="hljs-literal">null</span>);
+    <span class="hljs-keyword">this</span>.bar = bar;
+  }
+
+  consume(){
+    assert(<span class="hljs-keyword">this</span>.bar !== <span class="hljs-literal">null</span>);
+    <span class="hljs-comment">// 消费 this.bar 的逻辑</span>
+    <span class="hljs-comment">// 相比 this.bar?.toLowerCase()，你可以直接写 this.bar.toLowerCase()</span>
+  }
+}</code></pre>
+<p><code>Foo</code> 有一个名为 <code>bar</code> 的成员变量，通常 <code>bar</code> 都是存在的，但是因为某些原因，没有办法在 constructor 中为其赋值，而是在 <code>Foo</code> 类型的实例被构造后的某个时机，通过调用 <code>init</code> 方法来进行初始化。</p>
+<p>通常我会在 <code>init</code> 方法中放一个断言，来保证 <code>init</code> 只被调用一次（也许我后面会在这里做一些真正的初始化工作呢，所以谁要是想 <code>init</code> 两次，那必须得找我来沟通）。</p>
+<p>接下来，我会在 <code>consume</code> 方法中放一个断言，保证在消费 <code>bar</code> 的时候，<code>bar</code> 已经被初始化了。你看，<code>consume</code> 方法中的这一句断言，将 <code>this.bar</code> 的类型从 <code>string | null</code> 收窄为了 <code>string</code>，我可以直接调用 <code>this.bar.toLowerCase()</code> 而不用加一个累赘的问号了。</p>
+<p>除了作类型收窄，断言也可以作为静态类型系统和动态系统间的某种「胶水」。我们知道 TypeScript 有编译时的静态检查，但运行却是发生在解释器中的。有时候我希望<strong>有限地</strong>突破静态系统的某些约束，但又不想直接用 <code>any</code>（这样污染的 scope 太大），那么通过 <code>assert(false)</code> 直接抛异常是个不错的选择。</p>
+<p>举个例子，我有一个 <code>Bird</code> Class 表示鸟类，然后还有一个 <code>Ostrich</code> Class 表示鸵鸟：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Bird {
+  fly(): <span class="hljs-built_in">void</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Flying...'</span>);
+  }
+}
+
+<span class="hljs-keyword">class</span> Ostrich <span class="hljs-keyword">extends</span> Bird {
+  fly(): <span class="hljs-built_in">void</span> {
+    assert(<span class="hljs-literal">false</span>);
+  }
+}</code></pre>
+<p>写到这里偏题了，因为直接抛异常也可以，没必要用断言。不过断言似乎更可读：<code>assert(false)</code> 表示：「绝对不会（运行到这里）！」。</p>
+<p>鸟会飞；鸵鸟是鸟；鸵鸟不会飞 —— 按照逻辑三段论推理，鸟会飞 + 鸵鸟是鸟可以推断出鸵鸟会飞的，第三句话与前两句矛盾了；但是在自然语言中，三句话都讲得通，因为自然语言有一些默认的上下文，鸟会飞是指「绝大部分鸟会飞」。</p>
+<p>程序代码不仅是严谨的逻辑表达，也是对自然语言的模拟。在 OOP 程序设计的时候，会飞是鸟类最重要的通用特性之一，<code>Bird</code> 基类上有 <code>fly</code> 方法是极为自然的。既然「有的鸟不会飞」是鸵鸟等少数鸟类带来的，那么它的影响自然应当由少数鸟类来承担。</p>
+<p>体现在代码中，<code>Ostrich</code> 继承自 <code>Bird</code>，所以 <code>Bird</code> 上的方法 <code>Ostrich</code> 上都有，<code>Ostrich</code> 想摆脱 <code>fly</code> 方法是不可能了。可是鸵鸟真不会飞，怎么办呢，那就在飞的时候抛一个异常。这真的很好用：在类型系统看来，鸵鸟还是鸟，但是程序运行过程中起来，肯定是不会让鸵鸟去飞的。</p>
+<blockquote>
+<p>此问题解决方案还有 Mixin / 多重继承等。</p>
+</blockquote>
+]]></description>
+            <link>http://xieguanglei.github.io/blog/post/assertion.html</link>
+            <guid isPermaLink="false">assertion</guid>
+            <dc:creator><![CDATA[谢光磊]]></dc:creator>
+            <pubDate>Fri, 04 Sep 2020 00:00:00 GMT</pubDate>
+        </item>
+    </channel>
+</rss>

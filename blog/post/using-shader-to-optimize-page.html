@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta content="text/html">
+    <meta charset="utf-8">
+    <meta name="author" content="谢光磊">
+    <meta name="keywords" content="一叶斋,谢光磊,,TypeScript,编程随想,D2,2020 D2,,assert,,,,,光线追踪,SmallPT,,mixin,typescript,dart,,,Web Worker,OffScreen Canvas,学区房,杭州,webgl,,,逐个像素的艺术,2018 iWeb,">
+    <title>一叶斋 | 活用 Shader，让你的页面更小，更炫，更快</title>
+    <link href="../assets/index.css" rel="stylesheet">
+    <div id="ga_id" style="display: none">UA-73144174-1</div>
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', document.getElementById('ga_id').innerText, 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="https://www.google-analytics.com/analytics.js" async></script>
+  </head>
+  <body>
+    <div id="header">
+      <h1 id="title"><a href="/">一叶斋</a></h1>
+      <div class="links"><a href="http://xieguanglei.github.io/blog/feed.xml" target="_blank">
+          <div class="iconfont icon-rss"></div></a><a href="http://github.com/xieguanglei" target="_blank">
+          <div class="iconfont icon-github"></div></a><a href="/blog/post/about.html" target="_blank">
+          <div class="iconfont icon-author"></div></a>
+      </div>
+    </div>
+    <div id="main">
+      <div id="post">
+        <div class="main">
+          <h3 class="date">2018/05/10</h3>
+          <div><h1 id="活用-shader，让你的页面更小，更炫，更快">活用 Shader，让你的页面更小，更炫，更快</h1>
+<p>可编程着色器（shader）是运行在 GPU 中的程序，是现代图形渲染技术的基础。Shader 赋予了开发者「逐像素着色」的能力。桌面/移动设备的图形程序 API 诸如 OpenGL，OpenGL ES，DirectX 以及新一代的 Vulkan，shader 都是重中之重，核心中的核心。</p>
+<p>WebGL 的出现，使得在浏览器环境中渲染 3D 场景变得轻而易举。但是 WebGL 和 shader 不仅可以用来渲染 3D 场景，还可以做一些其他酷酷的事情。前两天，我用 shader 技术改造 / 复刻了之前开发的一个业务页面，颇有心得和启发，不妨记录下来。</p>
+<blockquote>
+<p>广告：在 GCanvas 的帮助下，前端开发可以在 Weex，RN 等 Hybrid 环境中使用本文中用到的技术。详情见 <a href="https://alibaba.github.io/GCanvas/">GCanvas</a>。</p>
+</blockquote>
+<p>先看一下效果：<a href="http://g.alicdn.com/gama/assets/0.0.10/assets/shader-view-demo/compare.html">链接</a></p>
+<p><img src="https://img.alicdn.com/tfs/TB1RNl_qntYBeNjy1XdXXXXyVXa-600-529.jpg" alt=""></p>
+<p>左侧是原页面，<a href="http://g.alicdn.com/gama/assets/0.0.10/assets/shader-view-demo/index.html">地址</a>；右侧是用 Shader 复刻后的页面，<a href="http://g.alicdn.com/gama/assets/0.0.10/assets/shader-view-demo/shader.html">地址</a>。</p>
+<p>这其实是 2018 年春晚项目的一个活动页面，页面结构非常简单。这个页面当时是我完成的，所以现在复刻起来熟悉一些。</p>
+<p>我们可以看到，复刻前的页面（后面称「原页面」）是静态的，加载了 1 个 js 文件和 6 张图片共 599K 的资源（包含一张 502K 的大尺寸透明 png 图片）；而复刻后的页面上，有不少元素在动，加载了 1 个 js 文件和 4 张图片共 122K 的资源。不管是视觉效果，还是页面尺寸上的提升，都是比较明显的。</p>
+<p><img src="https://img.alicdn.com/tfs/TB1B88_qntYBeNjy1XdXXXXyVXa-500-254.jpg" alt=""></p>
+<p><img src="https://img.alicdn.com/tfs/TB1Xcsip1uSBuNjy1XcXXcYjFXa-500-226.jpg" alt=""></p>
+<p>下面，我们就以这个页面为例，分析一下，使用 Shader 是如何让这个页面更小，更炫，更快。</p>
+<blockquote>
+<p>阅读后面的文本需要一些 webgl 和 glsl 的基础知识，之前在团内对曾做过一些培训，参加的同学应该不会有什么压力，没参加的同学，也可以稍微看下 the book of shaders 这篇教程。Shader 比你想象的要简单易用，相信我。</p>
+</blockquote>
+<h1 id="大尺寸透明背景图">大尺寸透明背景图</h1>
+<p>原页面存在的一个最大的问题是，有一张特别大的透明背景图。</p>
+<p><img src="https://img.alicdn.com/tfs/TB11dUjp1uSBuNjy1XcXXcYjFXa-750-571.jpg" alt=""></p>
+<p>这张图的体积达到了惊人的 501K，这是因为这张图是具有透明通道的 png 图片。而且由于这张图是广告内容，可能不止一张，是无法融合到背景里去的，必须透明。这时怎么优化呢？
+我们知道，具有透明通道的 png 的压缩是比较困难的；而不具备透明通道的图片，我们可以把它转化为 jpg 等格式，压缩比就高得多了，我们就可以以较小的质量损失去换取较大的压缩空间。</p>
+<p>我的思路是这样：把这张透明的 png 格式图片拆分为两张不透明的 jpg 格式图片。这两张不透明的图片，其中一张继承 png 图片的 rgb 通道，还有一张则仅使用 r 通道储存 png 图片的 a 通道。然后把这两张图片拼接在一起，给 WebGL 使用。由于拼接后的这张图没有透明度分量，所以可以使用 jpg 格式压缩，尺寸大幅度降低。这张图只有 41.5k，大约为之前的 8.2%。</p>
+<p>这张图看上去是这样的：</p>
+<p><img src="https://img.alicdn.com/tfs/TB13tUjp1uSBuNjy1XcXXcYjFXa-700-700.jpg" alt=""></p>
+<blockquote>
+<p>注意，前一张图的像素尺寸是 750x571，而后一张图的像素尺寸为 1024x1024，这里我并没有通过缩小图片的像素尺寸来进行压缩。</p>
+<p>此外，第二张图看上去有些变形，这是因为图片尺寸为 2 的整数次幂，WebGL 能够方便地生成 mipmap，这对我们的使用没有影响。</p>
+</blockquote>
+<p>在 shader 中，我们根据像素坐标从图片中取色，注意需要从图的上半部分和下半部分各取一个颜色，然后根据一定规则拼起来即可。</p>
+<pre><code class="language-glsl"><span class="hljs-keyword">precision</span> <span class="hljs-keyword">mediump</span> <span class="hljs-type">float</span>;
+
+<span class="hljs-keyword">uniform</span> <span class="hljs-type">vec2</span> uResolution;
+<span class="hljs-keyword">uniform</span> <span class="hljs-type">sampler2D</span> uImage;
+
+<span class="hljs-type">void</span> main(){
+
+    <span class="hljs-type">vec2</span> st = <span class="hljs-built_in">gl_FragCoord</span>.xy / uResolution;
+
+    <span class="hljs-type">vec4</span> c2 = <span class="hljs-built_in">texture2D</span>(uImage, <span class="hljs-type">vec2</span>(st.x, st.y*<span class="hljs-number">0.5</span>));      <span class="hljs-comment">// 取 A​lpha 通道</span>
+    <span class="hljs-type">vec4</span> c1 = <span class="hljs-built_in">texture2D</span>(uImage, <span class="hljs-type">vec2</span>(st.x, st.y*<span class="hljs-number">0.5</span>+<span class="hljs-number">0.5</span>));  <span class="hljs-comment">// 取 RGB 通道</span>
+
+    <span class="hljs-built_in">gl_FragColor</span> = <span class="hljs-type">vec4</span>(c1.xyz, c2.r &gt; <span class="hljs-number">0.6</span> ? c2.r : <span class="hljs-number">0.0</span>);
+}</code></pre>
+<p>png 图片转化为 jpg 图片的过程，可以很轻松地在浏览器里操作 canvas 完成（示例），也可以借助一些其他的工具完成。</p>
+<h1 id="会动的背景">会动的背景</h1>
+<p>首先，我们注意到，原页面的背景是在红色的渐变之上，随机散布着一些黄色的氛围小碎片。红色渐变背景和这些小碎片全部画在一张静态 jpg 图片上，如下图（1.原图）所示。</p>
+<p><img src="https://img.alicdn.com/tfs/TB16JUjp1uSBuNjy1XcXXcYjFXa-700-1256.jpg" alt=""></p>
+<p>在复刻前，我把原页面用到的图片分为了两类，图案（pattern）性质和图片（image）性质。Pattern 性质的图片，本身并不传递信息，通常用作底纹，氛围等场景；而 image 性质的图片则是信息的载体。</p>
+<p>这张图片明显是 pattern 性质的，这类图片往往尺寸大，体积也较大（尤其是半透明图案）。其实，这些图案完全可以用 Shader 「手绘」出来，这样就不用去加载此图片了。
+用 Shader 绘制图案的另一个好处是，图案可以有规律地动起来。在这个例子中，如果碎片能像天女散花一般洒下来，那就太棒了，对吧？但是熟悉前端动画的同学，一定会想到，这么多粒子组成的动画，如果用纯 CSS 或者 canvas 2d 来做的话，性能肯定好不了，粒子越多，动画的性能越差。用 WebGL 和 shader 来做粒子动画则不会因为粒子数量的增多而导致性能变差。</p>
+<p>我们来看看如何用 Shader 绘制这些碎片。</p>
+<pre><code class="language-glsl"><span class="hljs-type">vec2</span> random2(<span class="hljs-type">vec2</span> st){
+  st = <span class="hljs-type">vec2</span>( <span class="hljs-built_in">dot</span>(st,<span class="hljs-type">vec2</span>(<span class="hljs-number">127.1</span>,<span class="hljs-number">311.7</span>)),
+            <span class="hljs-built_in">dot</span>(st,<span class="hljs-type">vec2</span>(<span class="hljs-number">269.5</span>,<span class="hljs-number">183.3</span>)));
+  st = <span class="hljs-number">-1.0</span> + <span class="hljs-number">2.0</span>*<span class="hljs-built_in">fract</span>(<span class="hljs-built_in">sin</span>(st)*<span class="hljs-number">43758.5453123</span>);
+  <span class="hljs-keyword">return</span> st;
+}
+
+
+<span class="hljs-type">float</span> <span class="hljs-built_in">noise2</span>(<span class="hljs-type">vec2</span> ist, <span class="hljs-type">vec2</span> fst){
+  <span class="hljs-type">vec2</span> g1 = random2(ist+<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>));
+  <span class="hljs-type">vec2</span> g2 = random2(ist+<span class="hljs-type">vec2</span>(<span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span>));
+  <span class="hljs-type">vec2</span> g3 = random2(ist+<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>));
+  <span class="hljs-type">vec2</span> g4 = random2(ist+<span class="hljs-type">vec2</span>(<span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>));
+
+  <span class="hljs-type">vec2</span> f1 = fst - <span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>);
+  <span class="hljs-type">vec2</span> f2 = fst - <span class="hljs-type">vec2</span>(<span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span>);
+  <span class="hljs-type">vec2</span> f3 = fst - <span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>);
+  <span class="hljs-type">vec2</span> f4 = fst - <span class="hljs-type">vec2</span>(<span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>);
+
+  <span class="hljs-type">float</span> p1 = <span class="hljs-built_in">dot</span>(g1, f1);
+  <span class="hljs-type">float</span> p2 = <span class="hljs-built_in">dot</span>(g2, f2);
+  <span class="hljs-type">float</span> p3 = <span class="hljs-built_in">dot</span>(g3, f3);
+  <span class="hljs-type">float</span> p4 = <span class="hljs-built_in">dot</span>(g4, f4);
+
+  fst = <span class="hljs-built_in">smoothstep</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>, fst);
+
+  <span class="hljs-type">float</span> p = <span class="hljs-built_in">mix</span>(
+    <span class="hljs-built_in">mix</span>(p1, p2, fst.x),
+    <span class="hljs-built_in">mix</span>(p3, p4, fst.x),
+    fst.y
+  );
+
+  <span class="hljs-keyword">return</span> p;
+}
+
+
+<span class="hljs-type">float</span> inFrag(){
+    <span class="hljs-type">vec2</span> st = <span class="hljs-built_in">gl_FragCoord</span>.xy / uResolution.xx;
+    st = st * <span class="hljs-number">60.0</span>;
+    <span class="hljs-type">float</span> res = <span class="hljs-built_in">noise2</span>(<span class="hljs-built_in">floor</span>(st), <span class="hljs-built_in">fract</span>(st));
+    <span class="hljs-keyword">return</span> res;
+}
+
+<span class="hljs-type">void</span> main(){
+    <span class="hljs-type">float</span> pct = inFrag();
+    <span class="hljs-built_in">gl_FragColor</span> = <span class="hljs-type">vec4</span>(<span class="hljs-type">vec3</span>(pct), <span class="hljs-number">1.0</span>);
+}</code></pre>
+<p>首先我们要借助一个梯度噪声函数 noise2（参考此教程），对每个像素而言，把像素坐标输入，这个函数则会输出一个灰度值。此函数输出的图像大致如上图 （2.梯度噪声）所示。
+如果你对诸如「噪声函数」的原理感到陌生，其实也没太大关系。你可以在社区找到大量各种各样的开箱即用的功能函数，只需要知道它们的效果是什么，而不必太拘泥于其内部的原理。
+显然，图 2.梯度噪声 和我们设想的还有差距。接下来，我们用一个筛子把亮度大于某个阈值的点筛出来：</p>
+<pre><code class="language-glsl">function initFrag(){
+    ...
+    res = <span class="hljs-built_in">step</span>(<span class="hljs-number">0.5</span>, res);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+<p>这样，用 step 函数直接把大于 0.5 的点筛出来。可是这样做容易产生锯齿，为了使碎片的边缘比较平滑，所以我们用 smoothsStep 函数进行截取。</p>
+<pre><code class="language-glsl">res = <span class="hljs-built_in">smoothstep</span>(<span class="hljs-number">0.35</span>, <span class="hljs-number">0.5</span>, res);</code></pre>
+<p>这样，我们就得到了图 3.拉伸的结果。</p>
+<p>图 3 只是一张灰度图，我们使用这个灰度混合红色和黄色，使之得到一张彩色的图。</p>
+<pre><code class="language-glsl"><span class="hljs-type">vec3</span> bgColor(){
+    <span class="hljs-type">float</span> y = <span class="hljs-built_in">gl_FragCoord</span>.y / uResolution.y;
+    <span class="hljs-type">vec3</span> c1 = <span class="hljs-type">vec3</span>(<span class="hljs-number">0.96</span>, <span class="hljs-number">0.02</span>, <span class="hljs-number">0.16</span>);
+    <span class="hljs-type">vec3</span> c2 = <span class="hljs-type">vec3</span>(<span class="hljs-number">0.96</span>, <span class="hljs-number">0.25</span>, <span class="hljs-number">0.21</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">mix</span>(c1, c2, y);
+}
+
+<span class="hljs-type">void</span> main(){
+    ...
+
+    <span class="hljs-type">vec3</span> cRed = bgColor();
+    <span class="hljs-type">vec3</span> cYello = <span class="hljs-type">vec3</span>(<span class="hljs-number">0.96</span>, <span class="hljs-number">0.70</span>, <span class="hljs-number">0.26</span>);
+
+    <span class="hljs-built_in">gl_FragColor</span> = <span class="hljs-type">vec4</span>(<span class="hljs-built_in">mix</span>(cRed, cYello, pct), <span class="hljs-number">1.0</span>);
+}</code></pre>
+<p>这里 bgColor 方法返回红色，由于红色背景仍然是有一点垂直渐变色效果的，所以这里也要额外用两种不同的红色进行混合（混合系数和像素坐标的 Y 值相关），处理成渐变色。</p>
+<p>此时我们的结果和原图的意图还有些不同：</p>
+<ul>
+<li>原图中，页面下半部分的碎片比较透明度，越往页面下方，碎片就越透明（融入了红色背景）。</li>
+<li>原图中，中间圈圈部分（即红色窗格占据的部分）没有碎片。</li>
+<li>原图中，碎片的分布没有这么均匀，常有一小块区域完全没有碎片的情况，似乎有一种尺寸更大的随机变量在影响。</li>
+</ul>
+<p>从以上三点出发，我们制作了 3 个通道，并依次叠加（如图 5，图 6，图 7）所示，最终得到如 图 7 所示。将叠加后的结果与图 3 进行叠加，也就是说，图 3 中被筛出的点，如果在图 7 中是较暗的，则也会被降低亮度。再使用这一步的结果进行混色，最终得到图 8 的效果。</p>
+<pre><code class="language-glsl"><span class="hljs-type">void</span> main() {
+
+    <span class="hljs-type">float</span> pct = inFrag();
+    pct = <span class="hljs-built_in">min</span>(pct, yFactor());
+    pct = <span class="hljs-built_in">min</span>(pct, rFactor());
+    pct = <span class="hljs-built_in">min</span>(pct, mFactor());
+
+    ...
+}</code></pre>
+<p>下面，我们来使碎片动起来（洒下来）。在生成碎片的时候，传入噪音函数的坐标数据中，加上和时间有关的偏移量：</p>
+<pre><code class="language-glsl"><span class="hljs-type">float</span> inFrag(){
+    <span class="hljs-type">vec2</span> st = <span class="hljs-built_in">gl_FragCoord</span>.xy / uResolution.xx;
+    st = st * <span class="hljs-number">60.0</span>;
+    st.y += uTime * <span class="hljs-number">2.0</span>;  <span class="hljs-comment">// 增加与时间相关的偏移量</span>
+    <span class="hljs-type">float</span> res = <span class="hljs-built_in">noise2</span>(<span class="hljs-built_in">floor</span>(st), <span class="hljs-built_in">fract</span>(st));
+    res = <span class="hljs-built_in">smoothstep</span>(<span class="hljs-number">0.35</span>, <span class="hljs-number">0.5</span>, res);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+<p>最后，为了更出色的效果，我这里做了两个碎层碎片，两层碎片具有不同的下落速度，形成一些视差效果。</p>
+<pre><code class="language-glsl"><span class="hljs-type">void</span> main() {
+
+    <span class="hljs-type">float</span> pct = inFrag();
+    pct = <span class="hljs-built_in">min</span>(pct, yFactor());
+    pct = <span class="hljs-built_in">min</span>(pct, rFactor());
+    pct = <span class="hljs-built_in">min</span>(pct, mFactor());
+
+    <span class="hljs-type">float</span> pct2 = inFrag2();
+    pct2 = <span class="hljs-built_in">min</span>(pct2, yFactor());
+    pct2 = <span class="hljs-built_in">min</span>(pct2, rFactor());
+    pct2 = <span class="hljs-built_in">min</span>(pct2, mFactor());
+
+    pct = <span class="hljs-built_in">max</span>(pct, pct2);
+
+    ...
+}</code></pre>
+<p>这样，就在完全不依赖外部资源的情况下，仅用 Shader 直接绘制，制作出了氛围碎片的效果。</p>
+<h1 id="手绘图案">手绘图案</h1>
+<p>原页面中有一个圆形的窗格，这个窗格也是画在一张透明图片上。不知读者是否注意到，在复刻后的页面中，这个窗格是用 shader 直接画出来的。</p>
+<p><img src="https://img.alicdn.com/tfs/TB10Tp.qntYBeNjy1XdXXXXyVXa-400-363.jpg" alt=""></p>
+<p>实际上，这种复杂程度的窗格，也可以归为图案（pattern）一类，shader 是完全可以直接画出来的。下面，我们就来看看用 shader 如何来画窗格。
+窗格是由线组成的，其基本单元是线。首先我们看一下是如何画线的：</p>
+<pre><code class="language-glsl"><span class="hljs-comment">// 绘制线的函数 veins</span>
+<span class="hljs-type">float</span> line(<span class="hljs-type">float</span> e, <span class="hljs-type">float</span> w, <span class="hljs-type">float</span> d, <span class="hljs-type">float</span> p){
+    <span class="hljs-type">float</span> e1 = e - w/<span class="hljs-number">2.0</span>;
+    <span class="hljs-type">float</span> e2 = e + w/<span class="hljs-number">2.0</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">smoothstep</span>(e1 - d / <span class="hljs-number">2.0</span>, e1 + d / <span class="hljs-number">2.0</span>, p) * 
+            <span class="hljs-built_in">smoothstep</span>(e2 + d / <span class="hljs-number">2.0</span>, e2 - d / <span class="hljs-number">2.0</span>, p);
+}
+
+<span class="hljs-comment">// 绘制网格</span>
+<span class="hljs-type">vec3</span> veins(){
+    <span class="hljs-type">float</span> r = uResolution.x * <span class="hljs-number">0.4</span>;
+    <span class="hljs-type">vec2</span> center = <span class="hljs-type">vec2</span>(uResolution.x/<span class="hljs-number">2.0</span>, uResolution.y-r<span class="hljs-number">-5.0</span>);
+    <span class="hljs-type">vec2</span> st = <span class="hljs-built_in">gl_FragCoord</span>.xy - center;
+    st /= uResolution.x * <span class="hljs-number">0.5</span>;
+
+    <span class="hljs-type">float</span> p = line(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.3</span>, <span class="hljs-number">0.2</span>, st.x);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">mix</span>(veinsBgColor, veinsFgColor, p);
+}
+
+<span class="hljs-comment">// 主函数</span>
+<span class="hljs-type">void</span> main(){
+    <span class="hljs-type">vec3</span> res = veins();
+
+    <span class="hljs-built_in">gl_FragColor</span> = <span class="hljs-type">vec4</span>(<span class="hljs-type">vec3</span>(res), <span class="hljs-number">1.0</span>);
+}</code></pre>
+<p>main 函数调用 veins 函数，veins 又调用 line 函数得到一个灰度值，然后混合两种颜色。上述程序的结果如下图所示。</p>
+<p><img src="https://img.alicdn.com/tfs/TB1ctq.p3mTBuNjy1XbXXaMrVXa-400-430.jpg" alt=""></p>
+<p>解释一下几个参数：p 是当前像素的 x 或 y 坐标值（取决于横线还是竖线，如果是横线为 y 坐标值，如果为竖线为 x 坐标值），e 则是所绘制的直线所在的坐标。w 指线的宽度，而 d 指在线与非线的交界处，用来平滑的区域的宽度。</p>
+<blockquote>
+<p>在上面的代码中，w 取了 0.3，而 d 取了 0.2，线看上去很粗。后面，我们会把这两个值固定在 0.035 和 0.003 上。</p>
+</blockquote>
+<p>由于窗格图案中包含多跟线，我们需要多次调用 line 函数，并得到一个一个灰度值。如果当前像素在「任意一个」 line 函数中返回了大于 0 的灰度值，我们就认为这个像素是在图案上的。换言之，我们取多次 line 函数返回的灰度值中最大的那个值，作为最后的灰度值来计算颜色。代码如下所示：</p>
+<pre><code class="language-glsl"><span class="hljs-type">float</span> maxList(<span class="hljs-type">float</span> list[<span class="hljs-number">20</span>]){
+    <span class="hljs-type">float</span> res = list[<span class="hljs-number">0</span>];
+    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">20</span>; i++){
+        <span class="hljs-keyword">if</span>(list[i]&gt;res){
+            res = list[i];
+        }
+    }
+    <span class="hljs-keyword">return</span> res;
+}
+
+<span class="hljs-type">vec3</span> veins(){
+    ...
+
+    <span class="hljs-type">float</span> p = <span class="hljs-number">0.0</span>;
+    <span class="hljs-type">float</span> pl[<span class="hljs-number">20</span>];
+    pl[<span class="hljs-number">0</span>] = line(<span class="hljs-number">0.29</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.x);
+    pl[<span class="hljs-number">1</span>] = line(<span class="hljs-number">0.58</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.x);
+    ...
+    pl[<span class="hljs-number">7</span>] = line(<span class="hljs-number">-0.58</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.y);
+
+    p = maxList(pl);
+
+    ...
+}</code></pre>
+<p>我们计算了 8 根直线，得到的结果如下图 2 所示。</p>
+<p><img src="https://img.alicdn.com/tfs/TB1ltq.p3mTBuNjy1XbXXaMrVXa-700-1105.jpg" alt=""></p>
+<p>拆解图案，我们发现光有直线还不能满足要求，还需要有射线和矩形框。同样，我们引入射线 ray 和矩形框 box 函数。</p>
+<pre><code class="language-glsl"><span class="hljs-type">float</span> rayV(<span class="hljs-type">vec2</span> ep, <span class="hljs-type">float</span> w, <span class="hljs-type">float</span> d,  <span class="hljs-type">float</span> dir, <span class="hljs-type">vec2</span> st){
+    <span class="hljs-type">float</span> pct = line(ep.x, w, d, st.x);
+    <span class="hljs-keyword">if</span>((st.y - ep.y) * dir &lt; <span class="hljs-number">0.0</span>){
+        pct = <span class="hljs-number">0.0</span>;
+    }
+    <span class="hljs-keyword">return</span> pct;
+}
+
+<span class="hljs-type">float</span> rayH(<span class="hljs-type">vec2</span> ep, <span class="hljs-type">float</span> w, <span class="hljs-type">float</span> d,  <span class="hljs-type">float</span> dir, <span class="hljs-type">vec2</span> st){
+    <span class="hljs-type">float</span> pct = line(ep.y, w, d, st.y);
+    <span class="hljs-keyword">if</span>((st.x - ep.x)* dir &lt; <span class="hljs-number">0.0</span>){
+        pct = <span class="hljs-number">0.0</span>;
+    }
+    <span class="hljs-keyword">return</span> pct;
+}
+
+<span class="hljs-type">float</span> box(<span class="hljs-type">vec2</span> center, <span class="hljs-type">float</span> width, <span class="hljs-type">float</span> height, <span class="hljs-type">float</span> w, <span class="hljs-type">float</span> d, <span class="hljs-type">vec2</span> st){
+
+    <span class="hljs-type">float</span> l1 = line(center.x, width+w, d, st.x);
+    <span class="hljs-type">float</span> l2 = line(center.y, height+w, d, st.y);
+
+    <span class="hljs-type">float</span> inBox = l1*l2;
+    <span class="hljs-type">float</span> plist[<span class="hljs-number">20</span>];
+
+    plist[<span class="hljs-number">0</span>] = line(center.x+width*<span class="hljs-number">0.5</span>, w, d, st.x);
+    plist[<span class="hljs-number">1</span>] = line(center.x-width*<span class="hljs-number">0.5</span>, w, d, st.x);
+    plist[<span class="hljs-number">2</span>] = line(center.y+height*<span class="hljs-number">0.5</span>, w, d, st.y);
+    plist[<span class="hljs-number">3</span>] = line(center.y-height*<span class="hljs-number">0.5</span>, w, d, st.y);
+
+    <span class="hljs-type">float</span> p = maxList(plist);
+    p *= inBox;
+    <span class="hljs-keyword">return</span> p;
+}</code></pre>
+<p>然后依次向图案中增加内容，得到图 4，图 6 的效果。通过最终的叠加，得到了图 7 的效果。代码如下（不要被密密麻麻的浮点数吓住了，其实都是一些固定的坐标而已，有意义的值只有几个，通过正负号进行组合形成图案）：</p>
+<pre><code class="language-glsl">    <span class="hljs-type">float</span> p = <span class="hljs-number">0.0</span>;
+    <span class="hljs-type">float</span> pl[<span class="hljs-number">20</span>];
+    pl[<span class="hljs-number">0</span>] = line(<span class="hljs-number">0.29</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.x);
+    pl[<span class="hljs-number">1</span>] = line(<span class="hljs-number">0.58</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.x);
+    pl[<span class="hljs-number">2</span>] = line(<span class="hljs-number">-0.29</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.x);
+    pl[<span class="hljs-number">3</span>] = line(<span class="hljs-number">-0.58</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.x);
+    pl[<span class="hljs-number">4</span>] = line(<span class="hljs-number">0.29</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.y);
+    pl[<span class="hljs-number">5</span>] = line(<span class="hljs-number">0.58</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.y);
+    pl[<span class="hljs-number">6</span>] = line(<span class="hljs-number">-0.29</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.y);
+    pl[<span class="hljs-number">7</span>] = line(<span class="hljs-number">-0.58</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st.y);
+
+    pl[<span class="hljs-number">8</span>] = rayV(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.29</span>), <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, <span class="hljs-number">1.0</span>, st);
+    pl[<span class="hljs-number">9</span>] = rayV(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">-0.29</span>), <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, <span class="hljs-number">-1.0</span>, st);
+    pl[<span class="hljs-number">10</span>] = rayH(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.29</span>, <span class="hljs-number">0.0</span>), <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, <span class="hljs-number">1.0</span>, st);
+    pl[<span class="hljs-number">11</span>] = rayH(<span class="hljs-type">vec2</span>(<span class="hljs-number">-0.29</span>, <span class="hljs-number">0.0</span>), <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, <span class="hljs-number">-1.0</span>, st);
+
+    p = maxList(pl);
+
+    <span class="hljs-type">float</span> pl2[<span class="hljs-number">20</span>];
+
+    pl2[<span class="hljs-number">0</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+
+    pl2[<span class="hljs-number">1</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.29</span>, <span class="hljs-number">0.29</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">2</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">-0.29</span>, <span class="hljs-number">0.29</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">3</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">-0.29</span>, <span class="hljs-number">-0.29</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">4</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.29</span>, <span class="hljs-number">-0.29</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+
+    pl2[<span class="hljs-number">5</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.58</span>, <span class="hljs-number">0.0</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">6</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">-0.58</span>, <span class="hljs-number">0.0</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">7</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">0.58</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">8</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.0</span>, <span class="hljs-number">-0.58</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+
+    pl2[<span class="hljs-number">9</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.58</span>, <span class="hljs-number">0.58</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">10</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">-0.58</span>, <span class="hljs-number">0.58</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">11</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">-0.58</span>, <span class="hljs-number">-0.58</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+    pl2[<span class="hljs-number">12</span>] = box(<span class="hljs-type">vec2</span>(<span class="hljs-number">0.58</span>, <span class="hljs-number">-0.58</span>), <span class="hljs-number">0.39</span>, <span class="hljs-number">0.39</span>, <span class="hljs-number">0.035</span>, <span class="hljs-number">0.003</span>, st);
+
+    p = <span class="hljs-built_in">max</span>(p, maxList(pl2));</code></pre>
+<p>得到图 7 的图案后，我们还需要为其蒙上一层阴影（可对比原图），这样后面裁切的时候会有一些立体感。</p>
+<pre><code class="language-glsl"><span class="hljs-type">float</span> shadow(){
+    <span class="hljs-type">float</span> r = uResolution.x * <span class="hljs-number">0.4</span>;
+    <span class="hljs-type">vec2</span> center = <span class="hljs-type">vec2</span>(uResolution.x/<span class="hljs-number">2.0</span>, uResolution.y-r<span class="hljs-number">-5.0</span>);
+    <span class="hljs-type">vec2</span> st = <span class="hljs-built_in">gl_FragCoord</span>.xy - center;
+    st /= uResolution.x * <span class="hljs-number">0.5</span>;
+
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">smoothstep</span>(<span class="hljs-number">0.9</span>, <span class="hljs-number">0.3</span>, st.y+<span class="hljs-number">0.5</span>*st.x*st.x<span class="hljs-number">-0.1</span>);
+}
+
+<span class="hljs-type">vec3</span> veins(){
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">mix</span>(veinsBgColor, veinsFgColor, p)*shadow();
+}</code></pre>
+<p>这里为了方便，使用了一个开口朝下，中轴和 y 轴重合的抛物线（st.y + 0.5<em>st.x</em>st.x - 0.1）来模拟圆形的阴影。这样我们就得到了图 8。</p>
+<p>最后，原设计稿中红色边框和透明背景的效果，对整个图像进行了两次裁切。裁切掉的部分，分别用红色和透明色来填充。依次得到图 9 和 图 10 的结果。图 10 也就是最终的结果。</p>
+<pre><code class="language-glsl"><span class="hljs-type">vec3</span> circle(<span class="hljs-type">vec3</span> veinsColor){
+
+    <span class="hljs-type">float</span> r = uResolution.x * <span class="hljs-number">0.4</span>;    
+    <span class="hljs-type">vec2</span> center = <span class="hljs-type">vec2</span>(uResolution.x/<span class="hljs-number">2.0</span>, uResolution.y-r<span class="hljs-number">-5.0</span>);
+
+    <span class="hljs-type">vec2</span> dxy = <span class="hljs-built_in">gl_FragCoord</span>.xy - center;
+    <span class="hljs-type">float</span> dist = <span class="hljs-built_in">sqrt</span>(dxy.x*dxy.x+dxy.y*dxy.y);
+
+    <span class="hljs-type">float</span> p = dist/r;
+    p = <span class="hljs-built_in">smoothstep</span>(<span class="hljs-number">0.95</span>, <span class="hljs-number">0.96</span>, p);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">mix</span>(veinsColor, borderColor, p);
+}
+
+<span class="hljs-type">vec4</span> clip(<span class="hljs-type">vec3</span> color){
+    <span class="hljs-type">float</span> r = uResolution.x * <span class="hljs-number">0.4</span>;    
+    <span class="hljs-type">vec2</span> center = <span class="hljs-type">vec2</span>(uResolution.x/<span class="hljs-number">2.0</span>, uResolution.y-r<span class="hljs-number">-5.0</span>);
+
+    <span class="hljs-type">vec2</span> dxy = <span class="hljs-built_in">gl_FragCoord</span>.xy - center;
+    <span class="hljs-type">float</span> dist = <span class="hljs-built_in">sqrt</span>(dxy.x*dxy.x+dxy.y*dxy.y);
+
+    <span class="hljs-type">float</span> p = <span class="hljs-built_in">smoothstep</span>(<span class="hljs-number">1.0</span>, <span class="hljs-number">1.02</span>, dist/r);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-type">vec4</span>(color, <span class="hljs-number">1.0</span>-p);
+}
+
+
+<span class="hljs-type">void</span> main(){
+    <span class="hljs-type">vec3</span> res = veins();
+    res = circle(res);
+
+    <span class="hljs-built_in">gl_FragColor</span> = clip(res);
+}</code></pre>
+<h1 id="结语">结语</h1>
+<p>通过上面三个例子，可以看到，合理地使用 webgl 可以对页面进行精雕细琢的优化，可以减少对图片的依赖，避免使用大尺寸的透明图层，可以做一些全局性/背景性的动画效果。由于 webgl 是给了开发者「逐个像素」进行着色的能力，开发者可以非常灵活地使用 shader 来做事情。所以说，灵活地使用 shader ，可以帮助你把页面变得更小，更炫，更快。</p>
+<p>其实复刻后的页面里还有一些其他用 shader 完成的小玩意儿，比如底部 loading bar 的动态颜色渐变，以及中部文字「魅族手机祝你新春快乐」上掠过的高光，因为点比较小，用到的技术也比较简单，就不再详细介绍了。</p>
+<p>（完）</p>
+</div>
+        </div>
+      </div>
+    </div>
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/tomorrow.min.css">
+  </body>
+</html>
