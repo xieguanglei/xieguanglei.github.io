@@ -62,7 +62,6 @@ body{
   margin-top: 10px;
 }
 
-
 #main{
   margin-left: 75px;
 }
@@ -88,6 +87,10 @@ body{
 #posts .post .title a{
   text-decoration: none;
   font-weight: normal;
+}
+
+#post strong{
+  font-weight: bolder;
 }
 
 #post .date{

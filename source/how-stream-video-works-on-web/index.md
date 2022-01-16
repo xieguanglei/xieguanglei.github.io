@@ -396,8 +396,6 @@ YouTube，Netflix 和 Amazon Prime Video 使用此协议。基本格式为 XML�
 
 ### Smooth Streaming
 
-Developed by Microsoft, used by multiple Microsoft products and MyCanal. In Smooth Streaming, manifests are called… Manifests and are XML-based.
-
 由 Microsoft 开发，多个 Microsoft 产品和 MyCanal 使用此协议。基于 XML。
 
 ## 真实世界
