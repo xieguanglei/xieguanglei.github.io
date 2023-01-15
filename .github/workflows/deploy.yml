@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -16,7 +17,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm install amberpine
       - run: cat node_modules/amberpine/package.json
-      - run: npx abp
+      - run: ./node_modules/.bin/abp
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
