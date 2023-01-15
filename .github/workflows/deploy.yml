@@ -17,7 +17,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm install amberpine
       - run: cat node_modules/amberpine/package.json
-      - run: ./node_modules/.bin/abp
+      - run: node --experimental-specifier-resolution=node ./node_modules/.bin/abp
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
