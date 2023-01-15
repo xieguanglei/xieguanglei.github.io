@@ -1,8 +1,9 @@
 name: deploy
 
-on:
-  release:
-    types: [created]
+on: 
+  push:
+    branches:
+      - source
 
 jobs:
   deploy:
