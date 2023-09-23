@@ -281,7 +281,7 @@ double intersect(const Ray &r) const { // returns distance, 0 if nohit
 计算出根 $t$。
 
 1. 一元二次方程可能没有实根的，此时射线与球体不相交。这对应着代码中 `det<0` 的情况，直接返回 0。
-2. 一元二次方程可能有两个实根，此时射线（所在的直线）与球体有两个交点。我们需要取的是**最小的正根**。如果另一个根 $t'$（对应交点为 $X'$）大于 $t$，表明是左图的情况；如果 $t'$ 小于等于 0，表明是右图的情况，这条光线是在介质内的折射光线。
+2. 一元二次方程可能有两个实根，此时射线（所在的直线）与球体有两个交点。我们需要取的是**最小的正根**。如果另一个根 $t^{\prime}$（对应交点为 $X^{\prime}$）大于 $t$，表明是左图的情况；如果 $t^{\prime}$ 小于等于 0，表明是右图的情况，这条光线是在介质内的折射光线。
 
 ### 使用球体表示场景
 
@@ -530,13 +530,13 @@ if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
 
 首先需要考虑的是全反射现象，即光线从光密介质（玻璃）向光疏介质（空气）传播时（上图右半部分），$\theta_1$ 大于临界角（使得 $\theta_2$ 为 90° 的 $\theta_1$），以至于不存在 $\theta_2$ 满足上述折射定理时，所有光都被反射的现象，即：
 
-\begin{equation}\sin \theta_1 > \frac{n_2}{n_1} \sin(90°)\end{equation}
+\begin{equation}\sin \theta_1 \gt \frac{n_2}{n_1} \sin(90°)\end{equation}
 
 两边平方并作简单变换，得到：
 
-\begin{equation}(\frac{n_2}{n_1})^2-\cos^2 \theta_1+1<0\end{equation}
+\begin{equation}(\frac{n_2}{n_1})^2-\cos^2 \theta_1 +1 \lt 0\end{equation}
 
-由于 `nnt` 为 $\frac{n_1}{n_2}$，而 `ddn` 为 $-\cos \theta_1$，代入上式，得到全反射的条件即是 `1-nnt*nnt*(1-ddn*ddn))<0`。满足全反射条件时，镜面反射的方式进行处理。
+由于 `nnt` 为 $\frac{n_1}{n_2}$，而 `ddn` 为 $ -\cos \theta_1$，代入上式，得到全反射的条件即是 `1-nnt*nnt*(1-ddn*ddn))<0`。满足全反射条件时，镜面反射的方式进行处理。
 
 ```c
 Ray reflRay(x, r.d-n*2*n.dot(r.d));     // Ideal dielectric REFRACTION
@@ -552,7 +552,7 @@ if ((cos2t=1-nnt*nnt*(1-ddn*ddn))<0)    // Total internal reflection
 * `into`：由空气（试图）进入玻璃则为 `true`，由玻璃（试图）进入空气则为 `false`。
 * `nc` 和 `nt`：空气和玻璃的折射率。
 * `nnt` 为折射率比值，当追踪的射线是从空气进入玻璃时，`nnt` 为 `1.0/1.5`，当射线是从玻璃进入空气时，`nnt` 为 `1.5`。
-* `ddn`：即 $-\cos \theta_1$ 的值，由 $D$ 和 $N$ 点乘而来。
+* `ddn`：即 $ -\cos \theta_1$ 的值，由 $D$ 和 $N$ 点乘而来。
 
 #### 正常折射
 
