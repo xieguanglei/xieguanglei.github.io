@@ -16,11 +16,11 @@
 
 「变换」的含义就是，将点的初始位置的坐标P映射到平移、旋转、缩放后的位置坐标P’，即：
 
-\begin{equation}\begin{bmatrix}x\newline y\newline z\end{bmatrix}\rightarrow\begin{bmatrix}{x}'\newline {y}'\newline {z}'\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x\newline y\newline z\end{bmatrix}\rightarrow\begin{bmatrix}x^{\prime}\newline y^{\prime}\newline z^{\prime}\end{bmatrix}\end{equation}
 
 平移变换是最简单的变换：
 
-\begin{equation}\begin{bmatrix}x'\newline y'\newline z'\end{bmatrix}=\begin{bmatrix}x\newline y\newline z\end{bmatrix}+\begin{bmatrix}t_x\newline t_y\newline t_z\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline y^{\prime}\newline z^{\prime}\end{bmatrix}=\begin{bmatrix}x\newline y\newline z\end{bmatrix}+\begin{bmatrix}t_x\newline t_y\newline t_z\end{bmatrix}\end{equation}
 
 旋转变换有一些复杂，先看在二维平面上的旋转变换：
 
@@ -28,39 +28,39 @@
 
 很容易得到：
 
-\begin{equation}\begin{matrix}x'=x\cos\theta-y\sin\theta\newline y'=x\sin\theta+y\sin\theta\end{matrix}\end{equation}
+\begin{equation}\begin{matrix}x^{\prime}=x\cos\theta-y\sin\theta\newline y^{\prime}=x\sin\theta+y\sin\theta\end{matrix}\end{equation}
 
 矩阵形式的表达更加简洁：
 
-\begin{equation}\begin{bmatrix}x'\newline y'\end{bmatrix}=\begin{bmatrix}\cos\theta & -\sin\theta\newline \sin\theta & \cos\theta\end{bmatrix}\begin{bmatrix}x\newline y\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline y^{\prime}\end{bmatrix}=\begin{bmatrix}\cos\theta & -\sin\theta\newline \sin\theta & \cos\theta\end{bmatrix}\begin{bmatrix}x\newline y\end{bmatrix}\end{equation}
 
 推广到三维空间中： 
 
 点绕Z轴旋转：
 
-\begin{equation}\begin{bmatrix}x'\newline  y'\newline  z'\end{bmatrix}=\begin{bmatrix}\cos\theta & -\sin\theta & 0\newline  \sin\theta & \cos\theta & 0\newline  0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline  y^{\prime}\newline  z^{\prime}\end{bmatrix}=\begin{bmatrix}\cos\theta & -\sin\theta & 0\newline  \sin\theta & \cos\theta & 0\newline  0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\end{bmatrix}\end{equation}
 
 点绕X轴旋转：
 
-\begin{equation}\begin{bmatrix}x'\newline  y'\newline  z'\end{bmatrix}=\begin{bmatrix}1 & 0 & 0\newline  0 & \cos\theta & -\sin\theta\newline  0 & \sin\theta & \cos\theta\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline  y^{\prime}\newline  z^{\prime}\end{bmatrix}=\begin{bmatrix}1 & 0 & 0\newline  0 & \cos\theta & -\sin\theta\newline  0 & \sin\theta & \cos\theta\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\end{bmatrix}\end{equation}
 
 点绕Y轴旋转：
 
-\begin{equation}\begin{bmatrix}x'\newline  y'\newline  z'\end{bmatrix}=\begin{bmatrix}\cos\theta & 0 & -\sin\theta\newline  0 & 1 & 0\newline  \sin\theta & 0 & \cos\theta\end{bmatrix}\begin{bmatrix}x\newline y\newline z\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline  y^{\prime}\newline  z^{\prime}\end{bmatrix}=\begin{bmatrix}\cos\theta & 0 & -\sin\theta\newline  0 & 1 & 0\newline  \sin\theta & 0 & \cos\theta\end{bmatrix}\begin{bmatrix}x\newline y\newline z\end{bmatrix}\end{equation}
 
 绕指定的任意轴旋转变换是由几个绕坐标轴旋转变换和平移变换效果叠加而成。
 
 缩放变换也比较简单：
 
-\begin{equation}\begin{bmatrix} x' \newline  y' \newline z' \end{bmatrix} = \begin{bmatrix} s_x & 0 & 0 \newline 0 & s_y & 0 \newline 0 & 0 & s_z \end{bmatrix} \begin{bmatrix} x \newline  y \newline  z \end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix} x^{\prime} \newline  y^{\prime} \newline z^{\prime} \end{bmatrix} = \begin{bmatrix} s_x & 0 & 0 \newline 0 & s_y & 0 \newline 0 & 0 & s_z \end{bmatrix} \begin{bmatrix} x \newline  y \newline  z \end{bmatrix}\end{equation}
 
 总结一下：平移变换，变换后点坐标等于初始位置点坐标加上一个平移向量；而旋转变换和缩放变换，变换后点坐标等于初始位置点坐标乘以一个变换矩阵。
 
-\begin{equation}P'=P+T\end{equation}
+\begin{equation}P^{\prime}=P+T\end{equation}
 
-\begin{equation}P'=R\cdot P\end{equation}
+\begin{equation}P^{\prime}=R\cdot P\end{equation}
 
-\begin{equation}P'=S\cdot P\end{equation}
+\begin{equation}P^{\prime}=S\cdot P\end{equation}
 
 **齐次坐标**这天才的发明，允许平移变换也表示成初始位置点坐标左乘一个变换矩阵的形式。齐次坐标使用4个分量来表示三维空间中的点，前三个分量和普通坐标一样，第四个分量为1。
 
@@ -68,17 +68,17 @@
 
 平移变换巧妙地表示为：
 
-\begin{equation}\begin{bmatrix}x'\newline  y'\newline  z'\newline  1\end{bmatrix}=\begin{bmatrix}1 & 0 & 0 & t_x\newline 0 & 1 & 0 & t_y\newline  0 & 0 & 1 & t_z\newline  0 & 0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\newline  1\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline  y^{\prime}\newline  z^{\prime}\newline  1\end{bmatrix}=\begin{bmatrix}1 & 0 & 0 & t_x\newline 0 & 1 & 0 & t_y\newline  0 & 0 & 1 & t_z\newline  0 & 0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\newline  1\end{bmatrix}\end{equation}
 
 旋转变换（以绕z轴旋转为例）和缩放变换相应为：
 
-\begin{equation}\begin{bmatrix}x'\newline  y'\newline  z'\newline  1\end{bmatrix}=\begin{bmatrix}\cos\theta & -\sin\theta & 0 & 0\newline  \sin\theta & \cos\theta & 0 & 0\newline  0 & 0 & 1 & 0\newline  0 & 0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\newline  1\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline  y^{\prime}\newline  z^{\prime}\newline  1\end{bmatrix}=\begin{bmatrix}\cos\theta & -\sin\theta & 0 & 0\newline  \sin\theta & \cos\theta & 0 & 0\newline  0 & 0 & 1 & 0\newline  0 & 0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\newline  1\end{bmatrix}\end{equation}
 
-\begin{equation}\begin{bmatrix}x'\newline  y'\newline  z'\newline  1\end{bmatrix}=\begin{bmatrix}s_x & 0 & 0 & 0\newline  0 & s_y & 0 & \newline  0 & 0 & s_z & 0\newline  0 & 0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\newline  1\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x^{\prime}\newline  y^{\prime}\newline  z^{\prime}\newline  1\end{bmatrix}=\begin{bmatrix}s_x & 0 & 0 & 0\newline  0 & s_y & 0 & \newline  0 & 0 & s_z & 0\newline  0 & 0 & 0 & 1\end{bmatrix}\begin{bmatrix}x\newline  y\newline  z\newline  1\end{bmatrix}\end{equation}
 
 综上，在齐次坐标下三种基本变换实现了形式上的统一，这种形式的统一意义重大。
 
-\begin{equation}P'=T\cdot P, P'=R\cdot P, P'=S\cdot P\end{equation}
+\begin{equation}P^{\prime}=T\cdot P, P^{\prime}=R\cdot P, P^{\prime}=S\cdot P\end{equation}
 
 矩阵有一个性质：
 
@@ -143,7 +143,7 @@
 
 投影矩阵将视图坐标系中的顶点转化到平面上。
 
-\begin{equation}\begin{bmatrix}x\newline y\newline z\newline 1\end{bmatrix}\rightarrow \begin{bmatrix}x'\newline y'\end{bmatrix}\end{equation}
+\begin{equation}\begin{bmatrix}x\newline y\newline z\newline 1\end{bmatrix}\rightarrow \begin{bmatrix}x^{\prime}\newline y^{\prime}\end{bmatrix}\end{equation}
 
 实际上，投影矩阵先把顶点坐标转化到规范立方体坐标系(Xc-Yc-Zc)中，也就是将四棱锥台体空间映射到规范立方体中。规范立方体是x，y，z都处在区间[-1,1]之间的边长为2的立方体，如下所示。顶点在其中的坐标，其x值和y值直接就是顶点在屏幕上的坐标，而z坐标值可以用来表示顶点深度，如果两个不同顶点投影到平面上时重合了，深度可以来确定那个点在前面。
 
