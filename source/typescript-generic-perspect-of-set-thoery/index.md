@@ -56,11 +56,14 @@ type Length<T extends unknown[]> = T['length'];
 
 type Head<T extends unknown[]> = T extends [] ? never : T[0];
 
-type Tail<T extends unknown[]> = T extends [] ? never : T extends [unknown, ...infer R] ? R : T;
+type Tail<T extends unknown[]> = T extends [] ? 
+  never : T extends [unknown, ...infer R] ? R : T;
 
-type CurriedV1<P extends unknown[], R> = P extends [] ? R : (arg: Head<P>) => CurriedV1<Tail<P>, R>;
+type CurriedV1<P extends unknown[], R> = P extends [] ? 
+  R : (arg: Head<P>) => CurriedV1<Tail<P>, R>;
 
-type Curry = <P extends unknown[], R>(fn: (...args: P) => R) => CurriedV1<P, R>;
+type Curry = <P extends unknown[], R>(fn: (...args: P) => R) 
+  => CurriedV1<P, R>;
 
 declare const curry: Curry;
 declare const toCurry: (a1: 1, a2: 2, a3: 3, a4: 4) => 0;
@@ -151,7 +154,8 @@ type Head_Test4 = Head<[]>;             // => never
 第三条泛型 `Tail` 提取元组 `T` 的**尾项**（即除去第一项后剩余的那些项）的类型。
 
 ```typescript
-type Tail<T extends unknown[]> = T extends [] ? never : T extends [unknown, ...infer R] ? R : T;
+type Tail<T extends unknown[]> = T extends [] ?
+  never : T extends [unknown, ...infer R] ? R : T;
 ```
 
 有点复杂。
@@ -181,7 +185,8 @@ type SimpleTail_Test3 = SimpleTail<string[]>;              // => never
 再来看正式版本的 `Tail`：
 
 ```typescript
-type Tail<T extends unknown[]> = T extends [] ? never : T extends [unknown, ...infer R] ? R : T;
+type Tail<T extends unknown[]> = T extends [] ?
+  never : T extends [unknown, ...infer R] ? R : T;
 ```
 
 1. 分支 1：如果 `T` 是空数组单元素集的子集，我们可以断定：`T` 只能是空数组单元素集或 `never`，此时返回 `never`；
@@ -218,7 +223,8 @@ type Tail_Test5 = Tail<[] | string[] | [1, 2, 3]>;          // string[] | [2, 3]
 `Tail` 没有令我们失望，它正确地返回了预期的类型。但这是有条件的，泛型中的分支条件必须满足**分发条件类型**的约束：即条件必须是泛型参数**直接** `extends` 某个类型（形如 `T extends SOMETYPE`），如果我们把 `Tail` 实现中的第一个条件 `T extends []` 换成 `Length<T> extends 0`，分发条件类型的约束失效，命题「`T` 只可能是这 4 种写法之一」不复存在，—— 大厦由此坍塌。
 
 ```typescript
-type BrokenTail<T extends unknown[]> = Length<T> extends 0 ? never : T extends [unknown, ...infer R] ? R : T;
+type BrokenTail<T extends unknown[]> = Length<T> extends 0 ?
+  never : T extends [unknown, ...infer R] ? R : T;
 
 type BrokenTail_Test6 = BrokenTail<[] | [1, 3] | string[]>;  // => [] | [3] | string[]
 ```
@@ -252,7 +258,8 @@ type Curry = <P extends unknown[], R>(toCurry: (...args: P) => R) => Curried<P, 
 `CurriedV1` 是 `Curried` 泛型的第一版实现，它支持最简单的柯里化（每次只消费一个参数）。
 
 ```typescript
-type CurriedV1<P extends unknown[], R> = P extends [] ? R : (arg: Head<P>) => CurriedV1<Tail<P>, R>;
+type CurriedV1<P extends unknown[], R> = P extends [] ?
+  R : (arg: Head<P>) => CurriedV1<Tail<P>, R>;
 ```
 
 泛型是可以递归调用的，`CurriedV1` 就是这样，当它每次递归地调用自己，元组 `P` 的规模就减一，直到其变为空数组，结束递归。
@@ -325,9 +332,11 @@ type Prepend_Test3 = Prepend<1 | 2, 3[]>;               // ==> [1 | 2, ...3[]]
 注意，`Prepend` 不是条件类型，自然不满足分发条件类型，所以 `Prepend_Test3` 是 `[1 | 2, ...3[]]` 而不是 `[1, ...3[]] | [2, ...3[]]`。如果你想要得到后者，可以将 `Prepend` 的实现放在条件类型内，如下所示：
 
 ```typescript
-type DistributedPrepend<E extends unknown, T extends> = E extends unknown ? [E, ...T] : never;
+type DistributedPrepend<E extends unknown, T extends> = E extends unknown ?
+  [E, ...T] : never;
 
-type DistributedPrepend_Test1 = DistributedPrepend<1 | 2, 3[]>;    // ==> [1, ...3[]] | [2, ...3[]]
+type DistributedPrepend_Test1 =
+  DistributedPrepend<1 | 2, 3[]>;    // ==> [1, ...3[]] | [2, ...3[]]
 ```
 
 > 本文后续讨论假设所有传入的类型都是不分散的（即非并集的形式），也不再讨论分发条件类型的问题。
@@ -357,11 +366,21 @@ type Drop_Test3 = Drop<5, [1, 2, ...3[]]>;  // => 3[]
 > type FromLength<N extends number, P extends unknown[] = []> = 
 >     Length<P> extends N ? P : FromLength<N, Prepend<unknown, P>>;
 > 
-> type Add<A extends number, B extends number, Res extends unknown[] = FromLength<A>, Count extends unknown[] = []> = 
->     Length<Count> extends B ? Length<Res> : Add<A, B, Prepend<unknown, Res>, Prepend<unknown, Count>>;
+> type Add<
+>   A extends number, 
+>   B extends number, 
+>   Res extends unknown[] = FromLength<A>, Count extends unknown[] = []
+> > = Length<Count> extends B ? 
+>       Length<Res> : 
+>       Add<A, B, Prepend<unknown, Res>, Prepend<unknown, Count>>;
 > 
-> type Sub<A extends number, B extends number, Res extends unknown[] = [], Count extends unknown[] = FromLength<B>> = 
->     Length<Count> extends A ? Length<Res> : Sub<A, B, Prepend<unknown, Res>, Prepend<unknown, Count>>;
+> type Sub<
+>   A extends number,
+>   B extends number,
+>   Res extends unknown[] = [], Count extends unknown[] = FromLength<B>
+> > = Length<Count> extends A ? 
+>       Length<Res> : 
+>       Sub<A, B, Prepend<unknown, Res>, Prepend<unknown, Count>>;
 > 
 > type Eight = Add<3, 5>;     // => 8
 > type Four = Sub<9, 5>;      // => 4
@@ -387,19 +406,24 @@ type PartialTuple<T extends unknown[]> = Partial<T> & unknown[];
 
 ```typescript
 type CurriedV1<P extends unknown[], R> = 
-    P extends [] ? R : (arg: Head<P>) => CurriedV1<Tail<P>, R>;
+  P extends [] ? R : 
+    (arg: Head<P>) => CurriedV1<Tail<P>, R>;
 
 type CurriedV2<P extends unknown[], R> =
-    P extends [] ? R : <T extends PartialTuple<P>>(...args: T) => CurriedV2<Drop<Length<T>, P>, R>;
+  P extends [] ? R : 
+    <T extends PartialTuple<P>>(...args: T) 
+      => CurriedV2<Drop<Length<T>, P>, R>;
 ```
 
 最重要的一点区别是，`CurriedV2` 为柯里化函数引入了泛型约束，这样每次调用时，就能动态提取出传入参数的数量，并据此计算此次调用应该返回的类型。
 
 ```typescript
-type CurriedV1_Test1 = CurriedV1<[1, 2, 3], 0>; // => (arg: 1) => (arg: 2) => (arg: 3) => 0
+type CurriedV1_Test1 = CurriedV1<[1, 2, 3], 0>; 
+// => (arg: 1) => (arg: 2) => (arg: 3) => 0
 
 type CurriedV2_Test1 = CurriedV2<[1, 2, 3], 0>;
-// => <T extends PartialTuple<[1, 2, 3]>>(...args: T) => CurriedV2<Drop<Length<T>, [1, 2, 3], []>, 0>
+// => <T extends PartialTuple<[1, 2, 3]>>(...args: T)
+//   => CurriedV2<Drop<Length<T>, [1, 2, 3], []>, 0>
 ```
 
 简单测试，我们发现 `CurriedV2_Test1` 无法直白给出柯里化函数的类型，因为每一步调用后得到类型，只有调用的时候才能（根据参数）确定。
@@ -463,7 +487,8 @@ type Equal<X, Y> = X extends Y ? Y extends X ? true : false : false;
 
 type Item<T extends unknown[]> = T extends (infer R)[] ? R : never;
 
-type PlaceholderTuple<T extends unknown[], M extends unknown> = { [P in keyof T]?: T[P] | M } & unknown[];
+type PlaceholderTuple<T extends unknown[], M extends unknown> =
+  { [P in keyof T]?: T[P] | M } & unknown[];
 
 type Reverse<T extends unknown[], R extends unknown[] = []> =
     Equal<Length<T>, number> extends true
@@ -477,10 +502,11 @@ type Join<P extends unknown[], T extends unknown[]> =
 
 type Concat<P extends unknown[], T extends unknown[]> = Join<Reverse<P>, T>;
 
-type PlaceholderMatched<T extends unknown[], S extends unknown[], M extends unknown, R extends unknown[] = []> =
-    T extends [unknown, ...unknown[]]
-    ? PlaceholderMatched<Tail<T>, Tail<S>, M, Head<T> extends M ? Prepend<Head<S>, R> : R>
-    : Reverse<R>;
+type PlaceholderMatched<
+  T extends unknown[], S extends unknown[], M extends unknown, R extends unknown[] = []
+> = T extends [unknown, ...unknown[]] ?
+      PlaceholderMatched<Tail<T>, Tail<S>, M, Head<T> extends M ? Prepend<Head<S>, R> : R>
+      : Reverse<R>;
 
 type __ = '__';
 type CurriedV4<P extends unknown[], R> =
@@ -527,7 +553,8 @@ type Item_Test2 = Item<[string, ...1[]]>; // => string | 1
 泛型 `PlaceholderTuple` 与 `PartialTuple` 很类似，它不仅使元组的每一项变成可选，而且使每一项都可能是传入的类型 `M`。
 
 ```typescript
-type PlaceholderTuple<T extends unknown[], M extends unknown> = { [P in keyof T]?: T[P] | M } & unknown[];
+type PlaceholderTuple<T extends unknown[], M extends unknown> =
+  { [P in keyof T]?: T[P] | M } & unknown[];
 ```
 
 ### 泛型 `Reverse`
@@ -564,7 +591,8 @@ type Reverse_Test3 = Reverse<[string, ...number[]]>;    // => Array<string | num
 泛型 `Join` 将两个元组类型「头对头连接起来」。注意，第一个参数必须是固定项的元组类型。
 
 ```typescript
-type Join<P extends unknown[], T extends unknown[]> = P extends [unknown, ...unknown[]] ? Join<Tail<P>, Prepend<Head<P>, T>> : T;
+type Join<P extends unknown[], T extends unknown[]> =
+  P extends [unknown, ...unknown[]] ? Join<Tail<P>, Prepend<Head<P>, T>> : T;
 
 type Join_Test1 = Join<[1, 2], [3, 4]>;         // => [2, 1, 3, 4]
 type Join_Test2 = Join<[1, 2], [3, ...4[]]>;    // => [2, 1, 3, ...4[]]
@@ -588,17 +616,19 @@ type Concat_Test3 = Concat<[1, ...2[]], [3, 4]>;    // => ts error
 泛型 `PlaceholderMatched` 将元组 `T` 中的类型为 `M` 的项找出来，然后从元组 `S` 中提取出对应位置的项，顺序存放在一个新的元组里 `R`，并最终返回。
 
 ```typescript
-type PlaceholderMatched<T extends unknown[], S extends unknown[], M extends unknown, R extends unknown[] = []> =
-    T extends [unknown, ...unknown[]]
-    ? PlaceholderMatched<Tail<T>, Tail<S>, M, Head<T> extends M ? Prepend<Head<S>, R> : R>
-    : Reverse<R>;
+type PlaceholderMatched<
+  T extends unknown[], S extends unknown[], M extends unknown, R extends unknown[] = []
+> = T extends [unknown, ...unknown[]] ? 
+      PlaceholderMatched<Tail<T>, Tail<S>, M, Head<T> extends M ? Prepend<Head<S>, R> : R>
+      : Reverse<R>;
 ```
 
 有一点拗口。简单看一下测试就知道 `PlaceholderMatched` 的具体作用了：
 
 ```typescript
 type __ = '__';
-type PlaceholderMatched_Test1 = PlaceholderMatched<[1, __, __, 4], [1, 2, 3, 4, 5], __>; // => [2, 3]
+type PlaceholderMatched_Test1 = 
+  PlaceholderMatched<[1, __, __, 4], [1, 2, 3, 4, 5], __>; // => [2, 3]
 ```
 
 ### 泛型 `CurriedV4`
@@ -634,7 +664,8 @@ curried(1, __, 3)(2, 4, 5, 5);          // => 0
 // => CurriedV4<[1, 2, 3, 4, ...5[]], 0> => CurriedV4<[2, 4, ...5[]], 0>
 
 curried(1, __, 3)(__, 4)(2);            // => 0
-// => CurriedV4<[1, 2, 3, 4, ...5[]], 0> => CurriedV4<[2, 4, ...5[]], 0> => CurriedV4<[2, ...5[]], 0>
+// => CurriedV4<[1, 2, 3, 4, ...5[]], 0> => CurriedV4<[2, 4, ...5[]], 0> 
+//    => CurriedV4<[2, ...5[]], 0>
 ```
 
 ### 小结
