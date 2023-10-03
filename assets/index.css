@@ -77,9 +77,9 @@
 }
 #posts .post .date{
   display: inline-block;
-  width: 100px;
-  margin-right: 50px;
-  font-size: 14px;
+  width: 140px;
+  margin-right: 10px;
+  font-size: 16px;
   color: var(--color-level2);
 }
 #posts .post .title a{
@@ -166,10 +166,14 @@
   color: #888888;
 }
 #post .main img{
-  max-width: 750px;
+  max-width: 700px;
+  margin-left: 25px;
+}
+#post .main svg{
+  margin-left: 25px;
 }
 #post .main blockquote img{
-  max-width: 660px;
+  max-width: 600px;
 }
 
 .iconfont {
