@@ -26,7 +26,7 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
       - name: Install Amberpine
-        run: npm install amberpine@0.1.0-beta.2
+        run: npm install amberpine@0.2.0-beta.1
       - name: Build Pages
         run: npx abp
       - name: Setup Pages
