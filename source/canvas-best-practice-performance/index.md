@@ -2,7 +2,7 @@
 
 Canvas 想必前端同学们都不陌生，它是 HTML5 新增的「画布」元素，允许我们使用 JavaScript 来绘制图形。目前，所有的主流浏览器都支持 Canvas。
 
-![](http://img.alicdn.com/tps/TB1YgYILpXXXXcXXFXXXXXXXXXX-764-261.jpg)
+![](TB1YgYILpXXXXcXXFXXXXXXXXXX-764-261.jpg)
 
 Canvas 最常见的用途是渲染动画。渲染动画的基本原理，无非是反复地擦除和重绘。为了动画的流畅，留给我渲染一帧的时间，只有短短的 16ms。在这 16ms 中，我不仅需要处理一些游戏逻辑，计算每个对象的位置、状态，还需要把它们都画出来。如果消耗的时间稍稍多了一些，用户就会感受到「卡顿」。所以，在编写动画（和游戏）的时候，我无时无刻不担忧着动画的性能，唯恐对某个 API 的调用过于频繁，导致渲染的耗时延长。
 
@@ -19,7 +19,7 @@ Canvas 最常见的用途是渲染动画。渲染动画的基本原理，无非�
   2.1. JavaScript 调用 DOM API（包括 Canvas API）以进行渲染。
   2.2. 浏览器（通常是另一个渲染线程）把渲染后的结果呈现在屏幕上的过程。
 
-![](http://img.alicdn.com/tps/TB1i6rMLpXXXXaZXFXXXXXXXXXX-593-323.png)
+![](TB1i6rMLpXXXXaZXFXXXXXXXXXX-593-323.png)
 
 > 之前曾说过，留给我们渲染每一帧的时间只有 16ms。然而，其实我们所做的只是上述的步骤中的 1 和 2.1，而步骤 2.2 则是浏览器在另一个线程（至少几乎所有现代浏览器是这样的）里完成的。动画流畅的真实前提是，以上所有工作都在 16ms 中完成，所以 JavaScript 层面消耗的时间最好控制在 10ms 以内。
 
@@ -48,7 +48,7 @@ context.strokeColor = 'rgba(1, 0.5, 0.5, 1)';
 context.strokeRect(100, 100, 80, 80);
 ```
 
-![](http://img.alicdn.com/tps/TB1M4vNLpXXXXarXFXXXXXXXXXX-407-348.png)
+![](TB1M4vNLpXXXXarXFXXXXXXXXXX-407-348.png)
 
 说到这里，和性能貌似还扯不上什么关系。那我现在就要告诉你，对 `context.lineWidth` 赋值的开销远远大于对一个普通对象赋值的开销，你会作如何感想。
 
@@ -80,7 +80,7 @@ context.lineWidth = {}; // 600ms
 
 分层 Canvas 在几乎任何动画区域较大，动画较复杂的情形下都是非常有必要的。分层 Canvas 能够大大降低完全不必要的渲染性能开销。分层渲染的思想被广泛用于图形相关的领域：从古老的皮影戏、套色印刷术，到现代电影/游戏工业，虚拟现实领域，等等。而分层 Canvas 只是分层渲染思想在 Canvas 动画上最最基本的应用而已。
 
-![](http://img.alicdn.com/tps/TB1RgLULpXXXXatXVXXXXXXXXXX-667-309.png)
+![](TB1RgLULpXXXXatXVXXXXXXXXXX-667-309.png)
 
 分层 Canvas 的出发点是，动画中的每种元素（层），对渲染和动画的要求是不一样的。对很多游戏而言，主要角色变化的频率和幅度是很大的（他们通常都是走来走去，打打杀杀的），而背景变化的频率或幅度则相对较小（基本不变，或者缓慢变化，或者仅在某些时机变化）。很明显，我们需要很频繁地更新和重绘人物，但是对于背景，我们也许只需要绘制一次，也许只需要每隔 200ms 才重绘一次，绝对没有必要每 16ms 就重绘一次。
 
@@ -113,7 +113,7 @@ function render(){
 context.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 ```
 
-![](http://gw.alicdn.com/tps/TB11l3dLpXXXXXRXpXXXXXXXXXX-593-395.png)
+![](TB11l3dLpXXXXXRXpXXXXXXXXXX-593-395.png)
 
 ## 数据源与绘制的性能
 
@@ -156,7 +156,7 @@ context.drawImage(canvasOffscreen, x, y);
 
 > CSS3 动画（`transition` 与 `animate`）不会受 JavaScript 阻塞的影响，但不是本文讨论的重点。
 
-![](http://img.alicdn.com/tps/TB18QnWLpXXXXapXVXXXXXXXXXX-674-461.png)
+![](TB18QnWLpXXXXapXVXXXXXXXXXX-674-461.png)
 
 偶尔的且较小的阻塞是可以接收的，频繁或较大的阻塞是不可以接受的。也就是说，我们需要解决两种阻塞：
 
@@ -172,17 +172,17 @@ context.drawImage(canvasOffscreen, x, y);
 
 Web Worker 是好东西，性能很好，兼容性也不错。浏览器用另一个线程来运行 Worker 中的 JavaScript 代码，完全不会阻碍主线程的运行。动画（尤其是游戏）中难免会有一些时间复杂度比较高的算法，用 Web Worker 来运行再合适不过了。
 
-![](http://img.alicdn.com/tps/TB1qt_yLpXXXXcrXVXXXXXXXXXX-764-277.jpg)
+![](TB1qt_yLpXXXXcrXVXXXXXXXXXX-764-277.jpg)
 
 然而，Web Worker 无法对 DOM 进行操作。所以，有些时候，我们也使用另一种策略来优化性能，那就是将任务拆分成多个较小的任务，依次插入每一帧中去完成。虽然这样做几乎肯定会使执行任务的总时间变长，但至少动画不会卡住了。
 
-![](http://gw.alicdn.com/tps/TB1UG.qLpXXXXbdXpXXXXXXXXXX-674-461.png)
+![](TB1UG.qLpXXXXbdXpXXXXXXXXXX-674-461.png)
 
 看下面这个 [Demo](http://jsbin.com/puruba/edit?html,output)，我们的动画是使一个红色的 `div` 向右移动。Demo 中是通过每一帧改变其 `transform` 属性完成的（Canvas 绘制操作也一样）。
 
 然后，我创建了一个会阻塞浏览器的任务：获取 4x10<sup>6</sup> 次 `Math.random()` 的平均值。点击按钮，这个任务就会被执行，其结果也会打印在屏幕上。
 
-![](http://gw.alicdn.com/tps/TB13HZILpXXXXacXXXXXXXXXXXX-296-369.png)
+![](TB13HZILpXXXXacXXXXXXXXXXXX-296-369.png)
 
 如你所见，如果直接执行这个任务，动画会明显地「卡」一下。而使用 Web Worker 或将任务拆分，则不会卡。
 

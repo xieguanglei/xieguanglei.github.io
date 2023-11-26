@@ -6,7 +6,7 @@
 
 [Rhythm & Hues Studios](http://rhythm.com/) 公司的程序员 [Kevin Beason](http://kevinbeason.com/) 曾于 2010 年编写过一个名为 SmallPT 的 C++ [程序](http://www.kevinbeason.com/smallpt/)，仅包含 99 行[代码](https://github.com/munificent/smallpt/blob/master/smallpt.cpp)，即实现了最简单的光线追踪效果。此程序可视为光追算法的可运行最小集，是初学者学习和理解光追原理的极佳材料，其运行结果如下图所示。作为一个门外汉，我花了好几个晚上研究这 99 行代码，并在这个极好的 [PPT](https://drive.google.com/file/d/0B8g97JkuSSBwUENiWTJXeGtTOHFmSm51UC01YWtCZw/view) 的帮助下，总算基本弄明白了其运行的原理。不妨记录下来：
 
-![Small PT 程序运行结果](http://img.alicdn.com/tfs/TB1Hex0dqWs3KVjSZFxXXaWUXXa-640-480.jpg)
+![Small PT 程序运行结果](TB1Hex0dqWs3KVjSZFxXXaWUXXa-640-480.jpg)
 
 ## 渲染方程
 
@@ -14,7 +14,7 @@
 
 \begin{equation}L_o(o)=L_e(o)+\int_\Omega L_i(i)\cdot F(i, o)\cdot \cos\theta\cdot di \end{equation}
 
-![](http://img.alicdn.com/tfs/TB19602dEKF3KVjSZFEXXXExFXa-504-189.png)
+![](TB19602dEKF3KVjSZFEXXXExFXa-504-189.png)
 
 解释：
 
@@ -28,13 +28,13 @@
 
 依照光线追踪的原理，我们沿着 $o$ 方向追踪到一处交点 $P$，就需要进行一次积分操作。在计算机程序中，积分是用求和模拟的，求和的次数越多（自变量的间隔越小），结果就越准确。假设每次积分都要进行 $n$ 次求和操作，那么当追踪的光线遇到第一个交点时，会发散成 $n$ 条光线；同时追踪这 $n$ 条光线，到下一个交点，每条光线又会发散成 $n$ 条光线……随着追踪深度的增加，计算开销的量级将按照指数级上升。
 
-![](https://img.alicdn.com/tfs/TB1qxN8dB1D3KVjSZFyXXbuFpXa-319-237.png)
+![](TB1qxN8dB1D3KVjSZFyXXbuFpXa-319-237.png)
 
 ## 蒙特卡洛方法
 
 蒙特卡洛方法（Monte Carlo method）是一种使用概率理论（通过大量随机数采样）进行数值计算以求取积分的方法。一个常用的有助理解的例子是：对「如何计算圆的面积」这个问题（圆的面积公式求取其实也是一个积分问题），蒙特卡洛的解法是「撒豆」：在包含圆的已知面积为 $S$ 的矩形内随机采样（撒豆）$N$ 次，统计豆在圆内的次数为 $M$，则圆的面积为 $S\cdot {M} / {N}$。
 
-![](https://img.alicdn.com/tfs/TB1x2p8dBiE3KVjSZFMXXbQhVXa-251-251.png)
+![](TB1x2p8dBiE3KVjSZFMXXbQhVXa-251-251.png)
 
 > 撒豆问题不仅可以解圆的面积，还可以解任意形状，甚至不规则形状的面积求取。
 
@@ -45,7 +45,7 @@
 1. 左侧表示函数 $f(x)$ 在区间 $[a, b]$ 的积分，即下图中的部分阴影部分面积。
 2. 此积分的值，可以这样求取：随机在 $[a, b]$ 区间取值，采样计算 $f(x)$，然后计算所有样本的均值并乘以区间的长度。当取样数量 $N$ 越大，最后的值就越接近真实的积分值。
 
-![](https://img.alicdn.com/tfs/TB1CQ0_dEGF3KVjSZFmXXbqPXXa-338-303.png)
+![](TB1CQ0_dEGF3KVjSZFmXXbqPXXa-338-303.png)
 
 有同学可能会问（我也曾有此困惑），为什么不直接均等分采样，而要随机采样呢？其实，对于计算一维的函数 $f(x)$，区别确实不大，但对二维甚至更高维度的函数（此时需要求取重积分）如 $f(x,y)$，情况就不一样了。
 
@@ -60,7 +60,7 @@
 
 使用蒙特卡洛方法，对每一次反射或折射不再进行积分，而是随机选取一条可能的反射或折射光线进行追踪。然后在开始追踪的源头处，重复多次追踪操作以求取期望，这就是 SmallPT 光追的算法。简述一下具体步骤：
 
-![](http://img.alicdn.com/tfs/TB1oQmfdAWE3KVjSZSyXXXocXXa-404-306.png)
+![](TB1oQmfdAWE3KVjSZSyXXXocXXa-404-306.png)
 
 1. 从每个像素 $P$ 处发出一条射线 $R$，其方向与入射到相机并产生该像素的光线相反。
 2. 求取此射线照射到的物体表面的点 $P_1$，即与场景中物体的交点；如有多个交点，取距离相机最近的那个。如果未求到交点，则返回背景色。
@@ -208,7 +208,7 @@ struct Vec {
 7. 归一化 `norm()`：$norm(V_1) = V_1 * \frac{1}{\sqrt {x_1^2+y_1^2+z_1^2}}$，其物理意义是保持矢量方向不变，将其长度缩放为单位长度 1。
 
 
-![](http://img.alicdn.com/tfs/TB1S5indBWD3KVjSZKPXXap7FXa-529-277.png)
+![](TB1S5indBWD3KVjSZKPXXap7FXa-529-277.png)
 
 ## 射线
 
@@ -218,13 +218,13 @@ struct Vec {
 struct Ray { Vec o, d; Ray(Vec o_, Vec d_) : o(o_), d(d_) {} };
 ```
 
-![](https://img.alicdn.com/tfs/TB1rxmmdvWG3KVjSZFgXXbTspXa-298-123.png)
+![](TB1rxmmdvWG3KVjSZFgXXbTspXa-298-123.png)
 
 ## 定义场景
 
 如前文 SmallPT 的渲染效果图所示，整个场景由一个房间，一个光源和两个球体组成。为了简单，SmallPT 将场景全部用球体来表示，房间的墙壁就用直径极大（使观者感受不到墙壁是弯曲的）的球体来表示。
 
-![](http://img.alicdn.com/tfs/TB1V8mHdBCw3KVjSZFlXXcJkFXa-226-175.png)
+![](TB1V8mHdBCw3KVjSZFlXXcJkFXa-226-175.png)
 
 ### 球体对象的表示
 
@@ -259,7 +259,7 @@ double intersect(const Ray &r) const { // returns distance, 0 if nohit
 }
 ```
 
-![](http://img.alicdn.com/tfs/TB1tA1Sckxz61VjSZFtXXaDSVXa-430-152.png)
+![](TB1tA1Sckxz61VjSZFtXXaDSVXa-430-152.png)
 
 注意，下面为了清楚，我们使用大写字母为矢量，小写字母为标量来进行推导。我们需要求解的是射线的原点 $O$ 与交点 $X$ 的距离 $t$，而条件是：
 
@@ -342,7 +342,7 @@ int main(int argc, char *argv[]){
 
 然后，使用射线类的变量 `cam` 来表示相机，射线的原点 `cam.o` 即是相机的位置，而射线的方向 `cam.d` 是相机朝向的方向。由于相机本身的位置只是一个点，所以需要把渲染出的图像视为在屏幕前方（亦或是后方，参考一下眼球和相机的构造）不远处的一块矩形幕布，抵达相机的光线穿透幕布时会在与幕布的交点 $P$ 处留下颜色，这样就在幕布上投影了。只要幕布的分辨率和宽高比不变，其距离相机的远近与最终结果是无关的，所以程序直接设定幕布与相机的距离是 1，设定幕布本身的高度为 0.5135（配合像素尺寸的宽高比，其实这里已经暗含了相机的水平和垂直视场角的信息）。然后，求取长度等于幕布真实宽度 `0.5135*w/h` 的水平矢量 `cx`（平行于 X 轴），求取长度等于幕布真实高度 `0.5135` 的垂直矢量 `cy`（通过 `cx` 与 `cam.d` 叉乘而来）。
 
-![](https://img.alicdn.com/tfs/TB1QZQydEKF3KVjSZFEXXXExFXa-237-277.png)
+![](TB1QZQydEKF3KVjSZFEXXXExFXa-237-277.png)
 
 再接着，生成长度为 `w*h` 的 `Vec` 类型数组 `c` 备用。这个数组的作用是存储渲染的结果。
 
@@ -359,7 +359,7 @@ int main(int argc, char *argv[]){
 >  0  0  0    0  0  0    0 15  7    0  0  0
 > 15  0 15    0  0  0    0  0  0    0  0  0
 > ```
-> ![](http://img.alicdn.com/tfs/TB17WH3dv1H3KVjSZFBXXbSMXXa-120-120.png)
+> ![](TB17WH3dv1H3KVjSZFBXXbSMXXa-120-120.png)
 
 总结一下各个变量的含义：
 
@@ -373,17 +373,17 @@ int main(int argc, char *argv[]){
 
 接下来，我们看一下如何计算每个像素的值的（即之前省略的部分）。对每一个像素，都将其拆分为 2x2 一共 4 个子像素。一个当然的想法是，以子像素的中心点 $P_s$ 作为射线的出发点开始追踪，但是由于每个子像素都会进行 `samps` 次光追取均值，所以这里就引入了一次随机过程：以子像素的中心点，在一个像素大小的范围内进行一次随机采样，并以采样到的点 $P_i$ 为射线的出发点，进行一次光追。对每个子像素完成 `samps` 次光追，依次以 $P_1$，$P_2$ ……为出发点，最后求均值。
 
-![](https://img.alicdn.com/tfs/TB1QR3EdBCw3KVjSZR0XXbcUpXa-214-214.png)
+![](TB1QR3EdBCw3KVjSZR0XXbcUpXa-214-214.png)
 
 而且，为了使渲染的质量更高一些（达到相同渲染质量所需的采样次数更小一些），这里对随机过程进行了优化：对随机数进行了一次 [tent 滤波](https://computergraphics.stackexchange.com/questions/3868/why-use-a-tent-filter-in-path-tracing)。此滤波函数将 $x$ 从 $[0,2]$ 区间映射到了 $[-1, 1]$，当 $x$ 为随机的值时，$f(x)$ 的分布更向中点值 $0$ 集中（从图中可以看出）。
 
 \begin{equation}f(x) = \left \\{ \begin{matrix} \sqrt{x} -1 \leftarrow x<1 \\\\ 1-\sqrt{2-x} \leftarrow x>1 \end{matrix} \right. \end{equation}
 
-![](https://img.alicdn.com/tfs/TB18tZDdxiH3KVjSZPfXXXBiVXa-242-266.png)
+![](TB18tZDdxiH3KVjSZPfXXXBiVXa-242-266.png)
 
 然后，拿到经过滤波后的随机数 $dx$，$dy$，计算 $P_i$ 在整个画布中的归一化坐标（假设成为 $n_x$ 和 $n_y$，如 `nx=(sx+0.5+dx)/2+x)/w-0.5`），再乘以之前求得的画布真实尺寸矢量 $cx$ 和 $cy$，加上相机本身的方向矢量 $d$，就得到了最终从相机原点射向 $P_i$ 的矢量 $D$，即代码中的 `d`。
 
-![](http://img.alicdn.com/tfs/TB1uz3Hdq5s3KVjSZFNXXcD3FXa-231-277.png)
+![](TB1uz3Hdq5s3KVjSZFNXXcD3FXa-231-277.png)
 
 
 ```cpp
@@ -484,7 +484,7 @@ inline bool intersect(const Ray &r, double &t, int &id){
 3. 在区间 $[0, 2\pi]$ 中随机确定一个角度值 $r1$，使之成为反射光点 $D$ 在反射表面（即 $UV$ 平面）的投影与 $U$ 轴的交角。
 4. 极坐标公式转笛卡尔坐标，$U\ast\cos(r_1)\ast r_2s+V\ast\sin(r_1)\ast r_2s+W\ast \sqrt{1-r_2s^2}$ 计算出在半球面的随机矢量，再归一化得到反射矢量 $D$。
 
-![](http://img.alicdn.com/tfs/TB1BAN1dROD3KVjSZFFXXcn9pXa-196-218.png)
+![](TB1BAN1dROD3KVjSZFFXXcn9pXa-196-218.png)
 
 最后，递归地调用 `radiance()` 函数，将反射光线作为参数传入，传入已自增过一次的深度和随机种子。其结果乘以表面的颜色，再加上球体表面的发射光颜色，作为结果返回。这就是此光追算法对散射表面的处理。
 
@@ -509,7 +509,7 @@ if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
 
 镜面反射的求法比较简单，不过也记录一下吧：如下图对称的两条射线 $D_1$ 和 $D_2$，而法线为 $N$（法线是归一化的）。此时有 $D_1+D_2=N\ast 2(N\cdot D_1)$，求解 $D_2=N\ast 2(N\cdot D_1)-D_1$ 。在代码中，$D_1$ 就是 `-r.d`，带入得到 `r.d-n*2*n.dot(r.d)`，即反射光线的。由于 `r.d` 也已经是归一化的了，所以求取得到的结果也一定是归一化的。
 
-![](http://img.alicdn.com/tfs/TB1ich6dUGF3KVjSZFoXXbmpFXa-376-183.png)
+![](TB1ich6dUGF3KVjSZFoXXbmpFXa-376-183.png)
 
 代码如下：
 
@@ -524,7 +524,7 @@ if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
 
 \begin{equation}n_1\sin \theta_1 = n_2 \sin \theta_2\end{equation}
 
-![](https://img.alicdn.com/tfs/TB1dI9VawFY.1VjSZFnXXcFHXXa-511-230.png)
+![](TB1dI9VawFY.1VjSZFnXXcFHXXa-511-230.png)
 
 #### 全反射
 
@@ -564,7 +564,7 @@ if ((cos2t=1-nnt*nnt*(1-ddn*ddn))<0)    // Total internal reflection
 
 首先计算折射光线矢量 $T$：
 
-![](http://img.alicdn.com/tfs/TB1SZCecAxz61VjSZFrXXXeLFXa-209-227.png)
+![](TB1SZCecAxz61VjSZFrXXXeLFXa-209-227.png)
 
 首先，假设入射光线在表面平面的投影矢量（并归一化）为 $B$ 已知，折射角 $\theta_2$ 也已知，我们可以得到 $T$ 为：
 

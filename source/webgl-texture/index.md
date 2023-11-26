@@ -51,11 +51,11 @@ gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
 下图是 REPEAT 的情况：
 
-![repeat](https://gw.alicdn.com/tfs/TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg)
+![repeat](TB1XAx8t9zqK1RjSZPcXXbTepXa-600-380.jpg)
 
 下图是 CLAMP 的情况：
 
-![clamp](https://gw.alicdn.com/tfs/TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg)
+![clamp](TB1dgqbt7voK1RjSZFwXXciCFXa-600-375.jpg)
 
 > 有一点需要注意的是，REPEAT 模式对纹理图片的尺寸有要求，宽度和高度必须为 2 的整数次幂，如 32x32 或 1024x256 的图片都是符合要求的，但 500x512 或 300x300 是不符合的。我们可以将控件中的 size 从 512 改成 300，这时 Demo 将加载这张图片的一个尺寸为 300x300 的替代品作为纹理。如果 Wrap 为 CLAMP，我们会发现稍微纹理模糊了一些，但是如果 Wrap 为 REPEAT，则会报警并黑屏。
 
@@ -73,7 +73,7 @@ gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 在 Demo 中，默认情况下 FlipY 配置项是勾选的，如果你勾选取消，会发现纹理图片被翻转了。下图是取消 FlipY 配置后的情况。
 
-![cancel-flipY](https://gw.alicdn.com/tfs/TB1dFuJtVzqK1RjSZSgXXcpAVXa-600-379.jpg)
+![cancel-flipY](TB1dFuJtVzqK1RjSZSgXXcpAVXa-600-379.jpg)
 
 ## MIN_FILTER 和 MAG_FILTER
 
@@ -90,17 +90,17 @@ gl.texParameteri(
 
 MAG_FILTER 有两个可选项，NEAREST 和 LINEAR。顾名思义，NEAREST 就是去取距离当前坐标最近的那个像素的颜色，而 LINEAR 则会根据距离当前坐标最近的 4 个点去内插计算出一个数值，如图所示。
 
-![MAG_FILTER](https://gw.alicdn.com/tfs/TB1hgfJt3HqK1RjSZFEXXcGMXXa-600-481.png)
+![MAG_FILTER](TB1hgfJt3HqK1RjSZFEXXcGMXXa-600-481.png)
 
 显然 NEAREST 的运行速度更快，但 LINEAR 的效果更好。使用 NEAREST 时，当纹理被拉得比较近，颗粒感会比较明显，而使用 LINEAR 则会顺滑一些。你可以切换右上角空间上的 MAG_FILTER 选项，然后拖动 scale 滑块将纹理放大，体会一下两者的差别。
 
 下图是 MAG_FILTER 为 NEAREST 的效果：
 
-![MAG_FILTER_NEAREST](https://gw.alicdn.com/tfs/TB1l_nZtYvpK1RjSZFqXXcXUVXa-600-421.png)
+![MAG_FILTER_NEAREST](TB1l_nZtYvpK1RjSZFqXXcXUVXa-600-421.png)
 
 下图是 MAG_FILTER 为 LINEAR 的效果：
 
-![MAG_FILTER_LINEAR](https://gw.alicdn.com/tfs/TB1I2_St4TpK1RjSZR0XXbEwXXa-600-419.png)
+![MAG_FILTER_LINEAR](TB1I2_St4TpK1RjSZR0XXbEwXXa-600-419.png)
 
 MAG_FILTER 作用于将纹理拉近/放大的情形，而当纹理远离/缩小的时候，起作用的是 MIN_FILTER。MIN_FILTER 有以下 6 个可选配置项：
 
@@ -117,7 +117,7 @@ MAG_FILTER 作用于将纹理拉近/放大的情形，而当纹理远离/缩小�
 
 为了在纹理缩小也获得比较好的效果，需要按照采样密度，选择一定数量（通常大于 LINEAR 的 4 个，极端情况下为原纹理上所有像素）的像素进行计算。实时进行计算的开销是很大的，所有有一种称为 MIPMAP（金字塔）的技术。在纹理创建之初，就为纹理创建好 MIPMAP，比如对 512x512 的纹理，依次建立 256x256（称为 1 级 Mipmap）、128x128（称为 2 级 Mipmap） 乃至 2x2、1x1 的纹理。实时渲染时，根据采样密度选择其中的某一级纹理，以此避免运行时的大量计算。
 
-![Mipmap](https://gw.alicdn.com/tfs/TB1_0.ot9zqK1RjSZPxXXc4tVXa-501-503.png)
+![Mipmap](TB1_0.ot9zqK1RjSZPxXXc4tVXa-501-503.png)
 
 > 显而易见的是，使用 MIPMAP 同样需要纹理尺寸为 2 的整数次幂。
 
@@ -131,11 +131,11 @@ gl.generateMipmap(gl.TEXTURE_2D);
 
 下图是 MIN_FILTER 为 LINEAR 的效果（NEAREST 效果是类似的）：
 
-![MIN_FILTER_LINEAR](https://gw.alicdn.com/tfs/TB1CmY0tVzqK1RjSZFvXXcB7VXa-600-420.png)
+![MIN_FILTER_LINEAR](TB1CmY0tVzqK1RjSZFvXXcB7VXa-600-420.png)
 
 下图是 MIN_FILTER 为 LINEAR_MIPMAP_NEAREST 的效果（LINEAR_MIPMAP_LINEAR 效果是类似的）：
 
-![MIN_FILTER_MIPMAP](https://gw.alicdn.com/tfs/TB11zLZt9zqK1RjSZPcXXbTepXa-600-418.png)
+![MIN_FILTER_MIPMAP](TB11zLZt9zqK1RjSZPcXXbTepXa-600-418.png)
 
 可以看到当采用 MIPMAP 时，纹理平滑了很多（特别是头发部分）。
 
@@ -145,7 +145,7 @@ gl.generateMipmap(gl.TEXTURE_2D);
 
 我们可以使用 `gl.generateMipmap()` 方法来根据原始纹理生成一套 mipmap，这种生成的方式是默认的。但是实际上，我们还有一种更灵活的方式来自定义 Mipmap，那就是直接传入另一张图片。比如，这里我们使用的是一张 512x512 的 lena 图，调用 `gl.generateMipmap()` 会生成 256x256、128x128 直至 1x1 等一系列图片。但是，如果我们手头正好有一张 128x128 尺寸的图片，我们就可以强制指定这张图片作为原始纹理的 1 级 Mipmap。
 
-![Custom Mipmap](https://gw.alicdn.com/tfs/TB17fknt9rqK1RjSZK9XXXyypXa-600-503.png)
+![Custom Mipmap](TB17fknt9rqK1RjSZK9XXXyypXa-600-503.png)
 
 自定义 Mipmap 纹理的代码如下所示：
 
@@ -168,11 +168,11 @@ gl.texImage2D(
 
 下图是 MIN_FILTER 为 LINEAR_MIPMAP_NEAREST 时缩放的效果：
 
-![CustomMipmap1](https://gw.alicdn.com/tfs/TB11r3xt7voK1RjSZFDXXXY3pXa-500-316.gif)
+![CustomMipmap1](TB11r3xt7voK1RjSZFDXXXY3pXa-500-316.gif)
 
 下图是 MIN_FILTER 为 LINEAR_MIPMAP_LINEAR 时缩放的效果：
 
-![CustomMipmap2](https://gw.alicdn.com/tfs/TB1ctgvtYvpK1RjSZFqXXcXUVXa-500-316.gif)
+![CustomMipmap2](TB1ctgvtYvpK1RjSZFqXXcXUVXa-500-316.gif)
 
 ## SRGB 扩展
 
@@ -180,7 +180,7 @@ RGB 颜色空间是为人眼设计的。但是人眼感光强度和真实光线�
 
 一个经验是，将人眼感知的颜色归一化到 (0,1) 之间，然后取 2.2 次方幂，得到的结果与光线物理强度是呈线性关系的。如下所示，横轴是 RGB 色彩空间，蓝色直线是人眼的感光曲线，红色曲线是光线物理强度曲线。
 
-![SRGB](https://gw.alicdn.com/tfs/TB1QD7Xt3HqK1RjSZFEXXcGMXXa-297-286.png)
+![SRGB](TB1QD7Xt3HqK1RjSZFEXXcGMXXa-297-286.png)
 
 SRGB 扩展所做的就是这件事，在用户调用 `texImage2D` 向纹理中传输数据时，将纹理的每个像素颜色取了自己的 2.2 次方幂。开启 SRGB 扩展的代码如下所示：
 
@@ -212,13 +212,13 @@ if(uPostProcess == 1){
 
 下图是 SRGB 模式的效果，postProcess 选择 c^2.2 能达到同样的效果。
 
-![SRGB](https://gw.alicdn.com/tfs/TB1Aqr8tZbpK1RjSZFyXXX_qFXa-600-419.png)
+![SRGB](TB1Aqr8tZbpK1RjSZFyXXX_qFXa-600-419.png)
 
 当然，我们也可以勾选 SRGB，然后在 postProcess 中选择取 1/2.2 次方幂，这样输出的颜色和最初的几乎一样。SRGB 扩展将纹理颜色值压低，后处理又把输出的颜色值调亮，两者相互抵消。这正是 PBR 渲染的常用做法，先把纹理颜色从人眼颜色空间的纹理压低成物理空间，然后进行一系列物理规律运算，最后输出时再调亮成人眼颜色空间。
 
 下图是 SRGB + postProcess c^1/2.2 的效果，和不使用 SRGB 和 postProcess 的效果基本一致：
 
-![SRGB_PostProcess](https://gw.alicdn.com/tfs/TB1Qr__tYvpK1RjSZFqXXcXUVXa-600-421.png)
+![SRGB_PostProcess](TB1Qr__tYvpK1RjSZFqXXcXUVXa-600-421.png)
 
 ## Tex_Lod 扩展
 
@@ -246,7 +246,7 @@ gl_FragColor = texture2DLodEXT(uTexture, st, uExtLodLevel);
 
 下图是 extLod 开启后，在不依赖纹理的缩放导致采样密度变化的情况下，直接手动编码来从不同级别的 Mipmap 上取色的情况：
 
-![extLod](https://gw.alicdn.com/tfs/TB1xK7vtVYqK1RjSZLeXXbXppXa-500-316.gif)
+![extLod](TB1xK7vtVYqK1RjSZLeXXbXppXa-500-316.gif)
 
 ## 小结
 

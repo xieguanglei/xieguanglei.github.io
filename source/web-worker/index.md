@@ -2,7 +2,7 @@
 
 Web Worker（以下简称 Worker）是 JavaScript 多线程编程的解决方案。通过创建一个 Worker，Web 页面（或称「主线程」、「宿主页面」）可以在不阻塞主线程的前提下，执行一些比较费时的任务。在这 2019 年春天，Worker 的浏览器兼容性已经相当好了，但此前我还未有机会（或必要性）在生产环境使用 Worker。前段时间，为了调研 [OffScreen Canvas](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas) 的技术方案，我仔细研究了一下 Worker，不妨记录下来备忘；如果能帮助到读者，即是意外之喜了。
 
-![](https://img.alicdn.com/tfs/TB1XVooUSrqK1RjSZK9XXXyypXa-1257-282.png)
+![](TB1XVooUSrqK1RjSZK9XXXyypXa-1257-282.png)
 
 ## MessageChannel
 
@@ -160,7 +160,7 @@ worker.onmessage = e => {
 // > main thread : obj.val is still 1
 ```
 
-![](https://img.alicdn.com/tfs/TB1xWG2UYvpK1RjSZPiXXbmwXXa-522-350.png)
+![](TB1xWG2UYvpK1RjSZPiXXbmwXXa-522-350.png)
 
 ## 引用传递
 
@@ -207,7 +207,7 @@ Worker 线程拿到这段内存，并按照 `Float32Array` 的格式来解析它
 
 主线程拿回了这段内存，按照 `Float32Array` 重新解析这段内存（可以理解给内存套壳，开销很低；注意，之前的壳是不能复用的，需要重新套壳），并将解析得到的数组打印出来，结果是 `after retrieval : 4 - 5,2,7,4`。可见，数据被 Worker 线程篡改了。
 
-![](https://img.alicdn.com/tfs/TB18Wi1U4TpK1RjSZR0XXbEwXXa-524-579.png)
+![](TB18Wi1U4TpK1RjSZR0XXbEwXXa-524-579.png)
 
 ## 多 Worker 间通信
 
@@ -268,7 +268,7 @@ worker2.onmessage = function (e) {
 
 接着，主线程把将字符串 `"Hello from main thread;"` 发送给 `worker1`；`worker1` 收到此字符串后，加上了 `" through worker1;"`，并（通过之前传过去的 `port1`）发送给 `worker2`；`worker2` 在收到（从之前传过去的 `port2` 中监听到）此字符串后，又添加上 `" through worker2."`，最后发送给主线程。我们在主线程中打印出最后得到的消息字符串，为 `"Hello from main thread; through worker1; through worker2."`。
 
-![](https://img.alicdn.com/tfs/TB1xOm9U3DqK1RjSZSyXXaxEVXa-684-477.png)
+![](TB1xOm9U3DqK1RjSZSyXXaxEVXa-684-477.png)
 
 MessagePort 只能被通过传递引用的方式发送到 Worker 中。与 ArrayBuffer 类似，其被传递到另一个 JavaScript 上下文之后，留在原上下文中的对象便成了空壳，试图调用其上的 `postMessage` 方法将导致抛出异常。
 
@@ -317,7 +317,7 @@ self.onmessage = e => {
 
 注意：OffScreenCanvas 的浏览器兼容性比 Worker 要差很多。
 
-![](https://img.alicdn.com/tfs/TB1SdvLU4naK1RjSZFtXXbC2VXa-1260-283.png)
+![](TB1SdvLU4naK1RjSZFtXXbC2VXa-1260-283.png)
 
 ## 小结
 

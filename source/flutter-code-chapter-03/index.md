@@ -47,11 +47,11 @@ void main(){
 
 其实在此之前，我们还创建了一个 PipelineOwner 对象 `pipelineOwner`，这是渲染管线主对象。在创建完 RenderView 对象后，我立刻把 `rv` 挂载到了 `pipelineOwner` 对象上。由于 `rv` 是根节点，所以后续的子节点都会自动与 `pipelineOwner` 产生关联。
 
-![RenderTree](//img.alicdn.com/imgextra/i4/O1CN01hUxDwj24KQSKMnoHm_!!6000000007372-2-tps-480-200.png)
+![RenderTree](O1CN01hUxDwj24KQSKMnoHm_!!6000000007372-2-tps-480-200.png)
 
 这是一棵最简单的 RenderTree 了。根节点 RenderView 对象 `rv` 的尺寸和屏幕一致，而 `rv` 的子节点，RenderDecoratedBox 对象 `rdb` 的尺寸也被拉伸为和 RenderView 相同，所以整个屏幕都是蓝色的。如下图所示：
 
-![最简单的 Demo](//img.alicdn.com/imgextra/i4/O1CN017BtfFi1sHQTMiOhXt_!!6000000005741-2-tps-300-633.png)
+![最简单的 Demo](O1CN017BtfFi1sHQTMiOhXt_!!6000000005741-2-tps-300-633.png)
 
 > RenderView 和 RenderDecoratedBox，都继承自 RenderBox。Flutter 目前只有 RenderBox 这一种形状的 RenderObject，几乎所有的 RenderObject 对象都派生自 RenderBox（RenderObject 也许是为其他不规则形状预留的基类），所以在这篇文章里，RenderBox 和 RenderObject 基本是等价的。
 
@@ -214,7 +214,7 @@ void compositeFrame() {
 
 对上面这个最简 Demo 的运行过程作一个简单的总结：
 
-![](//img.alicdn.com/imgextra/i1/O1CN01ifA5Py1gHdGJOo0gz_!!6000000004117-2-tps-750-406.png)
+![](O1CN01ifA5Py1gHdGJOo0gz_!!6000000004117-2-tps-750-406.png)
 
 1. 首先，构建以 RenderView 为根，且只有一个子节点 RenderDecoratedBox 的 RenderTree，进行一些初始化工作，保证 PipelineOwner 和 RenderTree 相连接。
 2. 然后，运行 PipelineOwner 的 flushLayout 方法，依次调用 RenderView 和 RenderDecoratedBox 的 layout 方法，最终确定了这两个节点的尺寸 size。
@@ -228,7 +228,7 @@ void compositeFrame() {
 
 下面这个例子就模拟了 RenderTree 局部更新的过程。在这个例子中，我们初始化了一个稍微复杂一点的 RenderTree。我们引入了 RenderRepaintBoundary，RenderStack 和 RenderConstrainedBox。
 
-![](//img.alicdn.com/imgextra/i1/O1CN01g93Ahc1kJF7JjfK7o_!!6000000004662-2-tps-180-449.png)
+![](O1CN01g93Ahc1kJF7JjfK7o_!!6000000004662-2-tps-180-449.png)
 
 > 引入 RenderStack 和 RenderConstrainedBox 的原因是：在前一个例子中，RenderView 会强制的使用与设备屏幕完全相同的约束（约束的最大矩形和最小矩形都和设备屏幕一样，这种约束又称为 tight 类型约束）来对其子节点进行排版，不管你传入什么子节点，这个子节点本身 layout 之后的尺寸一定是和设备尺寸完全一样的。因此我们引入 RenderStack 来为下面的子节点「松绑」（loose），虽然 RenderStack 自己的尺寸被强制设定为和屏幕一样，但子节点就不必受这个约束了。这样 RenderConstrainedBox 对象 `rcb` 就能够为 RenderDecoratedBox 对象 `rdb` 重新规划尺寸了：初始化的时候设置为 `tight(100, 100)`。
 >
@@ -281,7 +281,7 @@ void main(){
 }
 ```
 
-![动态更新RenderTree](//img.alicdn.com/imgextra/i1/O1CN01klaxof2134bTCC5Tc_!!6000000006928-2-tps-741-634.png)
+![动态更新RenderTree](O1CN01klaxof2134bTCC5Tc_!!6000000006928-2-tps-741-634.png)
 
 3 秒之后，当为 `rcb.additionalConstraints` 的这条语句还没有执行的时候，PipelineOwner 是内部是干净的：`_nodesNeedingXXX` 全部是空数组。当我们为 `rcb.additionalConstraints` 赋值的时候，触发 `additionalConstraints` 这个 setter，在其中调用 `RenderObject#markNeedsLayout` 方法，将 RenderStack 添加到了 `_nodesNeedingLayout` 中。
 
@@ -332,7 +332,7 @@ void _compositeChild(RenderObject child, Offset offset) {
 
 最后对这个例子简单地总结一下：
 
-![动态更新RenderTree](//img.alicdn.com/imgextra/i3/O1CN01xQ6IPs1wboZKGYJNF_!!6000000006327-2-tps-750-927.png)
+![动态更新RenderTree](O1CN01xQ6IPs1wboZKGYJNF_!!6000000006327-2-tps-750-927.png)
 
 1. 初始化 RenderTree 并进行第一次渲染，与前一个例子的步骤一致。
 2. 值得注意的是，在第一次渲染的 `flushPaint` 过程中，我们把 RenderRepaintBoundary 对象 `rrb` 的 layer 追加（append）到了 RenderView 的 layer 的子 layer 中。

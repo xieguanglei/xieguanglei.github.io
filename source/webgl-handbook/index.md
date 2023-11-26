@@ -47,23 +47,23 @@ Canvas的更多知识，可以参考：
 
 假设有一个最简单的模型：三角形，三个顶点分别为(-1,-1,0)，(1,-1,0)，(0,1,0)。这三个数据是从文件中读出来的，是三角形最初始的坐标(局部坐标)。如下图所示，右手坐标系。
 
-![](http://gw.alicdn.com/tps/TB1.bc9KVXXXXXAaXXXXXXXXXXX-283-291.png)
+![](TB1.bc9KVXXXXXAaXXXXXXXXXXX-283-291.png)
 
 模型通常不会位于场景的原点，假设三角形的原点位于(0,0,-1)处，没有旋转或缩放，三个顶点分别为(-1,-1,-1)，(1,-1,-1)，(0,1,-1)，即世界坐标。
 
-![](http://gw.alicdn.com/tps/TB1x_k7KVXXXXc0aXXXXXXXXXXX-283-245.png)
+![](TB1x_k7KVXXXXc0aXXXXXXXXXXX-283-245.png)
 
 绘制三维场景必须指定一个观察者，假设观察者位于(0,0,1)处而且看向三角形，那么三个顶点相对于观察者的坐标为(-1,-1,-2)，(1,-1,-2)，(0,1,-2)，即视图坐标。
 
-![](http://gw.alicdn.com/tps/TB1zSpnLXXXXXXGXFXXXXXXXXXX-283-236.png)
+![](TB1zSpnLXXXXXXGXFXXXXXXXXXX-283-236.png)
 
 观察者的眼睛是一个点(这是透视投影的前提)，水平视角和垂直视角都是90度，视野范围(目力所及)为[0,2]在Z轴上，观察者能够看到的区域是一个四棱台体。
 
-![](http://gw.alicdn.com/tps/TB1umA_KVXXXXaDaXXXXXXXXXXX-283-324.png)
+![](TB1umA_KVXXXXaDaXXXXXXXXXXX-283-324.png)
 
 将四棱台体映射为标准立方体(CCV，中心为原点，边长为2，边与坐标轴平行)。顶点在CCV中的坐标，离它最终在canvas中的坐标已经很接近了，如果把CCV的前表面看成canvas，那么最终三角形就画在图中橙色三角形的位置。
 
-![](http://gw.alicdn.com/tps/TB1NbRuLXXXXXc3XXXXXXXXXXXX-283-245.png)
+![](TB1NbRuLXXXXXc3XXXXXXXXXXXX-283-245.png)
 
 上述变换是用矩阵来进行的。
 
@@ -108,7 +108,7 @@ WebGL没有提供任何有关上述变换的机制，开发者需要亲自计算
 
 顶点着色器接收的是attribute变量，是逐顶点的数据。顶点着色器输出varying变量，也是逐顶点的。逐顶点的varying变量数据经过光栅化，成为逐片元的varying变量数据，输入片元着色器，片元着色器输出的结果就会显示在canvas上。
 
-![](http://gw.alicdn.com/tps/TB1H9xALXXXXXaYXXXXXXXXXXXX-567-463.png)
+![](TB1H9xALXXXXXaYXXXXXXXXXXXX-567-463.png)
 
 着色器功能很多，上述只是基本功能。大部分炫酷的效果都是依赖着色器的。如果你对着色器完全没有概念，可以试着理解下一节hello world程序中的着色器再回顾一下本节。
 
@@ -121,7 +121,7 @@ WebGL没有提供任何有关上述变换的机制，开发者需要亲自计算
 
 这一节解释绘制上述场景(三角形)的WebGL程序。点[这个链接](http://xieguanglei.qiniudn.com/webgl/hello-triangle/HelloTriangle.html)，查看源代码，试图理解一下。这段代码出自[WebGL Programming Guide](http://www.amazon.com/WebGL-Programming-Guide-Interactive-Graphics/dp/0321902920)，我作了一些修改以适应本文内容。如果一切正常，你看到的应该是下面这样：
 
-![](http://gw.alicdn.com/tps/TB1sXXmLXXXXXasXFXXXXXXXXXX-283-283.png)
+![](TB1sXXmLXXXXXasXFXXXXXXXXXX-283-283.png)
 
 解释几点(如果之前不了解WebGL，多半会对下面的代码困惑，无碍)：
 
@@ -175,15 +175,15 @@ WebGL没有提供任何有关上述变换的机制，开发者需要亲自计算
 
 关于gl.TRIANGLES等其他绘制方式，可以参考下面这张图或[这篇博文](http://3dgep.com/rendering-primitives-with-opengl/)。
 
-![引用自http://3dgep.com/rendering-primitives-with-opengl/](http://gw.alicdn.com/tps/TB1B1A.KVXXXXcQXVXXXXXXXXXX-600-300.png)
+![引用自http://3dgep.com/rendering-primitives-with-opengl/](TB1B1A.KVXXXXcQXVXXXXXXXXXX-600-300.png)
 
 ## 深度检测
 
 当两个表面重叠时，前面的模型会挡住后面的模型。比如[这个例子](http://xieguanglei.qiniudn.com/webgl/depth-test/DepthTest.html)，绘制了两个交叉的三角形(varray和carray的长度变为18，gl.drawArrays最后一个参数变为6)。为了简单，这个例子去掉了矩阵变换过程，直接向着色器传入CCV坐标。
 
-![](http://gw.alicdn.com/tps/TB1uKZ7KVXXXXc8aXXXXXXXXXXX-283-286.png)
+![](TB1uKZ7KVXXXXc8aXXXXXXXXXXX-283-286.png)
 
-![](http://gw.alicdn.com/tps/TB1PNVmLXXXXXXLXFXXXXXXXXXX-283-262.png)
+![](TB1PNVmLXXXXXXLXFXXXXXXXXXX-283-262.png)
 
 顶点着色器给出了6个顶点的gl_Position，经过光栅化，片元着色器获得了2X个片元(假设X为每个三角形的像素个数)，每个片元都离散的x，y坐标值，还有z值。x，y坐标就是三角形在canvas上的坐标，但如果有两个具有相同x，y坐标的片元同时出现，那么WebGL就会取z坐标值较小的那个片元。
 
@@ -199,7 +199,7 @@ WebGL的这套逻辑，对理解蒙版(后面会说到)有一些帮助。
 
 gl.drawArrays()是按照顶点的顺序绘制的，而gl.drawElements()可以令着色器以一个索引数组为顺序绘制顶点。比如[这个例子](http://xieguanglei.qiniudn.com/webgl/draw-elements/drawElements.html)。
 
-![](http://gw.alicdn.com/tps/TB1e50eLXXXXXauXVXXXXXXXXXX-283-281.png)
+![](TB1e50eLXXXXXauXVXXXXXXXXXX-283-281.png)
 
 这里画了两个三角形，但只用了5个顶点，有一个顶点被两个三角形共用。这时需要建立索引数组，数组的每个元素表示顶点的索引值。将数组填充至`gl.ELEMENT_ARRAY`，然后调用gl.drawElements()。
 
@@ -216,7 +216,7 @@ attribute变量还可以帮助绘制纹理。绘制纹理的基本原理是，�
 
 比如[这个例子](http://xieguanglei.qiniudn.com/webgl/texture/texture.html)。
 
-![](http://gw.alicdn.com/tps/TB1.6twLXXXXXcRXXXXXXXXXXXX-283-283.png)
+![](TB1.6twLXXXXXcRXXXXXXXXXXXX-283-283.png)
 
 纹理对象和缓冲区对象很类似：使用gl的API函数创建，需要绑定至常量gl.ARRAY_BUFFER和gl.TEXTURE_2D，都通过常量对象向其中填入图像和数据。不同的是，纹理对象在绑定时还需要激活一个纹理单元(此处的`gl.TEXTURE0`)，而WebGL系统支持的纹理单元个数是很有限的(一般为8个)。
 
@@ -242,7 +242,7 @@ attribute变量还可以帮助绘制纹理。绘制纹理的基本原理是，�
 
 透明效果是用混合机制完成的。混合机制与深度检测类似，也发生在试图向某个已填充的像素填充颜色时。深度检测通过比较z值来确定像素的颜色，而混合机制会将两种颜色混合。比如[这个例子](http://xieguanglei.qiniudn.com/webgl/blend/blend.html)。
 
-![](https://gw.alicdn.com/tps/TB1pndjLXXXXXbtXFXXXXXXXXXX-283-285.png)
+![](TB1pndjLXXXXXbtXFXXXXXXXXXX-283-285.png)
 
 混合的顺序是按照绘制的顺序进行的，如果绘制的顺序有变化，混合的结果通常也不同。如果模型既有非透明表面又有透明表面，绘制透明表面时开启蒙版，其目的是锁定深度缓冲区，因为半透明物体后面的物体还是可以看到的，如果不这样做，半透明物体后面的物体将会被深度检测机制排除。
 
@@ -262,7 +262,7 @@ attribute变量还可以帮助绘制纹理。绘制纹理的基本原理是，�
 
 WebGL系统各个组成部分在既定规则下互相配合。稍作梳理如下。
 
-![](http://gw.alicdn.com/tps/TB1st34KVXXXXXqapXXXXXXXXXX-567-447.png)
+![](TB1st34KVXXXXXqapXXXXXXXXXX-567-447.png)
 
 这张图比较随意，箭头上的文字表示API，箭头方向大致表现了数据的流动方向，不必深究。
 
@@ -276,7 +276,7 @@ WebGL没有为光照提供任何内置的方法，需要开发者在着色器中
 
 光照又分为逐顶点的和逐片元的，两者的区别是，将法线光线交角因素放在顶点着色器中考虑还是放在片元着色器中考虑。逐片元光照更加逼真，一个极端的例子是：
 
-![](http://gw.alicdn.com/tps/TB1b6g_KVXXXXaYaXXXXXXXXXXX-145-286.png)
+![](TB1b6g_KVXXXXaYaXXXXXXXXXXX-145-286.png)
 
 此时，点光源在距离一个表面较近处，表面中央A处较亮，四周较暗。但是在逐顶点光照下，表面的颜色(的影响因子)是由顶点内插出来的，所以表面中央也会比较暗。而逐片元光照直接使用片元的位置和法线计算与点光源的交角，因此表面中央会比较亮。
 

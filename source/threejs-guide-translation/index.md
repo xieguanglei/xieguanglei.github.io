@@ -824,7 +824,7 @@ ThreeJS 将粒子系统视为一个基本的几何体，因为它就像基本几
 [kankan35]: http://www.aerotwist.com/static/tutorials/an-introduction-to-shaders-part-2/demo/demo-6.html
 [kankan41]: http://www.aerotwist.com/static/tutorials/creating-particles-with-three-js/demo/
 [kankan61]: http://www.aerotwist.com/static/tutorials/create-your-own-environment-maps/demo/
-[image61]: http://img.alicdn.com/tps/TB1txs0LpXXXXcNXpXXXXXXXXXX-700-331.jpg
+[image61]: TB1txs0LpXXXXcNXpXXXXXXXXXX-700-331.jpg
 
 [author-board]: http://www.aerotwist.com/contact/
 [author-twitter]: http://twitter.com/aerotwist

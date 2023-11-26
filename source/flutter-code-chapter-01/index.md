@@ -4,7 +4,7 @@ Flutter 是 Google 主导的跨平台 UI 开发解决方案，也是 2019 年前
 
 Flutter 与之前的跨平台 UI 开发解决方案（以 React 为代表）的最大区别，即 Flutter 是「自绘性」的。React 等框架最终需要借助具体平台的 UI 实现来落地：在 Web 上落实到 DOM API，在 iOS 和 Android 上各自落实到 iOS 和 Android 操作系统提供的 UI 组件，至于将组件**画出来**这个任务，则交由平台（WebView / iOS / Android）自己来实现了，画成什么样子，不得不受平台的钳制；而 Flutter 则更进一步，绕过平台的 UI 组件，直接落实到了绘图层，借助（Skia）这个强大的开源绘图引擎，自己把控了 UI 组件的绘制这一步骤。只要平台能够与 Skia 对接（通常是通过 OpenGL），Flutter 基本可以保证完全一致的渲染体验。Flutter 具有「自绘性」的特点，固然是因为它出现得比 React 晚，对 React 的痛点有深切的领悟，同时也与其团队的背景也密不可分——据说 Flutter 开发团队的许多成员都来自原 Chrome 浏览器 团队，而我们知道 Chrome 浏览器的绘图也是靠 Skia 完成的；所以 Flutter 其实与 Chrome 也有很深的渊源，某种意义上可视为完全没有 W3C 包袱的 Chrome 的继承者。
 
-![Flutter vs React](http://img.alicdn.com/tfs/TB1sWT_c7Y2gK0jSZFgXXc5OFXa-477-300.png)
+![Flutter vs React](TB1sWT_c7Y2gK0jSZFgXXc5OFXa-477-300.png)
 
 Flutter 的上层框架使用了 Dart 语言，这是一门优缺点都比较明显的语言（正如 Flutter 是一款优缺点都比较明显的框架）。Dart 在 Flutter 中扮演了极为重要的作用，从界面的描述，到布局、合成、绘制，整个渲染的逻辑（在 Chrome 中由 C++ 完成）有九成是由 Dart 完成的。本系列博文的讨论都将基于这门语言进行，但对 Dart 语言本身则不太会展开讲，我相信，对于前端工程师而言，Dart 语言本身造成的障碍是较为有限的，尤其是如果你已经使用过诸如 typescript 这样的具有类型系统的前端编程语言。如果你完全不了解 Dart，直接跟着本文熟悉 Dart，遇到问题去查阅一下文档，相信本系列文章完结时，你就能写出相当工整的 Dart 代码了。
 
@@ -20,7 +20,7 @@ Flutter 的上层框架使用了 Dart 语言，这是一门优缺点都比较明
 
 其中，1~4 通常又称为 Flutter Framework；而第 5 步则属于 Flutter Engine 的范畴。通常，不熟悉 Flutter 的读者可能对以上描述难以理解，请勿介怀（其实这几句是写给我自己整理思路的），大概能记住下面这张图就可以了。
 
-![](http://img.alicdn.com/tfs/TB1nx69c7P2gK0jSZPxXXacQpXa-202-314.png)
+![](TB1nx69c7P2gK0jSZPxXXacQpXa-202-314.png)
 
 ## 绘图引擎的基本用法
 
@@ -57,7 +57,7 @@ void main(){
 }
 ```
 
-![一条斜线](http://img.alicdn.com/tfs/TB1SnH6cV67gK0jSZPfXXahhFXa-400-400.png)
+![一条斜线](TB1SnH6cV67gK0jSZPfXXahhFXa-400-400.png)
 
 真正做「画斜线」这件事的代码，只有调用 `canvas.drawLine` 的一行。用过 Canvas 的前端同学应该已经闻到一些熟悉的味道了吧。虽然 Canvas 2D 中虽然没有 `drawLine`，但是用 `moveTo` 和 `lineTo` 也能达到完全一致的效果，它们的核心绘图功能——画点，画线（直线，曲线），画多边形，甚至画图片，逻辑上是很容易对齐的。
 
@@ -67,7 +67,7 @@ void main(){
 
 除了调用 `canvas.drawLine`，Engine 的使用就比 Web 上的 Canvas 要复杂多了。Web Canvas 很直接，首先 `getContext()` 拿到上下文，然后就可以画点、画线、画图片了，所有的绘图会立刻反映到屏幕上；但是 Engine 中，绘图操作只是输出到了一个 `PictureRecorder` 的对象上；在此对象上调用 `endRecording()` 得到一个 `Picture` 对象，然后需要在合适的时候把 `Picture` 对象添加（`add`）到 `SceneBuilder` 对象上；调用 `SceneBuilder` 对象的 `build()` 方法获得一个 `Scene` 对象；最后，在合适的时机把 `Scene` 对象传递给 `window.render()` 方法，最终把场景渲染出来。
 
-![从 PictureRecorder 到 Scene](http://img.alicdn.com/tfs/TB1uMT8c7L0gK0jSZFtXXXQCXXa-769-379.png)
+![从 PictureRecorder 到 Scene](TB1uMT8c7L0gK0jSZFtXXXQCXXa-769-379.png)
 
 有几点值得注意的：
 
@@ -131,7 +131,7 @@ void main(){
 
 上面这个例子，我们用到了两个 `PictureRecorder`，分别对应创建了一个 `Canvas`。这两个 `Canvas` 构成了独立的「空间」，当在其上调用绘图方法如 `drawLine`，然后结束记录（`endRecording`）后，所绘制的图形就记录在了 `picture` 中。这里，我们先在 `picCross` 上画了一个叉叉（这个操作只做一次），然后在每一帧，生成一个新的 `picLine`，上面画一条长度随时间变化的横杠。然后，把两个 `Picture` 叠加合成起来，形成最终的场景。
 
-![](http://img.alicdn.com/tfs/TB1zzwXcW61gK0jSZFlXXXDKFXa-400-331.gif)
+![](TB1zzwXcW61gK0jSZFlXXXDKFXa-400-331.gif)
 
 注意，在这个例子中，画叉叉的操作只进行了一次，但是它每一帧都参与了动画的合成操作。如果这个叉叉特别复杂，只要它本身没有变化，也只需要去画一次，这就是分层（layer）和合成（composite）带来的优势。因为对 OpenGL 有一些了解，所以我猜测 `Picture` 的背后应该是 OpenGL 中的 `RenderBuffer` 或（Vulkan / Metal 中）类似的结构，已经缓存了绘制结果即像素值。在 Web 上的 Canvas 2D 上下文中，并没有特别高效的方法（`putImageData` 并不是一个好的方案）。
 
@@ -143,7 +143,7 @@ void main(){
 
 前面我们仅仅用了绘制了一条直线段，这一节我们简单梳理一遍绘制其他主要元素。看下面这个例子：
 
-![点、线、面、文本、图片](http://img.alicdn.com/tfs/TB1dGH8c1T2gK0jSZFvXXXnFXXa-400-461.jpg)
+![点、线、面、文本、图片](TB1dGH8c1T2gK0jSZFvXXXnFXXa-400-461.jpg)
 
 ```dart
 import 'dart:ui';

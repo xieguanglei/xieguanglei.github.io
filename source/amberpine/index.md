@@ -8,7 +8,7 @@
 
 工具也提供了「写作模式」，就是本地文件保存后页面自动刷新显示最新的改动。不过我一般是在 Quiver 上写好再贴过来，这个写作模式也就是在最后微调排版的时候用得上。
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-5-28/dev.gif)
+![](dev.gif)
 
 后面附上工具的 README 吧：
 

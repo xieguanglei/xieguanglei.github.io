@@ -4,7 +4,7 @@
 
 首先界面长成这样，点击 **[直达链接](https://xieguanglei.github.io/schools-map/)** 即可访问。网站是开源的，托管在 [github](https://github.com/xieguanglei/schools-map) 上。
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/1.png)
+![](1.png)
 
 数据上目前仅做了杭州的西湖区和滨江区；用户可以在这张地图上直接绘图，然后把绘图数据发 ISSUE 或者 PR 来添加或更新数据。
 
@@ -16,34 +16,34 @@
 
 网站可以支持多个区域的数据，可以点击菜单栏中的「区域选择」来选择显示另一个区域的学区划分。（滨江区仅完成了 4 所较热门小学的学区。）
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/2-o.png)
+![](2-o.png)
 
 ### 绘制数据和提交
 
 用户可以在平台上直接绘制自己关心的学区数据，然后通过 PR 或 issue 选择提交到 github 仓库。绘制需要用到绘制工具栏：
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/3-o.png)
+![](3-o.png)
 
 四个按钮的作用分别为「绘图」、「撤销」、「导出」、「清除」。
 
 点击「绘图」按钮，会分别提示你输入绘制的区域名称、绘制的学校名称，然后鼠标就会从「手」形变成「十字」形，这提示你可以在地图上进行绘图操作了。
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/4-o.png)
+![](4-o.png)
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/5-o.png)
+![](5-o.png)
 
 在地图上依次单击选点，勾勒出学区范围的形状（正在绘图的区块是红色的）；在完成最后一个点时，使用双击表示勾勒绘图操作完成，学区的范围转为蓝色，并附上了包含学校名称的标记。这样，一所学校的施教区就绘制完成了（这里示例中的学区是我随意勾勒的，并不是真实数据）。
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/6-o.png)
+![](6-o.png)
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/7-o.png)
+![](7-o.png)
 
 
 再次点击「绘图」按钮，一所接一所学校地完成其所属学区的绘制操作。如果对绘图结果不满意，可以点击「撤销」按钮取消上一次绘制的内容。绘图过程中关闭页面重新打开，不会丢失已绘制的数据。
 
 点击「导出」按钮将下载一份文本文件，其中包含了你的绘图数据。你可以通过访问 issue 页将此附件提交给我，或者直接通过 PR 来提交数据的更改。
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/blog-post/2019-3-31/8-o.png)
+![](8-o.png)
 
 点击「清除」按钮即可清空你之前所有的绘图数据。如果你已经完成了提交，或者想要绘制一个新的区域，你需要先清除之前的绘制数据。
 

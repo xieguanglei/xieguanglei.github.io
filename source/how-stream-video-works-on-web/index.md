@@ -46,7 +46,7 @@ HTML5 中嵌入视频很简单，只需在页面中增加一个 `video` 标签�
 
 HTML 页面将直接把 some_video.mp4 加载到浏览器中，看上去是这样：
 
-![](http://img.alicdn.com/tfs/TB177y5bvb2gK0jSZK9XXaEgFXa-400-330.jpg)
+![](TB177y5bvb2gK0jSZK9XXaEgFXa-400-330.jpg)
 
 > 这里我使用了一个长达 30 秒，纯红色的视频，由 FFMPEG 生成。
 > ```bash
@@ -63,7 +63,7 @@ myVideo.currentTime = 10;
 
 然而，大部分视频网站的功能都要比上面这个 `video` 标签复杂得多。比如，「调整视频质量」和「直播」这两个功能，仅依靠上述 API 就没法完成。
 
-![Youtube 调整视频质量](http://img.alicdn.com/tfs/TB10Ya4bq67gK0jSZFHXXa9jVXa-180-133.jpg)
+![Youtube 调整视频质量](TB10Ya4bq67gK0jSZFHXXa9jVXa-180-133.jpg)
 
 ## 媒体源扩展（MSE）
 
@@ -71,7 +71,7 @@ myVideo.currentTime = 10;
 
 此「扩展」在 JavaScript 中增加了一个 `MediaSource` 对象。顾名思义，它表示视频的源——简单地说，就是视频背后的数据。
 
-![源数据先 push 到 MediaSource 中，再显示到页面上](http://img.alicdn.com/tfs/TB1_VS2b8r0gK0jSZFnXXbRRXXa-511-130.png)
+![源数据先 push 到 MediaSource 中，再显示到页面上](TB1_VS2b8r0gK0jSZFnXXbRRXXa-511-130.png)
 
 MSE 仍然需要通过 `video` 标签发挥作用。只不过，我们不再简单地把 `video` 的 `src` 属性设置为一个指向远程资源的链接，而是设置为指向 `MediaSource` 对象的链接。
 
@@ -100,7 +100,7 @@ video.src = window.URL.createObjectURL(ms);
 
 有时候，我们会使用两个 `SourceBuffer`：一个视频流，一个音频流，这种用法很常见。
 
-![源数据，SourceBuffer 和 MediaSource 间的关系](http://img.alicdn.com/tfs/TB1usy1b.T1gK0jSZFrXXcNCXXa-519-284.png)
+![源数据，SourceBuffer 和 MediaSource 间的关系](TB1usy1b.T1gK0jSZFrXXcNCXXa-519-284.png)
 
 将视频流和音频流分开，使得服务端也能够分开进行管理。这样做会带来一些好处（稍后讨论），以下是具体实现：
 
@@ -209,7 +209,7 @@ videoTag.addEventListener('click', () => videoTag.play());
 
 其实，在哪些视频网站的视频播放器内部，视频和音频数据都是被切成多个片段（segment），通常每个片段内只包含 2 到 10 秒的内容。
 
-![](http://img.alicdn.com/tfs/TB12VS2b8r0gK0jSZFnXXbRRXXa-382-62.png)
+![](TB12VS2b8r0gK0jSZFnXXbRRXXa-382-62.png)
 
 因为操控的是这些音视频片段，想做什么事情就很灵活了：我们可以在播放过程中逐渐地加载片段，并不算将加载到的片段向媒体中推送。
 

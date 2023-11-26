@@ -16,7 +16,7 @@ nil 节点就是空节点，在红黑树的实现中，nil 节点代替二叉树
 
 ![红黑树][RedBlackTree]
 
-[RedBlackTree]: http://img.alicdn.com/tps/TB10UXfLFXXXXaxXXXXXXXXXXXX-450-217.png
+[RedBlackTree]: TB10UXfLFXXXXaxXXXXXXXXXXXX-450-217.png
 
 红黑树的这5条性质中，第4和第5条性质保证了红黑树是相对“平衡”的。
 
@@ -342,7 +342,7 @@ nil 节点就是空节点，在红黑树的实现中，nil 节点代替二叉树
 
 ![旋转][Rotation]
 
-[Rotation]:http://img.alicdn.com/tps/TB198IBLpXXXXaBXpXXXXXXXXXX-402-122.png
+[Rotation]:TB198IBLpXXXXaBXpXXXXXXXXXX-402-122.png
 
     bool rbtree::rotateRight(node *n)
     {
@@ -434,11 +434,11 @@ nil 节点就是空节点，在红黑树的实现中，nil 节点代替二叉树
 
 ![修复插入Case4][insert_case4]
 
-[insert_case2]:http://img.alicdn.com/tps/TB1ziXgLFXXXXahXXXXXXXXXXXX-298-136.png
+[insert_case2]:TB1ziXgLFXXXXahXXXXXXXXXXXX-298-136.png
 
-[insert_case3]:http://img.alicdn.com/tps/TB18jkWLpXXXXa7XFXXXXXXXXXX-283-138.png
+[insert_case3]:TB18jkWLpXXXXa7XFXXXXXXXXXX-283-138.png
 
-[insert_case4]:http://img.alicdn.com/tps/TB1Fu4eLFXXXXbyXXXXXXXXXXXX-310-138.png
+[insert_case4]:TB1Fu4eLFXXXXbyXXXXXXXXXXXX-310-138.png
 
 代码如下所示：
 
@@ -551,15 +551,15 @@ nil 节点就是空节点，在红黑树的实现中，nil 节点代替二叉树
 
 ![修复删除Case6][remove_case6]
 
-[remove_case2]:http://img.alicdn.com/tps/TB1ziXgLFXXXXahXXXXXXXXXXXX-298-136.png
+[remove_case2]:TB1ziXgLFXXXXahXXXXXXXXXXXX-298-136.png
 
-[remove_case3]:http://img.alicdn.com/tps/TB18jkWLpXXXXa7XFXXXXXXXXXX-283-138.png
+[remove_case3]:TB18jkWLpXXXXa7XFXXXXXXXXXX-283-138.png
 
-[remove_case4]:http://img.alicdn.com/tps/TB1lLIZLpXXXXaYXFXXXXXXXXXX-313-132.png
+[remove_case4]:TB1lLIZLpXXXXaYXFXXXXXXXXXX-313-132.png
 
-[remove_case5]:http://img.alicdn.com/tps/TB1qZ.OLpXXXXcfXVXXXXXXXXXX-247-133.png
+[remove_case5]:TB1qZ.OLpXXXXcfXVXXXXXXXXXX-247-133.png
 
-[remove_case6]:http://img.alicdn.com/tps/TB1HJXeLFXXXXbrXXXXXXXXXXXX-299-143.png
+[remove_case6]:TB1HJXeLFXXXXbrXXXXXXXXXXXX-299-143.png
 
 
 代码如下所示：

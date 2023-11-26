@@ -2,13 +2,13 @@
 
 人的运动——走，跑，跳，是由骨骼带动躯干和四肢完成的。「骨骼动画」，顾名思义，就是模拟骨骼运动的机制而制作的动画。比如下面这条奔跑的小龙。参考 [Demo](http://jsbin.com/seyita/1/edit?html,output)。
 
-![奔跑的小龙](http://img.alicdn.com/tps/TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif)
+![奔跑的小龙](TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif)
 
 > 素材来自开源骨骼动画编辑器 [Dragonbones](http://dragonbones.github.io/)
 
 用到的素材，额，其实是他大卸八块后的样子。
 
-![](http://img.alicdn.com/tps/TB1rZG9KFXXXXX3XFXXXXXXXXXX-369-272.jpg)
+![](TB1rZG9KFXXXXX3XFXXXXXXXXXX-369-272.jpg)
 
 骨骼动画主要被用游戏场景中，做 Logo 、彩蛋也不错（比如 2014 年双 11 的喵喵舞就是天猫的同学基于骨骼动画原理实现的）。其实，在 CSS `transform` 或 Canvas 的帮助下，Web 前端播放骨骼动画，可谓举手之劳矣。
 
@@ -16,13 +16,13 @@
 
 骨骼当然不是随便排列的，它们需要以树状结构组织起来。
 
-![](http://img.alicdn.com/tps/TB17XvsKFXXXXXoXXXXXXXXXXXX-500-400.png)
+![](TB17XvsKFXXXXXoXXXXXXXXXXXX-500-400.png)
 
 光有树状的结构还是远远不够的，每片骨骼还需要描述 **自身的位移是多少（x，y），旋转的角度是多少（θ）** 。注意， **骨骼的位移和角度是相对「父骨骼」（的坐标系）而言的** 。
 
 举个例子，左臂的位移是（78，-40），角度是 -30°，表示左臂在躯干的基础上，沿 X 轴平移 78，沿 Y 轴平移 -40，然后旋转 -30°，才是左臂目前的位置。同样，左前臂的位移是（-45，100），角度是 55°，表示左前臂在左臂的基础上，沿 X 轴平移 -45，沿 Y 轴平移 100，然后旋转 55°，才是左前臂的位置。依此类推。
 
-![躯干-左臂-左前臂 骨骼系统](http://img.alicdn.com/tps/TB1umjqKFXXXXXeXFXXXXXXXXXX-439-514.png)
+![躯干-左臂-左前臂 骨骼系统](TB1umjqKFXXXXXeXFXXXXXXXXXX-439-514.png)
 
 位移和角度统称「变换参数」。用相对于父骨骼（而非全局）的变换参数描述子骨骼本身，其好处在于。当右臂（父骨骼）运动起来（变换参数变化起来）的时候，右前臂（子骨骼）自身即使不动（变换参数不变），它实际上还能够 **随着** 右臂运动。
 
@@ -109,7 +109,7 @@ context.draw(左臂)
 
 算出来的结果是 （89，69，25°）。
 
-![](http://img.alicdn.com/tps/TB159_dKFXXXXcgXVXXXXXXXXXX-439-514.png)
+![](TB159_dKFXXXXcgXVXXXXXXXXXX-439-514.png)
 
 这样，我们就能在不依赖左臂的情况下，把左前臂的位置确定下来了。所有的骨骼都按照这种方式处理，万事大吉了！
 
@@ -126,7 +126,7 @@ context.draw(左臂)
 
 如果还想做细腻一些，自然还有头部的摆动，毛发颤动，眼珠转动等等……而每一片骨骼的变化，只需要三五个关键帧。比如，示例骨骼动画（小龙跑步）的关键帧定义如下图所示。每个关键帧包含的信息包括：关键帧在动画周期中的位置，以及骨骼的变换参数。
 
-![关键帧](http://img.alicdn.com/tps/TB1BqHDKFXXXXaEXXXXXXXXXXXX-546-633.png)
+![关键帧](TB1BqHDKFXXXXaEXXXXXXXXXXXX-546-633.png)
 
 接下来，还有什么好说的呢？动画最基本的原理，就是随着时间更新对象的视觉状态。那么，对骨骼动画而言，就是在每一帧的时候，根据当前帧在一个动画周期内的位置，线性内插出每一片骨骼的位移和角度，然后算出全局的位移和角度，再画出来。
 
@@ -136,7 +136,7 @@ context.draw(左臂)
 
 这样，我们就能看到下面的情形了：参考 [Demo](http://jsbin.com/seyita/1/edit?html,output)。
 
-![](http://img.alicdn.com/tps/TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif)
+![](TB15qLcKFXXXXceXpXXXXXXXXXX-310-270.gif)
 
 ## 其他
 

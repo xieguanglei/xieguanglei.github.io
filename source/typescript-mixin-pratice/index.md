@@ -3,7 +3,7 @@
 
 > 多重继承必要性的例子（参考[这篇文章](https://medium.com/flutter-community/dart-what-are-mixins-3a72344011f3)）：
 > 
-> ![](https://img.alicdn.com/tfs/TB1JdcSbmWD3KVjSZSgXXcCxVXa-774-278.png)
+> ![](TB1JdcSbmWD3KVjSZSgXXcCxVXa-774-278.png)
 > 
 > 动物（Animal）是基类，哺乳动物类（Mamaml）、鸟类（Bird）和鱼类（Fish）是继承自动物的派生类，各自又派生出一些更具体的派生类。但是从另一个维度上，这些动物又具有会飞（CanFly），会跑（CanWalk）和会游水（CanSwim）的特征，而这些特征与之前的分类是完全正交（互相独立）的。此情况下，多重继承就会方便地帮助我们定义派生类——作为鸟类的鸭子，即会飞，也会跑，也有游水。
 

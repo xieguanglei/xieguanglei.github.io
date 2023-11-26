@@ -8,7 +8,7 @@ WebGL 的出现，使得在浏览器环境中渲染 3D 场景变得轻而易举�
 
 先看一下效果：[链接](http://g.alicdn.com/gama/assets/0.0.10/assets/shader-view-demo/compare.html)
 
-![](https://img.alicdn.com/tfs/TB1RNl_qntYBeNjy1XdXXXXyVXa-600-529.jpg)
+![](TB1RNl_qntYBeNjy1XdXXXXyVXa-600-529.jpg)
 
 左侧是原页面，[地址](http://g.alicdn.com/gama/assets/0.0.10/assets/shader-view-demo/index.html)；右侧是用 Shader 复刻后的页面，[地址](http://g.alicdn.com/gama/assets/0.0.10/assets/shader-view-demo/shader.html)。
 
@@ -16,9 +16,9 @@ WebGL 的出现，使得在浏览器环境中渲染 3D 场景变得轻而易举�
 
 我们可以看到，复刻前的页面（后面称「原页面」）是静态的，加载了 1 个 js 文件和 6 张图片共 599K 的资源（包含一张 502K 的大尺寸透明 png 图片）；而复刻后的页面上，有不少元素在动，加载了 1 个 js 文件和 4 张图片共 122K 的资源。不管是视觉效果，还是页面尺寸上的提升，都是比较明显的。
 
-![](https://img.alicdn.com/tfs/TB1B88_qntYBeNjy1XdXXXXyVXa-500-254.jpg)
+![](TB1B88_qntYBeNjy1XdXXXXyVXa-500-254.jpg)
 
-![](https://img.alicdn.com/tfs/TB1Xcsip1uSBuNjy1XcXXcYjFXa-500-226.jpg)
+![](TB1Xcsip1uSBuNjy1XcXXcYjFXa-500-226.jpg)
 
 下面，我们就以这个页面为例，分析一下，使用 Shader 是如何让这个页面更小，更炫，更快。
 
@@ -28,7 +28,7 @@ WebGL 的出现，使得在浏览器环境中渲染 3D 场景变得轻而易举�
 
 原页面存在的一个最大的问题是，有一张特别大的透明背景图。
 
-![](https://img.alicdn.com/tfs/TB11dUjp1uSBuNjy1XcXXcYjFXa-750-571.jpg)
+![](TB11dUjp1uSBuNjy1XcXXcYjFXa-750-571.jpg)
 
 这张图的体积达到了惊人的 501K，这是因为这张图是具有透明通道的 png 图片。而且由于这张图是广告内容，可能不止一张，是无法融合到背景里去的，必须透明。这时怎么优化呢？
 我们知道，具有透明通道的 png 的压缩是比较困难的；而不具备透明通道的图片，我们可以把它转化为 jpg 等格式，压缩比就高得多了，我们就可以以较小的质量损失去换取较大的压缩空间。
@@ -37,7 +37,7 @@ WebGL 的出现，使得在浏览器环境中渲染 3D 场景变得轻而易举�
 
 这张图看上去是这样的：
 
-![](https://img.alicdn.com/tfs/TB13tUjp1uSBuNjy1XcXXcYjFXa-700-700.jpg)
+![](TB13tUjp1uSBuNjy1XcXXcYjFXa-700-700.jpg)
 
 > 注意，前一张图的像素尺寸是 750x571，而后一张图的像素尺寸为 1024x1024，这里我并没有通过缩小图片的像素尺寸来进行压缩。
 >
@@ -68,7 +68,7 @@ png 图片转化为 jpg 图片的过程，可以很轻松地在浏览器里操�
 
 首先，我们注意到，原页面的背景是在红色的渐变之上，随机散布着一些黄色的氛围小碎片。红色渐变背景和这些小碎片全部画在一张静态 jpg 图片上，如下图（1.原图）所示。
 
-![](https://img.alicdn.com/tfs/TB16JUjp1uSBuNjy1XcXXcYjFXa-700-1256.jpg)
+![](TB16JUjp1uSBuNjy1XcXXcYjFXa-700-1256.jpg)
 
 在复刻前，我把原页面用到的图片分为了两类，图案（pattern）性质和图片（image）性质。Pattern 性质的图片，本身并不传递信息，通常用作底纹，氛围等场景；而 image 性质的图片则是信息的载体。
 
@@ -229,7 +229,7 @@ void main() {
 
 原页面中有一个圆形的窗格，这个窗格也是画在一张透明图片上。不知读者是否注意到，在复刻后的页面中，这个窗格是用 shader 直接画出来的。
 
-![](https://img.alicdn.com/tfs/TB10Tp.qntYBeNjy1XdXXXXyVXa-400-363.jpg)
+![](TB10Tp.qntYBeNjy1XdXXXXyVXa-400-363.jpg)
 
 实际上，这种复杂程度的窗格，也可以归为图案（pattern）一类，shader 是完全可以直接画出来的。下面，我们就来看看用 shader 如何来画窗格。
 窗格是由线组成的，其基本单元是线。首先我们看一下是如何画线的：
@@ -265,7 +265,7 @@ void main(){
 
 main 函数调用 veins 函数，veins 又调用 line 函数得到一个灰度值，然后混合两种颜色。上述程序的结果如下图所示。
 
-![](https://img.alicdn.com/tfs/TB1ctq.p3mTBuNjy1XbXXaMrVXa-400-430.jpg)
+![](TB1ctq.p3mTBuNjy1XbXXaMrVXa-400-430.jpg)
 
 解释一下几个参数：p 是当前像素的 x 或 y 坐标值（取决于横线还是竖线，如果是横线为 y 坐标值，如果为竖线为 x 坐标值），e 则是所绘制的直线所在的坐标。w 指线的宽度，而 d 指在线与非线的交界处，用来平滑的区域的宽度。
 
@@ -302,7 +302,7 @@ vec3 veins(){
 
 我们计算了 8 根直线，得到的结果如下图 2 所示。
 
-![](https://img.alicdn.com/tfs/TB1ltq.p3mTBuNjy1XbXXaMrVXa-700-1105.jpg)
+![](TB1ltq.p3mTBuNjy1XbXXaMrVXa-700-1105.jpg)
 
 拆解图案，我们发现光有直线还不能满足要求，还需要有射线和矩形框。同样，我们引入射线 ray 和矩形框 box 函数。
 

@@ -12,6 +12,6 @@
 
 这就是我：
 
-![](http://xieguanglei.oss-cn-hangzhou.aliyuncs.com/photos/xieguanglei.jpg)
+![](xieguanglei.jpg)
 
 你可以通过电子邮件 xieguanglei@hotmail.com 联系到我。

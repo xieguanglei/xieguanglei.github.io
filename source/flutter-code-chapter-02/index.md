@@ -52,7 +52,7 @@ Picture createSolidRectanglePicture(
 
 渲染结果如下图所示：
 
-![最简单的例子渲染结果](http://img.alicdn.com/tfs/TB1iR.Te8v0gK0jSZKbXXbK2FXa-400-444.png)
+![最简单的例子渲染结果](TB1iR.Te8v0gK0jSZKbXXbK2FXa-400-444.png)
 
 这个例子首先创建了一个 `PictureLayer` 类的实例和一个 `OffsetLayer` 类的实例（这两个类定义在 `package:flutter/rendering.dart` 中，其含义稍后解释），并将 `pictureLayer` 作为子节点（如上一篇所述，Layer 通过树状结构来组织）添加到名为 `rootLayer` 的 `OffsetLayer` 对象中。
 
@@ -82,13 +82,13 @@ sceneBuilder.pop();
 
 这个例子中，Layer 树的节点只有两个，类型为 `OffserLayer` 的根节点 `rootLayer` （对应 `sceneBuilder` 上的操作是 `pushOffset` 和 `pop`），和类型为 `PictureLayer` 的叶子节点 `pictureLayer`（对应 `sceneBuilder` 上的操作是 `addPicture`）：如下图所示：
 
-![最简单的例子](http://gw.alicdn.com/tfs/TB1tbzwe2b2gK0jSZK9XXaEgFXa-278-354.png)
+![最简单的例子](TB1tbzwe2b2gK0jSZK9XXaEgFXa-278-354.png)
 
 ## 常用的 Layer 类
 
 所有的 Layer 类（刚刚我们已经见识过了 `OffsetLayer` 和 `PictureLayer`）全部派生自 `Layer` 基类（这些类全部实现在 `rendering/layer.dart` 文件中）。具体的 Layer 类又分为两种：一种是具有一个或多个子节点的 Layer，它们继承自 `ContainerLayer`，另一种是不具有子节点的 Layer（叶子节点），它们直接继承自 `Layer`；如下图所示：
 
-![Layer 继承关系（常用 Layer）](http://gw.alicdn.com/tfs/TB1x.DxeYr1gK0jSZFDXXb9yVXa-664-358.png)
+![Layer 继承关系（常用 Layer）](TB1x.DxeYr1gK0jSZFDXXb9yVXa-664-358.png)
 
 常用的具有子节点的 Layer 有三类：半透明（`OpacityLayer`）、位移（`OffsetLayer`、`TransformLayer`）和裁剪（`ClipRectLayer`、`ClipRRectLayer` 和 `ClipPathLayer`）。半透明、位移和裁剪这三个操作的目标，是所有子节点渲染结果叠加得到的**像素数据**，只有这种级别的操作，才值得添加一种 `ContainerLayer` 来对应。
 
@@ -150,11 +150,11 @@ OffsetLayer createLayerTree(){
 
 从这个例子开始，我把创建的 Layer 树过程封装在了 `createLayerTree()` 方法中。`main()` 函数主动调用此方法获取 Layer 树的根节点并渲染（与前一个例子一致）。`createLayerTree()` 方法创建的 Layer 树如下所示：
 
-![图 OffsetLayer 与 TransformLayer](http://img.alicdn.com/tfs/TB1tunKe.H1gK0jSZSyXXXtlpXa-537-361.png)
+![图 OffsetLayer 与 TransformLayer](TB1tunKe.H1gK0jSZSyXXXtlpXa-537-361.png)
 
 渲染结果如下所示：
 
-![位移图层渲染结果](http://img.alicdn.com/tfs/TB1pJMTe.H1gK0jSZSyXXXtlpXa-400-444.png)
+![位移图层渲染结果](TB1pJMTe.H1gK0jSZSyXXXtlpXa-400-444.png)
 
 创建 `OffsetLayer` 对象时可传入 `Offset` 对象以指定位移的偏移量。创建 `TransformLayer` 对象时需传入矩阵 `transform` 来描述具体的变换，这里用了沿 Z 轴（与屏幕垂直的轴）旋转 45°，因此渲染结果上，以 `transformParent` 为根的子树沿着左上角顺时针旋转了 45°，如果选择沿 X 或 Y 轴旋转，子树会变被水平压扁或垂直压扁，这是正射投影的结果（因为 X 轴和 Y 轴在屏幕内，而我们是平行于 Z 轴看屏幕的）。
 
@@ -206,11 +206,11 @@ OffsetLayer createLayerTree(){
 
 在这个例子中，`createLayerTree()` 方法创建的子树如下图所示。创建 `OpacityLayer` 对象时，传入整型的 `alpha` 参数，128 表示半透明。
 
-![OpacityLayer](http://gw.alicdn.com/tfs/TB1.ovTeYY1gK0jSZTEXXXDQVXa-364-511.png)
+![OpacityLayer](TB1.ovTeYY1gK0jSZTEXXXDQVXa-364-511.png)
 
 渲染结果如下所示。由于 `foregroundParent` 是 `root` 的第二个子节点（根据 `append` 顺序），在 `backgroundParent` 子树之后进行渲染，所以可以透过绿色的前景矩形看到红色的背景矩形。
 
-![半透明图层渲染结果](http://img.alicdn.com/tfs/TB1wesVe7L0gK0jSZFxXXXWHVXa-400-444.png)
+![半透明图层渲染结果](TB1wesVe7L0gK0jSZFxXXXWHVXa-400-444.png)
 
 接下来看裁剪图层。
 
@@ -282,7 +282,7 @@ Path createPath(){
 
 渲染结果如下所示：
 
-![裁剪图层渲染结果](http://img.alicdn.com/tfs/TB172AUe4n1gK0jSZKPXXXvUXXa-400-444.png)
+![裁剪图层渲染结果](TB172AUe4n1gK0jSZKPXXXvUXXa-400-444.png)
 
 ## Layer 树
 
@@ -453,7 +453,7 @@ class PictureLayer extends Layer {
 
 用一张图来举例说明整个流程吧，假设我们的 Layer 树和上面 Opacity Layer 小节中的示例一直，只不过第一次渲染后，为背景矩形重新绘制了一个 `Picture`。图中为了直观，我把 `_needsAddToScene` 称为 selfDirty，把 `_subtreeNeedsAddToScene` 称为 treeDirty。
 
-![Layer 树的更新绘制逻辑](http://img.alicdn.com/tfs/TB1ae8weubviK0jSZFNXXaApXXa-750-1250.png)
+![Layer 树的更新绘制逻辑](TB1ae8weubviK0jSZFNXXaApXXa-750-1250.png)
 
 再次总结一下整个 Layer 树的核心逻辑：
 
@@ -526,7 +526,7 @@ void main(){
 
 这个例子绘制的结果如下所示。上边的红色矩形在变化位置和尺寸，表示对 Layer 树的渲染在持续地进行中。我们重点考察的目标是下面的由蓝色和绿色组成的圆角矩形，即以 `target` 节点为根的子树。我们在渲染到 100 次的时候，把 `target` 子树的唯一子节点 `clip` 删掉，所以渲染开始过了一会儿之后，下方的圆角矩形就消失了。
 
-![](http://img.alicdn.com/tfs/TB1NI.Ye4v1gK0jSZFFXXb0sXXa-400-432.gif)
+![](TB1NI.Ye4v1gK0jSZFFXXb0sXXa-400-432.gif)
 
 要知道，在渲染过程中，我们没有修改过 `target` 子树下的任何一个图层，所以 `target` 子树应该是一直以缓存的形式参与渲染的。你可以在 Flutter Framework 代码里悄悄打印一些日志来验证你的想法。
 
@@ -621,7 +621,7 @@ void main(){
 
 这段代码和上一篇中直接使用 `SceneBuilder` 的代码类似，绘制了两个逐渐增大的矩形。但是半透明的蓝色矩形只会在第一次渲染时使用，使用蓝色矩形绘制出的结果会被缓存在 `layer` 对象（`EngineLayer` 类的实例）中，从第二次开始调用 `addRetained()` 方法，传入 `layer` 对象。所以，我们可以看到蓝色矩形的尺寸是不会变化的。
 
-![](http://img.alicdn.com/tfs/TB1LU3YeYj1gK0jSZFuXXcrHpXa-400-216.gif)
+![](TB1LU3YeYj1gK0jSZFuXXcrHpXa-400-216.gif)
 
 > 相信读者应该能够体会得出 `push` 开头的方法和 `add` 开头的方法间的差异。前者反应状态的改变，此状态可以被 `pop()` 出来，用于父节点；而 `add` 开头的方法则是传入一些数据，用于叶子节点。当节点使用缓存来参与上层渲染时，其子树不会被访问到，那么该节点就相当于叶子节点了。
 
@@ -704,7 +704,7 @@ void main(){
 
 这是渲染效果：
 
-![ShakingLayer 渲染结果](http://img.alicdn.com/tfs/TB1LQEUe.Y1gK0jSZFMXXaWcVXa-400-432.gif)
+![ShakingLayer 渲染结果](TB1LQEUe.Y1gK0jSZFMXXaWcVXa-400-432.gif)
 
 ## 小结
 

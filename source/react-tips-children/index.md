@@ -11,7 +11,7 @@ React 的初学者通常会犯一个错误是：不大会使用（甚至完全�
 * 用户的描述信息默认不显示，鼠标 hover 到用户头像上时，用气泡显示描述信息。
 * 点击「关注」按钮即可关注用户，随之按钮文案变成「取关」（取消关注）。
 
-![](https://img.alicdn.com/tps/TB1_AceLXXXXXXHXpXXXXXXXXXX-200-271.png)
+![](TB1_AceLXXXXXXHXpXXXXXXXXXX-200-271.png)
 
 首先拆解一下上面的原型：
 
@@ -19,7 +19,7 @@ React 的初学者通常会犯一个错误是：不大会使用（甚至完全�
 * UserList 组件中有一组用户信息组件 UserItem。
 * 用户信息组件包括头像 Avatar，名字 Name，描述 Description，关注按钮 FollowButton。
 
-![](https://img.alicdn.com/tps/TB1OU.rLXXXXXXBXFXXXXXXXXXX-754-415.png)
+![](TB1OU.rLXXXXXXBXFXXXXXXXXXX-754-415.png)
 
 `UserList` 会被其外层容器组件调用。如果你对 React 和「组件化」思想比较缺乏经验，很有可能会写出这样的代码来。
 
@@ -149,7 +149,7 @@ const Description = props => <div>{props.value}</div>;
 
 我们可以看到，`onToggleFollow` 方法从最外层的 `App` 组件开始向内传递，经过 `UserList` 和 `UserItem`，最终落在了 `FollowButton` 上。其实，这个行为（关注与否）与中间的两层组件 `UserList` 和 `UserItem` 并没有什么关系，如果某一天「关注」按钮变成了「发信」按钮，`UserList` 和 `UserItem` 不应该为此作任何修改。
 
-![](https://img.alicdn.com/tps/TB1jPQqLXXXXXXSXFXXXXXXXXXX-714-206.png)
+![](TB1jPQqLXXXXXXSXFXXXXXXXXXX-714-206.png)
 
 也就是说，上面的这个 `UserList` 看上去把用户列表内的逻辑都封装了起来，但它并不是一个足够「组件化」的组件。一个合格的「组件化」的 `UserList` 应该能像下面这样被调用。
 
