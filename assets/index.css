@@ -167,10 +167,6 @@
 }
 #post .main img{
   max-width: 700px;
-  margin-left: 25px;
-}
-#post .main p svg:only-child {
-  margin-left: 25px;
 }
 #post .main blockquote img{
   max-width: 600px;
