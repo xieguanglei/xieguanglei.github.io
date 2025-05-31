@@ -1,6 +1,7 @@
 .DS_Store
 .obsidian
+.cursor
 dist
 node_modules
-package.json
 package-lock.json
+pnpm-lock.yaml
