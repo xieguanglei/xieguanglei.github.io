@@ -6,13 +6,18 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <article>
-        <div class="meta">
-            <time><%= date %></time>
-        </div>
-        <div class="content">
-            <%- content %>
-        </div>
-    </article>
+    <div class="layout">
+        <%- include('sidebar.html') %>
+        <main class="content">
+            <article>
+                <div class="meta">
+                    <time><%= date %></time>
+                </div>
+                <div class="content">
+                    <%- content %>
+                </div>
+            </article>
+        </main>
+    </div>
 </body>
-</html> 
+</html>

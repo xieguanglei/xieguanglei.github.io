@@ -135,4 +135,51 @@ a:hover {
         text-decoration: none;
         color: var(--text-color);
     }
+}
+
+.layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.sidebar header {
+    margin-bottom: 2rem;
+}
+
+.sidebar h1 {
+    font-size: 1.8em;
+    margin: 0;
+}
+
+main.content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: static;
+    }
+
+    .sidebar h1 {
+        font-size: 1.5em;
+    }
 } 

@@ -35,6 +35,13 @@ fs.ensureDirSync(OUTPUT_DIR);
 const postTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'post.html'), 'utf-8');
 const indexTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'index.html'), 'utf-8');
 
+// 配置 EJS 选项
+const ejsOptions = {
+    async: false,
+    filename: path.join(TEMPLATES_DIR, 'index.html'),
+    root: TEMPLATES_DIR
+};
+
 // 扫描文章目录
 async function scanPosts(): Promise<Post[]> {
     const posts: Post[] = [];
@@ -115,7 +122,7 @@ async function generatePostPage(post: Post): Promise<void> {
         title: post.title,
         date: moment(post.date).format('YYYY年MM月DD日'),
         content: post.content
-    }, { async: true });
+    }, ejsOptions);
 
     const outputPath = path.join(OUTPUT_DIR, 'blog', post.date, post.postPath, 'index.html');
     await fs.ensureDir(path.dirname(outputPath));
@@ -124,12 +131,12 @@ async function generatePostPage(post: Post): Promise<void> {
 
 // 生成首页
 async function generateIndexPage(posts: Post[]): Promise<void> {
-    const html = await ejs.render(indexTemplate, {
+    const html = ejs.render(indexTemplate, {
         posts: posts.map(post => ({
             ...post,
             formattedDate: moment(post.date).format('YYYY年MM月DD日')
         }))
-    }, { async: true });
+    }, ejsOptions) as string;
     
     await fs.writeFile(path.join(OUTPUT_DIR, 'index.html'), html);
 }
@@ -217,4 +224,4 @@ async function build(): Promise<void> {
     }
 }
 
-build(); 
+build();
