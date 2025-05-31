@@ -159,14 +159,6 @@ async function copyAssets(post: Post): Promise<void> {
             console.log(`已复制图片: ${file}`);
         }
     }
-
-    // 复制 assets 目录（如果存在）
-    const assetsDir = path.join(sourcePostDir, 'assets');
-    if (await fs.pathExists(assetsDir)) {
-        const outputAssetsDir = path.join(OUTPUT_DIR, post.date, post.postPath, 'assets');
-        await fs.copy(assetsDir, outputAssetsDir);
-        console.log('已复制 assets 目录');
-    }
 }
 
 // 复制 CSS 文件
@@ -181,6 +173,20 @@ async function copyStyles(): Promise<void> {
     }
 }
 
+// 复制构建脚本目录下的资源文件
+async function copyBuildAssets(): Promise<void> {
+    const buildAssetsDir = path.join(__dirname, 'assets');
+    if (await fs.pathExists(buildAssetsDir)) {
+        const assetsFiles = await fs.readdir(buildAssetsDir);
+        for (const assetFile of assetsFiles) {
+            const sourcePath = path.join(buildAssetsDir, assetFile);
+            const outputPath = path.join(OUTPUT_DIR, assetFile);
+            await fs.copy(sourcePath, outputPath);
+            console.log(`已复制构建资源: ${assetFile}`);
+        }
+    }
+}
+
 // 主函数
 async function build(): Promise<void> {
     try {
@@ -189,6 +195,10 @@ async function build(): Promise<void> {
         // 清空输出目录
         await fs.emptyDir(OUTPUT_DIR);
         console.log('已清空输出目录');
+        
+        // 复制构建脚本目录下的资源文件
+        await copyBuildAssets();
+        console.log('构建资源文件复制完成');
         
         // 扫描并解析文章
         const posts = await scanPosts();

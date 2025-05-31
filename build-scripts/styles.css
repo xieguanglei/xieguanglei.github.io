@@ -1,185 +1,116 @@
+@font-face {
+    font-family: 'Open Sans';
+    src: url('fonts/OpenSans-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('fonts/SourceCodePro-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: "Icons";
+    src: url(data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAWQAAsAAAAACAwAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAADMAAABCsP6z7U9TLzIAAAE8AAAARAAAAFY8xkgIY21hcAAAAYAAAABcAAABlM1lNDBnbHlmAAAB3AAAAbAAAAHUdueanGhlYWQAAAOMAAAALwAAADYTYQhRaGhlYQAAA7wAAAAcAAAAJAfeA4VobXR4AAAD2AAAAA4AAAAQEAAAAGxvY2EAAAPoAAAACgAAAAoBOACwbWF4cAAAA/QAAAAfAAAAIAETAEluYW1lAAAEFAAAAUUAAAJtPlT+fXBvc3QAAAVcAAAAMwAAAERWZNPHeJxjYGRgYOBikGPQYWB0cfMJYeBgYGGAAJAMY05meiJQDMoDyrGAaQ4gZoOIAgCKIwNPAHicY2BkYWCcwMDKwMHUyXSGgYGhH0IzvmYwYuRgYGBiYGVmwAoC0lxTGByeMTwTY27438AQw9zAcAEozAiSAwDhlwxJeJztkMsNgDAMQ1+aUiHEmSkQJ6bhxPRZo7ifMbD0YsWRcjCwAC5OkcFejKZHqfXc2XqeubQXuZHC4qgVguGS6bZ2T+2jFX7tfd5z89bXoHUbE/WlFgf4B4qjD4p4nE2Qv08UQRTH37vZmT29i96xx85FvWHHTW5FzS7e7s6CEoLFXWEsjCREINASDMSSKy+htbEzlpYE/AO0sLaygdyPhsslRiktTWCOARqTl5eXb17x+X6AAoxnyBkJoAguePAApgGQge0CV5DVISAhJqrhVpgdJ2HOTwXy2MSpBY6fg64eMYai20NBqR71Tv0oakWR//PR0tazL7/pGtW/jjGPG3abBEyPuj09ohRFr4uCnf3AqBmZwadvXz/etf4cHuE9umvrz/ofGAzDNkvGRMA8gONOcFcFKasHIWaKC7MycyVZXWXK5arBF9CktssNqsAaVtxYTVw2YIDk20eH4rs54oQ34oVqq1qotbcxu12ykiU2+2Gu8CqipVsZ7rQnOS1++k6YHvb7eohT+1or6hTe2KvOnWrx7rpH7eka31tZXkxf5jG0S6WbD3P5F8nz5dU9XkmnOvliiuSgj57xMQRiOnQsIB0oQAWEKXUFdK0XL7XeryeKxGU/jcvxpLSA6pPBQJ8YSXIwQKnLVSmfSLnZbH5tjQE7JqP//eBf2fC8hjw/xVao30cAFxfvcT94nGNgZGBgAOLSGRemxPPbfGXgZmEAgRsKj4IQ9H8DFgbmBiCXg4EJJAoAM/YKOgB4nGNgZGBgbvjfwBDDwgACQJKRARWwAABHCgJteJxjYWBgYEHCAACwABEAAAAAAAAATgCwAOoAAHicY2BkYGBgYbBlYGUAASYg5gJCBob/YD4DAA8eAV0AeJxlj01OwzAQhV/6B6QSqqhgh+QFYgEo/RGrblhUavdddN+mTpsqiSPHrdQDcB6OwAk4AtyAO/BIJ5s2lsffvHljTwDc4Acejt8t95E9XDI7cg0XuBeuU38QbpBfhJto41W4Rf1N2MczpsJtdGF5g9e4YvaEd2EPHXwI13CNT+E69S/hBvlbuIk7/Aq30PHqwj7mXle4jUcv9sdWL5xeqeVBxaHJIpM5v4KZXu+Sha3S6pxrW8QmU4OgX0lTnWlb3VPs10PnIhVZk6oJqzpJjMqt2erQBRvn8lGvF4kehCblWGP+tsYCjnEFhSUOjDFCGGSIyujoO1Vm9K+xQ8Jee1Y9zed0WxTU/3OFAQL0z1xTurLSeTpPgT1fG1J1dCtuy56UNJFezUkSskJe1rZUQuoBNmVXjhF6XNGJPyhnSP8ACVpuyAAAAHicY2BigAAuBuyAhZGJkZmRhZGVgbmouJgtPbMkozSJuyIzryIzMy8t38iQgQEAdkwIUQA=) format('woff');
+}
+
 :root {
-    --primary-color: #3498db;
-    --text-color: #333;
-    --bg-color: #fff;
-    --border-color: #eee;
-    --code-bg: #f8f9fa;
-    --heading-color: #2c3e50;
-    --meta-color: #666;
+    --font-family-normal: 'Open Sans', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+    --font-family-code: 'Source Code Pro', 'Consolas', sans-serif;
+    --color-fg: #ecf0f1;
+    --color-bg: #273f54;
+    --color-bg-trans: rgba(39, 63, 84, 0.5);
+    --color-bg-light: #335e7c;
+    --color-bg-block: #8ab1b7;
+    --color-level1: #161616;
+    --color-level2: #777777;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --text-color: #e0e0e0;
-        --bg-color: #1a1a1a;
-        --border-color: #333;
-        --code-bg: #2d2d2d;
-        --heading-color: #e0e0e0;
-        --meta-color: #999;
-    }
-}
-
-body {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--bg-color);
-    transition: color 0.3s, background-color 0.3s;
-}
-
-h1 {
-    font-size: 2.5em;
-    margin-bottom: 1em;
-    color: var(--heading-color);
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-h2 {
-    font-size: 1.8em;
-    margin: 1.5em 0 1em;
-    color: var(--heading-color);
-    font-weight: 600;
-    line-height: 1.3;
-}
-
-article {
-    margin-bottom: 3em;
-    padding-bottom: 2em;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.meta {
-    color: var(--meta-color);
-    font-size: 0.9em;
-    margin: 0.8em 0;
-    display: flex;
-    gap: 1em;
-    flex-wrap: wrap;
-}
-
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.2s, text-decoration 0.2s;
-}
-
-a:hover {
-    text-decoration: underline;
-    color: #2980b9;
-}
-
-.content {
-    margin-top: 2em;
-}
-
-.content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.content pre {
-    background: var(--code-bg);
-    padding: 1.2em;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 1.5em 0;
-    border: 1px solid var(--border-color);
-}
-
-.content code {
-    background: var(--code-bg);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    font-size: 0.9em;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-    body {
-        padding: 15px;
-    }
-
-    h1 {
-        font-size: 2em;
-    }
-
-    h2 {
-        font-size: 1.5em;
-    }
-
-    .content pre {
-        padding: 1em;
-    }
-}
-
-/* 打印样式优化 */
-@media print {
-    body {
-        max-width: none;
-        padding: 0;
-    }
-
-    .content pre {
-        white-space: pre-wrap;
-        border: 1px solid #ddd;
-    }
-
-    a {
-        text-decoration: none;
-        color: var(--text-color);
-    }
-}
-
-.layout {
-    display: flex;
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+* {
+    font-family: var(--font-family-normal);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
 }
 
 .sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 20px;
-    height: fit-content;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 75px;
+    height: 100vh;
+    color: var(--color-fg);
+    background-color: var(--color-bg);
+    box-shadow: 0 3px 5px var(--color-bg-light);
 }
 
-.sidebar header {
-    margin-bottom: 2rem;
+.sidebar a {
+    text-decoration: none;
+    color: var(--color-fg);
+    font-weight: bold;
 }
 
-.sidebar h1 {
-    font-size: 1.8em;
-    margin: 0;
+
+.sidebar .title {
+    font-family: var(--font-family-normal);
+    font-size: 16px;
+    text-align: center;
+    margin-left: -8px;
 }
 
-main.content {
-    flex: 1;
-    min-width: 0;
+.sidebar .links {
+    margin-top: 10px;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .layout {
-        flex-direction: column;
-        padding: 15px;
-    }
+.iconfont {
+    text-align: center;
+    margin-left: -8px;
+    font-family: "Icons";
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-style: normal;
+}
 
-    .sidebar {
-        width: 100%;
-        position: static;
-    }
+.icon-author:before {
+    content: "\e616";
+}
 
-    .sidebar h1 {
-        font-size: 1.5em;
-    }
-} 
+.icon-rss:before {
+    content: "\e600";
+}
+
+.icon-github:before {
+    content: "\e601";
+}
+
+
+.content {
+    margin-left: 75px;
+}
+
+.post-list {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    width: 750px;
+    margin: auto;
+}
+
+.post-item {
+    margin-top: 12px;
+}
+
+.post-item .time {
+    display: inline;
+    width: 140px;
+    margin-right: 10px;
+    font-size: 16px;
+    color: var(--color-level2);
+}
+
+.post-item .title {
+    display: inline;
+}
+
+.post-item .title a {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 16px;
+}

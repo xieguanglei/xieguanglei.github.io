@@ -31,7 +31,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-#header{
+.sidebar{
   position: fixed;
   top: 0;
   left: 0;
@@ -41,23 +41,20 @@
   background-color: var(--color-bg);
   box-shadow: 0 3px 5px var(--color-bg-light);
 }
-#header a{
-  text-decoration: none;
-  color: var(--color-fg);
-}
 
-#title{
+.title{
   font-family: var(--font-family-normal);
   font-size: 16px;
   text-align: center;
   margin-left: -8px;
 }
-#title > a{
+.title > a{
   text-decoration: none;
-  color: #ecf0f1;
+  color: var(--color-fg);
   font-weight: bold;
 }
-#header .links{
+
+.sidebar .links{
   margin-top: 10px;
 }
 
@@ -76,7 +73,7 @@
   margin-top: 12px;
 }
 #posts .post .date{
-  display: inline-block;
+  display: inline;
   width: 140px;
   margin-right: 10px;
   font-size: 16px;

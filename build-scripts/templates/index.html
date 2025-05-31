@@ -12,8 +12,8 @@
             <div class="post-list">
                 <% posts.forEach(function(post) { %>
                     <article class="post-item">
-                        <h2><a href="/blog/<%= post.date %>/<%= post.postPath %>"><%= post.title %></a></h2>
-                        <time><%= post.formattedDate %></time>
+                        <time class="time"><%= post.formattedDate %></time>
+                        <h2 class="title"><a href="/blog/<%= post.date %>/<%= post.postPath %>"><%= post.title %></a></h2>
                     </article>
                 <% }); %>
             </div>
