@@ -1,10 +1,27 @@
-const fs = require('fs-extra');
-const path = require('path');
-const matter = require('gray-matter');
-const marked = require('marked');
-const moment = require('moment');
-const yaml = require('js-yaml');
-const ejs = require('ejs');
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import matter from 'gray-matter';
+import { marked } from 'marked';
+import moment from 'moment';
+import yaml from 'js-yaml';
+import ejs from 'ejs';
+
+// 类型定义
+interface PostMeta {
+    path?: string;
+    [key: string]: any;
+}
+
+interface Post {
+    date: string;
+    title: string;
+    path: string;
+    postPath: string;
+    content?: string;
+    url?: string;
+    formattedDate?: string;
+    [key: string]: any;
+}
 
 // 配置
 const SOURCE_DIR = path.join(__dirname, '..', 'source');
@@ -19,8 +36,8 @@ const postTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'post.html'), 'utf
 const indexTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'index.html'), 'utf-8');
 
 // 扫描文章目录
-async function scanPosts() {
-    const posts = [];
+async function scanPosts(): Promise<Post[]> {
+    const posts: Post[] = [];
     console.log('正在扫描目录:', SOURCE_DIR);
     
     try {
@@ -50,9 +67,9 @@ async function scanPosts() {
                         
                         if (await fs.pathExists(indexMd) && await fs.pathExists(indexYaml)) {
                             const metaContent = await fs.readFile(indexYaml, 'utf-8');
-                            const meta = yaml.load(metaContent);
+                            const meta = yaml.load(metaContent) as PostMeta;
                             const [date, title] = [dir, postName];
-                            posts.push({ date, title, path: postPath, postPath: meta.path });
+                            posts.push({ date, title, path: postPath, postPath: meta.path || '' });
                             console.log('找到文章:', date, title, meta.path);
                         }
                     }
@@ -71,13 +88,13 @@ async function scanPosts() {
 }
 
 // 解析文章内容
-async function parsePost(post) {
+async function parsePost(post: Post): Promise<Post> {
     const indexMd = path.join(post.path, 'index.md');
     const indexYaml = path.join(post.path, 'index.yaml');
     
     const content = await fs.readFile(indexMd, 'utf-8');
     const metaContent = await fs.readFile(indexYaml, 'utf-8');
-    const meta = yaml.load(metaContent);
+    const meta = yaml.load(metaContent) as PostMeta;
     
     const { data: frontMatter, content: markdown } = matter(content);
     if (!post.postPath) {
@@ -87,18 +104,18 @@ async function parsePost(post) {
         ...post,
         ...meta,
         ...frontMatter,
-        content: marked.parse(markdown),
+        content: marked.parse(markdown, { async: false }) as string,
         url: `/blog/${post.date}/${post.postPath}/`
     };
 }
 
 // 生成文章页面
-async function generatePostPage(post) {
+async function generatePostPage(post: Post): Promise<void> {
     const html = await ejs.render(postTemplate, {
         title: post.title,
         date: moment(post.date).format('YYYY年MM月DD日'),
         content: post.content
-    });
+    }, { async: true });
 
     const outputPath = path.join(OUTPUT_DIR, 'blog', post.date, post.postPath, 'index.html');
     await fs.ensureDir(path.dirname(outputPath));
@@ -106,19 +123,19 @@ async function generatePostPage(post) {
 }
 
 // 生成首页
-async function generateIndexPage(posts) {
+async function generateIndexPage(posts: Post[]): Promise<void> {
     const html = await ejs.render(indexTemplate, {
         posts: posts.map(post => ({
             ...post,
             formattedDate: moment(post.date).format('YYYY年MM月DD日')
         }))
-    });
+    }, { async: true });
     
     await fs.writeFile(path.join(OUTPUT_DIR, 'index.html'), html);
 }
 
 // 复制图片资源
-async function copyAssets(post) {
+async function copyAssets(post: Post): Promise<void> {
     // 构建源文件目录路径
     const sourcePostDir = path.join(SOURCE_DIR, post.date, post.title);
     
@@ -146,7 +163,7 @@ async function copyAssets(post) {
 }
 
 // 复制 CSS 文件
-async function copyStyles() {
+async function copyStyles(): Promise<void> {
     const stylesPath = path.join(__dirname, 'styles.css');
     const outputStylesPath = path.join(OUTPUT_DIR, 'styles.css');
     if (await fs.pathExists(stylesPath)) {
@@ -158,7 +175,7 @@ async function copyStyles() {
 }
 
 // 主函数
-async function build() {
+async function build(): Promise<void> {
     try {
         console.log('开始构建博客...');
         
@@ -200,4 +217,4 @@ async function build() {
     }
 }
 
-build();
+build(); 
