@@ -82,7 +82,7 @@
 }
 
 
-.content {
+.main {
     margin-left: 75px;
 }
 
@@ -113,4 +113,116 @@
     text-decoration: none;
     font-weight: normal;
     font-size: 16px;
+}
+
+/* === post ===*/
+
+
+.article strong {
+    font-weight: bolder;
+}
+
+.article .date {
+    color: var(--color-level2);
+}
+
+.article table {
+    border-top: 2px solid #7f8c8d;
+    border-bottom: 2px solid #7f8c8d;
+}
+
+.article table th,
+.article table td {
+    max-width: 400px;
+    min-width: 100px;
+    text-align: left;
+    vertical-align: top;
+    padding: 0 20px 0 0;
+}
+
+.article table th {
+    border-bottom: 1px solid #7f8c8d;
+}
+
+.article {
+    font-size: 16px;
+}
+
+.article pre {
+    padding: 15px;
+    background: var(--color-fg);
+    font-family: var(--font-family-code);
+    overflow: auto;
+}
+
+.article pre::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.article pre::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: var(--color-bg-trans);
+}
+
+.article pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.article pre span {
+    font-family: var(--font-family-code);
+}
+
+.article code {
+    font-family: var(--font-family-code);
+}
+
+.article blockquote {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 40px;
+    border-left: 10px solid #eee;
+}
+
+
+.article {
+    padding: 20px 20px 100px 20px;
+}
+
+.article {
+    margin: auto;
+}
+
+.article figure {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
+
+.article figure figurecaption {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: #888888;
+}
+
+.article img {
+    max-width: 700px;
+}
+
+.article blockquote img {
+    max-width: 600px;
+}
+
+
+@media screen and (max-width: 5000px) {
+    .article {
+        max-width:60vw;
+    }
+}
+
+@media screen and (max-width: 1500px) {
+    .article {
+        max-width: 800px;
+    }
 }

@@ -120,7 +120,7 @@ async function parsePost(post: Post): Promise<Post> {
 async function generatePostPage(post: Post): Promise<void> {
     const html = await ejs.render(postTemplate, {
         title: post.title,
-        date: moment(post.date).format('YYYY年MM月DD日'),
+        date: moment(post.date).format('YYYY / MM / DD'),
         content: post.content
     }, ejsOptions);
 
@@ -134,7 +134,7 @@ async function generateIndexPage(posts: Post[]): Promise<void> {
     const html = ejs.render(indexTemplate, {
         posts: posts.map(post => ({
             ...post,
-            formattedDate: moment(post.date).format('YYYY年MM月DD日')
+            formattedDate: moment(post.date).format('YYYY / MM / DD')
         }))
     }, ejsOptions) as string;
     
