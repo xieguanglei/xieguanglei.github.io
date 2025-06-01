@@ -3,12 +3,16 @@ import * as path from 'path';
 import moment from 'moment';
 import ejs from 'ejs';
 import yaml from 'js-yaml';
+import RSS from 'rss';
 import { PostRenderer, Post, PostMeta } from './post-renderer';
 
 // 配置
 const SOURCE_DIR = path.join(__dirname, '..', 'source');
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const TEMPLATES_DIR = path.join(__dirname, 'templates');
+
+// 创建文章渲染器
+const postRenderer = new PostRenderer();
 
 // 确保输出目录存在
 fs.ensureDirSync(OUTPUT_DIR);
@@ -147,6 +151,41 @@ async function copyBuildAssets(): Promise<void> {
     }
 }
 
+// 生成 RSS Feed
+async function generateRssFeed(posts: Post[]): Promise<void> {
+
+    const feed = new RSS({
+        title: '一叶斋',
+        description: '一叶障目 一叶知秋',
+        feed_url: 'https://xieguanglei.github.io/blog/feed.xml',
+        site_url: 'https://xieguanglei.github.io',
+        language: 'zh-cn',
+        pubDate: new Date(),
+        copyright: 'All rights reserved'
+    });
+
+    // 只添加前5篇文章
+    const recentPosts = posts.slice(0, 5);
+    
+    for (const post of recentPosts) {
+
+        const parsedPost = await postRenderer.parsePost(post);
+
+        feed.item({
+            title: post.title,
+            description: parsedPost.content || post.title,
+            url: `https://xieguanglei.github.io/blog/${post.date}/${post.postPath}`,
+            date: moment(post.date).toDate(),
+        });
+    }
+
+    const xml = feed.xml({ indent: true });
+    const outputPath = path.join(OUTPUT_DIR, 'blog', 'feed.xml');
+    await fs.ensureDir(path.dirname(outputPath));
+    await fs.writeFile(outputPath, xml);
+    console.log('RSS Feed 生成完成');
+}
+
 // 主函数
 async function build(): Promise<void> {
     try {
@@ -163,9 +202,6 @@ async function build(): Promise<void> {
         // 扫描并解析文章
         const posts = await scanPosts();
         console.log(`共找到 ${posts.length} 篇文章`);
-        
-        // 创建文章渲染器
-        const postRenderer = new PostRenderer();
         
         // 顺序处理每篇文章
         for (const post of posts) {
@@ -186,6 +222,9 @@ async function build(): Promise<void> {
         // 生成首页
         await generateIndexPage(posts);
         console.log('首页生成完成');
+        
+        // 生成 RSS Feed
+        await generateRssFeed(posts);
         
         // 复制 CSS 文件
         await copyStyles();

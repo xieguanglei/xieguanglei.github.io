@@ -81,11 +81,7 @@ export class PostRenderer {
                         return undefined;
                     },
                     renderer(token) {
-                        console.log('===>');
-                        console.log(token.text);
-                        const a = renderMathToSVG(token.text);
-                        console.log(a);
-                        return a;
+                        return renderMathToSVG(token.text);
                     }
                 }
             ]
