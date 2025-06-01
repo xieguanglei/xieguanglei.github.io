@@ -1,27 +1,9 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import matter from 'gray-matter';
-import { marked } from 'marked';
 import moment from 'moment';
-import yaml from 'js-yaml';
 import ejs from 'ejs';
-
-// 类型定义
-interface PostMeta {
-    path?: string;
-    [key: string]: any;
-}
-
-interface Post {
-    date: string;
-    title: string;
-    path: string;
-    postPath: string;
-    content?: string;
-    url?: string;
-    formattedDate?: string;
-    [key: string]: any;
-}
+import yaml from 'js-yaml';
+import { PostRenderer, Post, PostMeta } from './post-renderer';
 
 // 配置
 const SOURCE_DIR = path.join(__dirname, '..', 'source');
@@ -92,28 +74,6 @@ async function scanPosts(): Promise<Post[]> {
     
     // 按日期降序排序
     return posts.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
-}
-
-// 解析文章内容
-async function parsePost(post: Post): Promise<Post> {
-    const indexMd = path.join(post.path, 'index.md');
-    const indexYaml = path.join(post.path, 'index.yaml');
-    
-    const content = await fs.readFile(indexMd, 'utf-8');
-    const metaContent = await fs.readFile(indexYaml, 'utf-8');
-    const meta = yaml.load(metaContent) as PostMeta;
-    
-    const { data: frontMatter, content: markdown } = matter(content);
-    if (!post.postPath) {
-        throw new Error(`文章 ${post.date}/${post.title} 缺少 path 字段`);
-    }
-    return {
-        ...post,
-        ...meta,
-        ...frontMatter,
-        content: marked.parse(markdown, { async: false }) as string,
-        url: `/blog/${post.date}/${post.postPath}/`
-    };
 }
 
 // 生成文章页面
@@ -204,11 +164,14 @@ async function build(): Promise<void> {
         const posts = await scanPosts();
         console.log(`共找到 ${posts.length} 篇文章`);
         
+        // 创建文章渲染器
+        const postRenderer = new PostRenderer();
+        
         // 顺序处理每篇文章
         for (const post of posts) {
             try {
                 console.log(`\n开始处理文章: ${post.date}/${post.title}`);
-                const parsedPost = await parsePost(post);
+                const parsedPost = await postRenderer.parsePost(post);
                 
                 await generatePostPage(parsedPost);
                 console.log('文章页面生成完成');

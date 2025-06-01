@@ -150,8 +150,8 @@
 
 .article pre {
     padding: 15px;
-    background: var(--color-fg);
     font-family: var(--font-family-code);
+    background: var(--color-fg);
     overflow: auto;
 }
 
@@ -175,6 +175,7 @@
 
 .article code {
     font-family: var(--font-family-code);
+    background: transparent;
 }
 
 .article blockquote {
