@@ -25,6 +25,10 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Build Pages
         run: cd build-scripts && pnpm i && pnpm build
       - name: Setup Pages
