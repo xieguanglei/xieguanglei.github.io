@@ -63,8 +63,14 @@ async function scanPosts(): Promise<Post[]> {
                             const metaContent = await fs.readFile(indexYaml, 'utf-8');
                             const meta = yaml.load(metaContent) as PostMeta;
                             const [date, title] = [dir, postName];
-                            posts.push({ date, title, path: postPath, postPath: meta.path || '' });
-                            console.log('找到文章:', date, title, meta.path);
+                            posts.push({ 
+                                date, 
+                                title, 
+                                path: postPath, 
+                                postPath: meta.path || '',
+                                hidden: meta.hidden || false 
+                            });
+                            console.log('找到文章:', date, title, meta.path, meta.hidden ? '(hidden)' : '');
                         }
                     }
                 }
@@ -96,8 +102,10 @@ async function generatePostPage(post: Post): Promise<void> {
 
 // 生成首页
 async function generateIndexPage(posts: Post[]): Promise<void> {
+    // 过滤掉 hidden 的文章
+    const visiblePosts = posts.filter(post => !post.hidden);
     const html = ejs.render(indexTemplate, {
-        posts: posts.map(post => ({
+        posts: visiblePosts.map(post => ({
             ...post,
             formattedDate: moment(post.date).format('YYYY / MM / DD')
         }))
@@ -179,10 +187,10 @@ async function generateRssFeed(posts: Post[]): Promise<void> {
         copyright: 'All rights reserved'
     });
 
-    // 只添加前5篇文章
-    const recentPosts = posts.slice(0, 5);
+    // 过滤掉 hidden 的文章，只添加前5篇可见文章
+    const visiblePosts = posts.filter(post => !post.hidden).slice(0, 5);
     
-    for (const post of recentPosts) {
+    for (const post of visiblePosts) {
         const parsedPost = await postRenderer.parsePost(post);
         
         // 转换文章内容中的图片路径

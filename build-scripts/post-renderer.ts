@@ -20,6 +20,7 @@ export interface Post {
     title: string;
     path: string;
     postPath: string;
+    hidden?: boolean;
     content?: string;
     url?: string;
     formattedDate?: string;
