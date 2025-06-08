@@ -1,3 +1,10 @@
+---
+keywords:
+  - webgl
+jsbin: true
+path: webgl-texture
+---
+
 # WebGL 纹理详解
 
 Buffer（数据缓冲区）与 Texture（纹理）是 WebGL 程序的两大数据来源。Buffer 可以通过 ArrayBuffer 或更语义化的 TypedArray 来构造；而 Texture 在大多数情况下，是通过 Image 对象来构造的。在构造和使用 Texture 的过程中，需要确定很多**选项**来以不同的方式构造 Texture；这些选项之间有着各种各样的关系，或互相依赖，或互相排斥，或互相影响。最近，我又重新梳理了一遍我所用到的 WebGL 纹理各种参数的影响，稍作整理，以防遗忘。

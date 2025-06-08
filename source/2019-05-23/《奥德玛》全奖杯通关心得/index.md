@@ -1,3 +1,7 @@
+---
+path: oddmar-game
+---
+
 # 《奥德玛》全奖杯通关心得
 
 ![](CC.jpg)

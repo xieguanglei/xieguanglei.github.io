@@ -106,20 +106,16 @@ export class PostRenderer {
 
     async parsePost(post: Post): Promise<Post> {
         const indexMd = path.join(post.path, 'index.md');
-        const indexYaml = path.join(post.path, 'index.yaml');
 
         const content = await fs.readFile(indexMd, 'utf-8');
-        const metaContent = await fs.readFile(indexYaml, 'utf-8');
-        const meta = yaml.load(metaContent) as PostMeta;
-
         const { data: frontMatter, content: markdown } = matter(content);
+        
         if (!post.postPath) {
             throw new Error(`文章 ${post.date}/${post.title} 缺少 path 字段`);
         }
 
         return {
             ...post,
-            ...meta,
             ...frontMatter,
             content: await this.renderContent(markdown),
             url: `/blog/${post.date}/${post.postPath}/`

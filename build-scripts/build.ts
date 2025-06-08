@@ -4,6 +4,7 @@ import moment from 'moment';
 import ejs from 'ejs';
 import yaml from 'js-yaml';
 import RSS from 'rss';
+import matter from 'gray-matter';
 import { PostRenderer, Post, PostMeta } from './post-renderer';
 
 // 配置
@@ -57,20 +58,19 @@ async function scanPosts(): Promise<Post[]> {
                     
                     if (stat.isDirectory()) {
                         const indexMd = path.join(postPath, 'index.md');
-                        const indexYaml = path.join(postPath, 'index.yaml');
                         
-                        if (await fs.pathExists(indexMd) && await fs.pathExists(indexYaml)) {
-                            const metaContent = await fs.readFile(indexYaml, 'utf-8');
-                            const meta = yaml.load(metaContent) as PostMeta;
-                            const [date, title] = [dir, postName];
+                        if (await fs.pathExists(indexMd)) {
+                            const content = await fs.readFile(indexMd, 'utf-8');
+                            const { data: meta } = matter(content);
+                            
                             posts.push({ 
-                                date, 
-                                title, 
+                                date: dir, 
+                                title: postName, 
                                 path: postPath, 
                                 postPath: meta.path || '',
                                 hidden: meta.hidden || false 
                             });
-                            console.log('找到文章:', date, title, meta.path, meta.hidden ? '(hidden)' : '');
+                            console.log('找到文章:', dir, postName, meta.path, meta.hidden ? '(hidden)' : '');
                         }
                     }
                 }

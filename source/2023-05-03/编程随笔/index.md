@@ -1,3 +1,10 @@
+---
+keywords:
+  - 随笔
+  - 编程
+path: programming-thoughts-2023
+---
+
 # 编程随笔
 
 ## 命名
