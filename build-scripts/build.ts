@@ -1,15 +1,17 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
+import path from 'path';
 import moment from 'moment';
 import ejs from 'ejs';
 import yaml from 'js-yaml';
 import RSS from 'rss';
+import matter from 'gray-matter';
 import { PostRenderer, Post, PostMeta } from './post-renderer';
 
 // 配置
 const SOURCE_DIR = path.join(__dirname, '..', 'source');
-const OUTPUT_DIR = path.join(__dirname, '../dist');
+const OUTPUT_DIR = path.join(__dirname, '..', 'dist');
 const TEMPLATES_DIR = path.join(__dirname, 'templates');
+const BUILD_ASSETS_DIR = path.join(__dirname, 'assets');
 
 // 创建文章渲染器
 const postRenderer = new PostRenderer();
@@ -28,7 +30,7 @@ const ejsOptions = {
     root: TEMPLATES_DIR
 };
 
-// 扫描文章目录
+// 扫描文章目录（不含文章内容），按照日期降序排序
 async function scanPosts(): Promise<Post[]> {
     const posts: Post[] = [];
     console.log('正在扫描目录:', SOURCE_DIR);
@@ -56,14 +58,19 @@ async function scanPosts(): Promise<Post[]> {
                     
                     if (stat.isDirectory()) {
                         const indexMd = path.join(postPath, 'index.md');
-                        const indexYaml = path.join(postPath, 'index.yaml');
                         
-                        if (await fs.pathExists(indexMd) && await fs.pathExists(indexYaml)) {
-                            const metaContent = await fs.readFile(indexYaml, 'utf-8');
-                            const meta = yaml.load(metaContent) as PostMeta;
-                            const [date, title] = [dir, postName];
-                            posts.push({ date, title, path: postPath, postPath: meta.path || '' });
-                            console.log('找到文章:', date, title, meta.path);
+                        if (await fs.pathExists(indexMd)) {
+                            const content = await fs.readFile(indexMd, 'utf-8');
+                            const { data: meta } = matter(content);
+                            
+                            posts.push({ 
+                                date: dir, 
+                                title: postName, 
+                                path: postPath, 
+                                postPath: meta.path || '',
+                                hidden: meta.hidden || false 
+                            });
+                            console.log('找到文章:', dir, postName, meta.path, meta.hidden ? '(hidden)' : '');
                         }
                     }
                 }
@@ -95,8 +102,10 @@ async function generatePostPage(post: Post): Promise<void> {
 
 // 生成首页
 async function generateIndexPage(posts: Post[]): Promise<void> {
+    // 过滤掉 hidden 的文章
+    const visiblePosts = posts.filter(post => !post.hidden);
     const html = ejs.render(indexTemplate, {
-        posts: posts.map(post => ({
+        posts: visiblePosts.map(post => ({
             ...post,
             formattedDate: moment(post.date).format('YYYY / MM / DD')
         }))
@@ -139,11 +148,10 @@ async function copyStyles(): Promise<void> {
 
 // 复制构建脚本目录下的资源文件
 async function copyBuildAssets(): Promise<void> {
-    const buildAssetsDir = path.join(__dirname, 'assets');
-    if (await fs.pathExists(buildAssetsDir)) {
-        const assetsFiles = await fs.readdir(buildAssetsDir);
+    if (await fs.pathExists(BUILD_ASSETS_DIR)) {
+        const assetsFiles = await fs.readdir(BUILD_ASSETS_DIR);
         for (const assetFile of assetsFiles) {
-            const sourcePath = path.join(buildAssetsDir, assetFile);
+            const sourcePath = path.join(BUILD_ASSETS_DIR, assetFile);
             const outputPath = path.join(OUTPUT_DIR, assetFile);
             await fs.copy(sourcePath, outputPath);
             console.log(`已复制构建资源: ${assetFile}`);
@@ -151,9 +159,24 @@ async function copyBuildAssets(): Promise<void> {
     }
 }
 
+// 转换图片路径为绝对路径
+function convertImageUrls(content: string, post: Post): string {
+    return content.replace(
+        /<img[^>]+src="([^"]+)"[^>]*>/g,
+        (match, src) => {
+            // 如果已经是绝对路径，则不做处理
+            if (src.startsWith('http://') || src.startsWith('https://')) {
+                return match;
+            }
+            // 将相对路径转换为绝对路径
+            const absoluteUrl = `https://xieguanglei.github.io/blog/${post.date}/${post.postPath}/${src}`;
+            return match.replace(src, absoluteUrl);
+        }
+    );
+}
+
 // 生成 RSS Feed
 async function generateRssFeed(posts: Post[]): Promise<void> {
-
     const feed = new RSS({
         title: '一叶斋',
         description: '一叶障目 一叶知秋',
@@ -164,16 +187,18 @@ async function generateRssFeed(posts: Post[]): Promise<void> {
         copyright: 'All rights reserved'
     });
 
-    // 只添加前5篇文章
-    const recentPosts = posts.slice(0, 5);
+    // 过滤掉 hidden 的文章，只添加前5篇可见文章
+    const visiblePosts = posts.filter(post => !post.hidden).slice(0, 5);
     
-    for (const post of recentPosts) {
-
+    for (const post of visiblePosts) {
         const parsedPost = await postRenderer.parsePost(post);
+        
+        // 转换文章内容中的图片路径
+        const contentWithAbsoluteUrls = convertImageUrls(parsedPost.content || '', post);
 
         feed.item({
             title: post.title,
-            description: parsedPost.content || post.title,
+            description: contentWithAbsoluteUrls,
             url: `https://xieguanglei.github.io/blog/${post.date}/${post.postPath}`,
             date: moment(post.date).toDate(),
         });

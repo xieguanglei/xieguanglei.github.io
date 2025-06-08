@@ -1,3 +1,9 @@
+---
+keywords:
+  - webgl
+path: webgl-handbook
+---
+
 # WebGL 技术储备指南
 
 WebGL是html5草案的一部分，可以驱动canvas渲染三维场景。WebGL虽然还未有广泛应用，但极具潜力和想象空间。本文是我学习WebGL时梳理知识脉络的产物，花点时间整理出来与大家分享。

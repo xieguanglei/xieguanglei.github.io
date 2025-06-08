@@ -1,3 +1,7 @@
+---
+path: using-shader-to-optimize-page
+---
+
 # 活用 Shader，让你的页面更小，更炫，更快
 
 可编程着色器（shader）是运行在 GPU 中的程序，是现代图形渲染技术的基础。Shader 赋予了开发者「逐像素着色」的能力。桌面/移动设备的图形程序 API 诸如 OpenGL，OpenGL ES，DirectX 以及新一代的 Vulkan，shader 都是重中之重，核心中的核心。

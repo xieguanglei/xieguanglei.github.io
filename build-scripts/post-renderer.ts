@@ -20,6 +20,7 @@ export interface Post {
     title: string;
     path: string;
     postPath: string;
+    hidden?: boolean;
     content?: string;
     url?: string;
     formattedDate?: string;
@@ -100,53 +101,21 @@ export class PostRenderer {
             }
         }
 
-        // const renderParagraph = renderer.paragraph;
-        // renderer.paragraph = function(paragraph): string {
-
-        //     let { text } = paragraph;
-
-        //     if (text.startsWith('\\begin')) {
-        //         text = text.replaceAll('&amp;', '&');
-        //         text = renderMathToSVG(text);
-        //     } else if (text.includes('$')) {
-        //         const parts = text.split('$');
-        //         if (parts.length % 2 === 1) {
-        //             let transformed: string[] = [];
-        //             for (const [i, part] of parts.entries()) {
-        //                 if (i % 2 === 0) {
-        //                     transformed[i] = part;
-        //                 } else {
-        //                     let p = parts[i];
-        //                     p = p.replaceAll('&amp;', '&');
-        //                     transformed[i] = renderMathToSVG(p);
-        //                 }
-        //             }
-        //             text = transformed.join('');
-        //         }
-        //     }
-
-        //     return renderParagraph.call(this, { ...paragraph, text });
-        // }
-
         this.marked.use({ renderer });
     }
 
     async parsePost(post: Post): Promise<Post> {
         const indexMd = path.join(post.path, 'index.md');
-        const indexYaml = path.join(post.path, 'index.yaml');
 
         const content = await fs.readFile(indexMd, 'utf-8');
-        const metaContent = await fs.readFile(indexYaml, 'utf-8');
-        const meta = yaml.load(metaContent) as PostMeta;
-
         const { data: frontMatter, content: markdown } = matter(content);
+        
         if (!post.postPath) {
             throw new Error(`文章 ${post.date}/${post.title} 缺少 path 字段`);
         }
 
         return {
             ...post,
-            ...meta,
             ...frontMatter,
             content: await this.renderContent(markdown),
             url: `/blog/${post.date}/${post.postPath}/`

@@ -1,3 +1,9 @@
+---
+keywords:
+  - threejs
+path: threejs-guide-translation
+---
+
 # 「译」ThreeJS 入门教程
 
 ---

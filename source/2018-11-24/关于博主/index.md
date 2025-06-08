@@ -1,3 +1,8 @@
+---
+hidden: true
+path: about
+---
+
 # 关于博主
 
 你好，欢迎来到我的博客。
