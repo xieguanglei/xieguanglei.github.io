@@ -100,34 +100,6 @@ export class PostRenderer {
             }
         }
 
-        // const renderParagraph = renderer.paragraph;
-        // renderer.paragraph = function(paragraph): string {
-
-        //     let { text } = paragraph;
-
-        //     if (text.startsWith('\\begin')) {
-        //         text = text.replaceAll('&amp;', '&');
-        //         text = renderMathToSVG(text);
-        //     } else if (text.includes('$')) {
-        //         const parts = text.split('$');
-        //         if (parts.length % 2 === 1) {
-        //             let transformed: string[] = [];
-        //             for (const [i, part] of parts.entries()) {
-        //                 if (i % 2 === 0) {
-        //                     transformed[i] = part;
-        //                 } else {
-        //                     let p = parts[i];
-        //                     p = p.replaceAll('&amp;', '&');
-        //                     transformed[i] = renderMathToSVG(p);
-        //                 }
-        //             }
-        //             text = transformed.join('');
-        //         }
-        //     }
-
-        //     return renderParagraph.call(this, { ...paragraph, text });
-        // }
-
         this.marked.use({ renderer });
     }
 
