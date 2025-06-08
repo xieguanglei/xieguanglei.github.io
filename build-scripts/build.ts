@@ -110,6 +110,8 @@ async function generateIndexPage(posts: Post[]): Promise<void> {
             formattedDate: moment(post.date).format('YYYY / MM / DD')
         }))
     }, ejsOptions) as string;
+
+    console.log(indexTemplate, html);
     
     await fs.writeFile(path.join(OUTPUT_DIR, 'index.html'), html);
 }
