@@ -1,5 +1,11 @@
 ---
 path: how-stream-video-works-on-web
+keywords:
+  - 流媒体
+  - video
+  - html5
+tags:
+  - 编程
 ---
 
 # 「译+注+修」Web 上的流媒体是如何工作的？

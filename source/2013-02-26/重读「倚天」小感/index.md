@@ -1,6 +1,8 @@
 ---
 keywords:
   - 倚天屠龙记
+tags:
+  - 读书
 path: heaven-sword
 ---
 

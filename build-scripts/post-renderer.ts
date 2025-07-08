@@ -12,6 +12,9 @@ import { renderMathToSVG } from './render-math';
 
 export interface PostMeta {
     path?: string;
+    description?: string;
+    keywords?: string[];
+    tags?: string[];
     [key: string]: any;
 }
 
@@ -20,6 +23,9 @@ export interface Post {
     title: string;
     path: string;
     postPath: string;
+    keywords: string[];
+    tags: string[];
+    description?: string;
     hidden?: boolean;
     content?: string;
     url?: string;

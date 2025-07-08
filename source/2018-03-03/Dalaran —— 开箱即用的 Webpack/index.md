@@ -1,5 +1,7 @@
 ---
 path: dalaran-the-webpack-tool
+tags:
+  - 编程
 ---
 
 # Dalaran —— 开箱即用的 Webpack

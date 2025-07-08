@@ -1,5 +1,7 @@
 ---
 path: c-language-review-notes
+tags:
+  - 编程
 ---
 
 # C 语言快速复习笔记

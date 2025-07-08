@@ -1,5 +1,7 @@
 ---
 path: amberpine
+tags:
+  - 编程
 ---
 
 # Amberpine —— 静态博客网站生成器

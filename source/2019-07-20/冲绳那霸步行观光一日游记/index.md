@@ -1,5 +1,9 @@
 ---
 path: okinawa-naha-story
+keywords:
+  - 冲绳
+tags:
+  - 旅行
 ---
 
 # 冲绳那霸步行观光一日游记

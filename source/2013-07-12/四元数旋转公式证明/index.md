@@ -1,6 +1,8 @@
 ---
 keywords:
   - 四元数
+tags:
+  - 编程
 path: quaternion-rotation
 ---
 

@@ -2,6 +2,8 @@
 keywords:
   - D2
   - 2020 D2
+tags:
+  - 演讲
 path: 2020-d2-speech
 ---
 

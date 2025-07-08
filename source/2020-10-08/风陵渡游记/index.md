@@ -1,5 +1,12 @@
 ---
 path: fenglingdu
+keywords:
+  - 风陵渡
+  - 山西
+  - 陕西
+  - 金庸
+tags:
+  - 旅行
 ---
 
 # 风陵渡游记

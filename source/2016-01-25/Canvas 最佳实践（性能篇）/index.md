@@ -1,5 +1,7 @@
 ---
 path: canvas-best-practice-performance
+tags:
+  - 编程
 ---
 
 # Canvas 最佳实践（性能篇）

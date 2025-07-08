@@ -1,5 +1,7 @@
 ---
 path: on-children
+tags:
+  - 读书
 ---
 
 # 「译」论孩子

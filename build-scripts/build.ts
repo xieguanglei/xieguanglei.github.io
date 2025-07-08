@@ -2,7 +2,6 @@ import * as fs from 'fs-extra';
 import path from 'path';
 import moment from 'moment';
 import ejs from 'ejs';
-import yaml from 'js-yaml';
 import RSS from 'rss';
 import matter from 'gray-matter';
 import { PostRenderer, Post, PostMeta } from './post-renderer';
@@ -33,11 +32,9 @@ const ejsOptions = {
 // 扫描文章目录（不含文章内容），按照日期降序排序
 async function scanPosts(): Promise<Post[]> {
     const posts: Post[] = [];
-    console.log('正在扫描目录:', SOURCE_DIR);
     
     try {
         const dirs = await fs.readdir(SOURCE_DIR);
-        console.log('找到的目录:', dirs);
         
         for (const dir of dirs) {
             // 检查目录名是否符合日期格式 (YYYY-MM-DD)
@@ -63,12 +60,15 @@ async function scanPosts(): Promise<Post[]> {
                             const content = await fs.readFile(indexMd, 'utf-8');
                             const { data: meta } = matter(content);
                             
-                            posts.push({ 
+                            posts.push({
                                 date: dir, 
-                                title: postName, 
-                                path: postPath, 
+                                title: postName,
+                                path: postPath,
                                 postPath: meta.path || '',
-                                hidden: meta.hidden || false 
+                                hidden: meta.hidden || false,
+                                keywords: meta.keywords || [],
+                                tags: meta.tags || [],
+                                description: meta.description || ''
                             });
                             console.log('找到文章:', dir, postName, meta.path, meta.hidden ? '(hidden)' : '');
                         }
@@ -92,7 +92,12 @@ async function generatePostPage(post: Post): Promise<void> {
     const html = await ejs.render(postTemplate, {
         title: post.title,
         date: moment(post.date).format('YYYY / MM / DD'),
-        content: post.content
+        content: post.content,
+        description: post.description || post.title,
+        keywords: post.keywords || [],
+        tags: post.tags || [],
+        url: post.url || `/blog/${post.date}/${post.postPath}/`,
+        publishedTime: moment(post.date).toISOString()
     }, ejsOptions);
 
     const outputPath = path.join(OUTPUT_DIR, 'blog', post.date, post.postPath, 'index.html');

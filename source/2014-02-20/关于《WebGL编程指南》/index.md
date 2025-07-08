@@ -1,6 +1,8 @@
 ---
 keywords:
   - WebGL编程指南
+tags:
+  - 出版
 path: about-webgl-programming-guide
 ---
 

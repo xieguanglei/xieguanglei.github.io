@@ -1,6 +1,8 @@
 ---
 keywords:
   - HTML5游戏开发进阶指南
+tags:
+  - 出版
 path: about-pro-html5-games
 ---
 

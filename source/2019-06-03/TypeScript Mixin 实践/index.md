@@ -3,6 +3,8 @@ keywords:
   - mixin
   - typescript
   - dart
+tags:
+  - 编程
 path: typescript-mixin-pratice
 ---
 

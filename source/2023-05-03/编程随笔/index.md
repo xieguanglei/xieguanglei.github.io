@@ -2,6 +2,12 @@
 keywords:
   - 随笔
   - 编程
+  - 架构师
+  - 命名
+  - 技术债
+  - 程序员
+tags:
+  - 编程
 path: programming-thoughts-2023
 ---
 

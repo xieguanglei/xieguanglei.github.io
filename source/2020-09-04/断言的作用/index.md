@@ -1,6 +1,8 @@
 ---
 keywords:
-  - assert
+  - 断言
+keywords:
+  - 编程
 path: assertion
 ---
 

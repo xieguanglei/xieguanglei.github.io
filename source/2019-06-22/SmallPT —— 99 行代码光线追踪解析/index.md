@@ -2,6 +2,8 @@
 keywords:
   - 光线追踪
   - SmallPT
+tags:
+  - 编程
 path: ray-tracing-99-lines-code
 ---
 
