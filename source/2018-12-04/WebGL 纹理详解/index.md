@@ -1,7 +1,8 @@
 ---
 keywords:
   - webgl
-jsbin: true
+tags:
+  - 编程
 path: webgl-texture
 ---
 

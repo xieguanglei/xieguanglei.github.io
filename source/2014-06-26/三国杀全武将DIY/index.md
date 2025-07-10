@@ -1,6 +1,8 @@
 ---
 keywords:
   - 三国杀DIY
+tags:
+  - 游戏
 path: sgs-diy
 ---
 

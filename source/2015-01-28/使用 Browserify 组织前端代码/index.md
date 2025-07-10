@@ -1,5 +1,7 @@
 ---
 path: use-browserify-in-fed
+tags:
+  - 编程
 ---
 
 # 使用 Browserify 组织前端代码

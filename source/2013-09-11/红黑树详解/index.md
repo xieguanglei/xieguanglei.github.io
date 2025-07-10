@@ -1,6 +1,8 @@
 ---
 keywords:
   - 红黑树
+tags:
+  - 编程
 path: red-black-tree
 ---
 

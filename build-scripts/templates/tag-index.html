@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>一叶斋</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="layout">
+        <%- include('sidebar.html') %>
+        <main class="main">
+            <div class="tag">
+              <%= tag %>
+            </div>
+            <div class="post-list">
+                <% posts.forEach(function(post) { %>
+                    <article class="post-item">
+                        <time class="time"><%= post.formattedDate %></time>
+                        <h2 class="title"><a href="/blog/<%= post.date %>/<%= post.postPath %>"><%= post.title %></a></h2>
+                    </article>
+                <% }); %>
+            </div>
+        </main>
+    </div>
+    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9b0def1d1ac3409daeac4177d3fcb125"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

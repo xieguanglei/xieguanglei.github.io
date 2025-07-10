@@ -1,6 +1,8 @@
 ---
 keywords:
   - 骨骼动画
+tags:
+  - 编程
 path: skeleton
 ---
 

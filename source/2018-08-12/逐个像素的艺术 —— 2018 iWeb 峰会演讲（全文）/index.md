@@ -2,6 +2,8 @@
 keywords:
   - 逐个像素的艺术
   - 2018 iWeb
+tags:
+  - 演讲
 path: 2018-iweb-speech
 ---
 

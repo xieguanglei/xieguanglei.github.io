@@ -2,7 +2,6 @@ import * as fs from 'fs-extra';
 import path from 'path';
 import moment from 'moment';
 import ejs from 'ejs';
-import yaml from 'js-yaml';
 import RSS from 'rss';
 import matter from 'gray-matter';
 import { PostRenderer, Post, PostMeta } from './post-renderer';
@@ -22,6 +21,9 @@ fs.ensureDirSync(OUTPUT_DIR);
 // 读取模板文件
 const postTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'post.html'), 'utf-8');
 const indexTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'index.html'), 'utf-8');
+const tagsTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'tags.html'), 'utf-8');
+const tagIndexTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, 'tag-index.html'), 'utf-8');
+
 
 // 配置 EJS 选项
 const ejsOptions = {
@@ -33,42 +35,43 @@ const ejsOptions = {
 // 扫描文章目录（不含文章内容），按照日期降序排序
 async function scanPosts(): Promise<Post[]> {
     const posts: Post[] = [];
-    console.log('正在扫描目录:', SOURCE_DIR);
-    
+
     try {
         const dirs = await fs.readdir(SOURCE_DIR);
-        console.log('找到的目录:', dirs);
-        
+
         for (const dir of dirs) {
             // 检查目录名是否符合日期格式 (YYYY-MM-DD)
             if (!/^\d{4}-\d{2}-\d{2}$/.test(dir)) {
                 console.log('跳过非日期格式目录:', dir);
                 continue;
             }
-            
+
             const postDir = path.join(SOURCE_DIR, dir);
             console.log('处理文章目录:', postDir);
-            
+
             try {
                 const postDirs = await fs.readdir(postDir);
-                
+
                 for (const postName of postDirs) {
                     const postPath = path.join(postDir, postName);
                     const stat = await fs.stat(postPath);
-                    
+
                     if (stat.isDirectory()) {
                         const indexMd = path.join(postPath, 'index.md');
-                        
+
                         if (await fs.pathExists(indexMd)) {
                             const content = await fs.readFile(indexMd, 'utf-8');
                             const { data: meta } = matter(content);
-                            
-                            posts.push({ 
-                                date: dir, 
-                                title: postName, 
-                                path: postPath, 
+
+                            posts.push({
+                                date: dir,
+                                title: postName,
+                                path: postPath,
                                 postPath: meta.path || '',
-                                hidden: meta.hidden || false 
+                                hidden: meta.hidden || false,
+                                keywords: meta.keywords || [],
+                                tags: meta.tags || [],
+                                description: meta.description || ''
                             });
                             console.log('找到文章:', dir, postName, meta.path, meta.hidden ? '(hidden)' : '');
                         }
@@ -82,7 +85,7 @@ async function scanPosts(): Promise<Post[]> {
         console.error('扫描目录时出错:', err);
         throw err;
     }
-    
+
     // 按日期降序排序
     return posts.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
 }
@@ -92,7 +95,12 @@ async function generatePostPage(post: Post): Promise<void> {
     const html = await ejs.render(postTemplate, {
         title: post.title,
         date: moment(post.date).format('YYYY / MM / DD'),
-        content: post.content
+        content: post.content,
+        description: post.description || post.title,
+        keywords: post.keywords || [],
+        tags: post.tags || [],
+        url: post.url || `/blog/${post.date}/${post.postPath}/`,
+        publishedTime: moment(post.date).toISOString()
     }, ejsOptions);
 
     const outputPath = path.join(OUTPUT_DIR, 'blog', post.date, post.postPath, 'index.html');
@@ -100,31 +108,97 @@ async function generatePostPage(post: Post): Promise<void> {
     await fs.writeFile(outputPath, html);
 }
 
+// 根据标签将文章分组
+function groupPostsByTags(posts: Post[]): { [tag: string]: Post[] } {
+    const groups: { [tag: string]: Post[] } = {};
+
+    for (const post of posts) {
+        // 跳过隐藏的文章
+        if (post.hidden) continue;
+
+        // 如果文章没有标签，放入 "未分类" 组
+        if (!post.tags || post.tags.length === 0) {
+            if (!groups['未分类']) {
+                groups['未分类'] = [];
+            }
+            groups['未分类'].push(post);
+            continue;
+        }
+
+        // 将文章添加到每个标签对应的组中
+        for (const tag of post.tags) {
+            if (!groups[tag]) {
+                groups[tag] = [];
+            }
+            groups[tag].push(post);
+        }
+    }
+
+    // 对每个组内的文章按日期降序排序
+    for (const tag in groups) {
+        groups[tag].sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
+    }
+
+    return groups;
+}
+
 // 生成首页
 async function generateIndexPage(posts: Post[]): Promise<void> {
     // 过滤掉 hidden 的文章
     const visiblePosts = posts.filter(post => !post.hidden);
+
     const html = ejs.render(indexTemplate, {
         posts: visiblePosts.map(post => ({
             ...post,
             formattedDate: moment(post.date).format('YYYY / MM / DD')
-        }))
+        })),
     }, ejsOptions) as string;
 
-    console.log(indexTemplate, html);
-    
     await fs.writeFile(path.join(OUTPUT_DIR, 'index.html'), html);
 }
+
+// 生成 tags 列表页
+async function generateTagsPage(tags: Array<{ name: string, path: string, count: number }>): Promise<void> {
+
+    const html = ejs.render(
+        tagsTemplate,
+        { tags },
+        ejsOptions
+    ) as string;
+
+    await fs.outputFile(path.join(OUTPUT_DIR, 'blog', 'tags.html'), html);
+}
+
+
+// 生成 tag 详情页
+async function generateTagIndexPage(posts: Post[], tag: string, tagPath: string): Promise<void> {
+
+    const html = ejs.render(
+        tagIndexTemplate,
+        {
+            tag,
+            posts: posts.map(p => ({
+                ...p,
+                formattedDate: moment(p.date).format('YYYY / MM / DD')
+            }))
+        },
+        ejsOptions
+    ) as string;
+
+    await fs.outputFile(path.join(OUTPUT_DIR, 'blog', tagPath, 'index.html'), html);
+}
+
+
 
 // 复制图片资源
 async function copyAssets(post: Post): Promise<void> {
     // 构建源文件目录路径
     const sourcePostDir = path.join(SOURCE_DIR, post.date, post.title);
-    
+
     // 复制文章目录下的图片文件
     const files = await fs.readdir(sourcePostDir);
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-    
+
     for (const file of files) {
         const ext = path.extname(file).toLowerCase();
         if (imageExtensions.includes(ext)) {
@@ -191,10 +265,10 @@ async function generateRssFeed(posts: Post[]): Promise<void> {
 
     // 过滤掉 hidden 的文章，只添加前5篇可见文章
     const visiblePosts = posts.filter(post => !post.hidden).slice(0, 5);
-    
+
     for (const post of visiblePosts) {
         const parsedPost = await postRenderer.parsePost(post);
-        
+
         // 转换文章内容中的图片路径
         const contentWithAbsoluteUrls = convertImageUrls(parsedPost.content || '', post);
 
@@ -217,45 +291,73 @@ async function generateRssFeed(posts: Post[]): Promise<void> {
 async function build(): Promise<void> {
     try {
         console.log('开始构建博客...');
-        
+
         // 清空输出目录
         await fs.emptyDir(OUTPUT_DIR);
         console.log('已清空输出目录');
-        
+
         // 复制构建脚本目录下的资源文件
         await copyBuildAssets();
         console.log('构建资源文件复制完成');
-        
+
         // 扫描并解析文章
         const posts = await scanPosts();
         console.log(`共找到 ${posts.length} 篇文章`);
-        
+
         // 顺序处理每篇文章
         for (const post of posts) {
             try {
                 console.log(`\n开始处理文章: ${post.date}/${post.title}`);
                 const parsedPost = await postRenderer.parsePost(post);
-                
+
                 await generatePostPage(parsedPost);
                 console.log('文章页面生成完成');
-                
+
                 await copyAssets(parsedPost);
                 console.log('文章资源复制完成');
             } catch (err) {
                 console.error(`处理文章 ${post.date}/${post.title} 时出错:`, err);
             }
         }
-        
+
         // 生成首页
         await generateIndexPage(posts);
         console.log('首页生成完成');
-        
+
+        const tagPosts = groupPostsByTags(posts);
+        const tagPaths: Record<string, string> = {
+            '编程': 'programing',
+            '演讲': 'speech',
+            '旅行': 'travel',
+            '游戏': 'game',
+            '读书': 'reading',
+            '出版': 'publication',
+            '精选': 'featured'
+        };
+
+        // 生成标签首页
+        await generateTagsPage(
+            Object.keys(tagPosts).map(n => ({
+                name: n,
+                path: tagPaths[n],
+                count: tagPosts[n].length
+            })).sort((a, b) => a.name === '精选' || a.count > b.count ? -1 : a.count < b.count ? 1 : 0)
+        )
+        console.log('标签首页生成完成');
+
+        for (const tag in tagPosts) {
+            const ps = tagPosts[tag];
+            if (Array.isArray(ps)) {
+                generateTagIndexPage(ps, tag, tagPaths[tag] ?? tag);
+            }
+        }
+
         // 生成 RSS Feed
         await generateRssFeed(posts);
-        
+
         // 复制 CSS 文件
         await copyStyles();
-        
+
         console.log('博客构建完成！');
     } catch (error) {
         console.error('构建失败:', error);

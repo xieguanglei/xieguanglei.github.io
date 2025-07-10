@@ -2,6 +2,8 @@
 keywords:
   - Web Worker
   - OffScreen Canvas
+tags:
+  - 编程
 path: web-worker
 ---
 

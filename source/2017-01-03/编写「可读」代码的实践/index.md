@@ -1,5 +1,7 @@
 ---
 path: write-readable-code-practice
+tags:
+  - 编程
 ---
 
 # 编写「可读」代码的实践

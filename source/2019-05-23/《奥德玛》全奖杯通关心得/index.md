@@ -1,5 +1,9 @@
 ---
 path: oddmar-game
+keywords:
+  - 奥德玛
+tags:
+  - 游戏
 ---
 
 # 《奥德玛》全奖杯通关心得

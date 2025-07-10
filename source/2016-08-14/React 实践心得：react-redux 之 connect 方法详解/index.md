@@ -2,6 +2,8 @@
 keywords:
   - react
   - redux
+tags:
+  - 编程
 path: react-tips-connect
 ---
 

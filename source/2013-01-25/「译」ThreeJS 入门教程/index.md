@@ -1,6 +1,8 @@
 ---
 keywords:
   - threejs
+tags:
+  - 编程
 path: threejs-guide-translation
 ---
 

@@ -1,6 +1,8 @@
 ---
 keywords:
   - Polymer面向未来的Web组件开发
+tags:
+  - 出版
 path: about-polymer-book
 ---
 

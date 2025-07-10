@@ -1,5 +1,7 @@
 ---
 path: blog-history
+tags:
+  - 编程
 ---
 
 # 折腾博客之历程

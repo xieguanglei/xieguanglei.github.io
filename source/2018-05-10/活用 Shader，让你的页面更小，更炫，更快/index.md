@@ -1,5 +1,7 @@
 ---
 path: using-shader-to-optimize-page
+tags:
+  - 编程
 ---
 
 # 活用 Shader，让你的页面更小，更炫，更快

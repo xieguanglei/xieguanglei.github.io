@@ -6,6 +6,8 @@ keywords:
   - 高级泛型
   - 集合论
   - 柯里化
+tags:
+  - 编程
 path: typescript-generic-perspect-of-set-thoery
 ---
 
