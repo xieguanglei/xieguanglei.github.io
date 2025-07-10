@@ -4,6 +4,7 @@ keywords:
   - SmallPT
 tags:
   - 编程
+  - 精选
 path: ray-tracing-99-lines-code
 ---
 

@@ -135,6 +135,8 @@
 
 .article {
     font-size: 16px;
+    max-width: 800px;
+    margin: auto;
 }
 
 .article pre {
@@ -208,16 +210,4 @@
 #disqus_thread {
     max-width: 800px;
     margin: auto;
-}
-
-@media screen and (max-width: 5000px) {
-    .article {
-        max-width:60vw;
-    }
-}
-
-@media screen and (max-width: 1500px) {
-    .article {
-        max-width: 800px;
-    }
 }

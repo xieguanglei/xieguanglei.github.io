@@ -8,6 +8,7 @@ keywords:
   - 程序员
 tags:
   - 编程
+  - 精选
 path: programming-thoughts-2023
 ---
 

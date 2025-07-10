@@ -8,6 +8,7 @@ keywords:
   - 柯里化
 tags:
   - 编程
+  - 精选
 path: typescript-generic-perspect-of-set-thoery
 ---
 
