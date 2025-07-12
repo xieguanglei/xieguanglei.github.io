@@ -6,7 +6,6 @@ tags:
 path: about-webgl-programming-guide
 ---
 
-# 关于《WebGL编程指南》
 
 ## 关于本书
 

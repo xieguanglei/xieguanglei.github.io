@@ -7,7 +7,6 @@ tags:
 path: react-tips-children
 ---
 
-# React 实践心得：说说 children 的使用
 
 React 的初学者通常会犯一个错误是：不大会使用（甚至完全不使用）组件的 children 属性。其实，对 children 的合理使用，是「组件化」的基础。
 

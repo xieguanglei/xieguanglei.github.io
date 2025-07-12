@@ -7,7 +7,6 @@ tags:
 path: about-g3d
 ---
 
-# G3D —— Hybrid 环境下的 WebGL 3D 渲染引擎
 
 > G3D 是一款开源 3D 渲染引擎，目前由我开发和维护。这篇宣传最初发表于[淘宝前端团队博客](http://taobaofed.org/blog/2018/03/05/intro-to-g3d/)。这里是个人博客上保存的一份备份。
 

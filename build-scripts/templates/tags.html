@@ -12,7 +12,7 @@
             <div class="tag">标签</div>
             <div class="tags">
               <% tags.forEach(function(tag, i) { %>
-                <a target="_blank" href="/blog/<%= tag.path %>/"><%= tag.name %>(<%= tag.count %>)<%= (i === tags.length - 1 ? '' : ',') %></a>
+                <a href="/blog/<%= tag.path %>/"><%= tag.name %>(<%= tag.count %>)<%= (i === tags.length - 1 ? '' : ',') %></a>
               <% }) %>
             </div>
         </main>

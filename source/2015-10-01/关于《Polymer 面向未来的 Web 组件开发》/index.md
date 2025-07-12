@@ -6,7 +6,6 @@ tags:
 path: about-polymer-book
 ---
 
-# 关于《Polymer 面向未来的 Web 组件开发》
 
 Polymer 以一种最激进的方式实践着 Web Components 标准，通过 Polymer 提供的 polyfill，我们几乎可以完全按照 Web Components 标准来编写面向未来的网页，然后等待未来的到来。
 

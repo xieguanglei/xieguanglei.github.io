@@ -4,7 +4,6 @@ tags:
   - 编程
 ---
 
-# 使用 Browserify 组织前端代码
 
 在最近的一些项目中，我使用了 [Browserify](http://browserify.org/) 来组织和构建前端代码。这个工具彻底改变了前端代码的模块化组织（以及构建）形式。
 

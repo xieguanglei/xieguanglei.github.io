@@ -12,7 +12,6 @@ tags:
 path: programming-thoughts-2023
 ---
 
-# 编程随笔
 
 ## 命名
 

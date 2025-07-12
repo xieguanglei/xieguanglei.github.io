@@ -4,7 +4,6 @@ tags:
   - 编程
 ---
 
-# Canvas 最佳实践（性能篇）
 
 Canvas 想必前端同学们都不陌生，它是 HTML5 新增的「画布」元素，允许我们使用 JavaScript 来绘制图形。目前，所有的主流浏览器都支持 Canvas。
 

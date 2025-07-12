@@ -7,7 +7,6 @@ tags:
 path: web-worker
 ---
 
-# Web Worker 详解
 
 Web Worker（以下简称 Worker）是 JavaScript 多线程编程的解决方案。通过创建一个 Worker，Web 页面（或称「主线程」、「宿主页面」）可以在不阻塞主线程的前提下，执行一些比较费时的任务。在这 2019 年春天，Worker 的浏览器兼容性已经相当好了，但此前我还未有机会（或必要性）在生产环境使用 Worker。前段时间，为了调研 [OffScreen Canvas](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas) 的技术方案，我仔细研究了一下 Worker，不妨记录下来备忘；如果能帮助到读者，即是意外之喜了。
 
