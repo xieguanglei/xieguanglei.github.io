@@ -1,10 +1,9 @@
 ---
-path: c-language-review-notes
+path: c-yu-yan-kuai-su-fu-xi-bi-ji
 tags:
   - 编程
 ---
 
-# C 语言快速复习笔记
 
 大学里学过 C 语言，但是挺久没用过了。最近时不时要用到 C 或阅读 C 和 C++ 代码，但是写惯了 JavaScript，一下子不太习惯。于是我决定稍微复习一下 C 语言和 C++。
 

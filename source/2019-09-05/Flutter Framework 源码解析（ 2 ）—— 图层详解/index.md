@@ -1,12 +1,11 @@
 ---
-path: flutter-code-chapter-02
+path: flutterframework-yuan-ma-jie-xi-2-tu-ceng-xiang-jie
 keywords:
   - flutter
 tags:
   - 编程
 ---
 
-# Flutter Framework 源码解析（ 2 ）—— 图层详解
 
 书接上回，我们讲到了 Flutter Engine 绘图引擎（简称 Engine）的基本用法。这一篇，我们就来讲讲 Flutter 中的一个直接建立在 Engine 上的，非常基础的概念，也就是图层（Layer）。
 

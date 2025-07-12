@@ -3,10 +3,9 @@ keywords:
   - 骨骼动画
 tags:
   - 编程
-path: skeleton
+path: gu-ge-dong-hua-yuan-li-yu-qian-duan-shi-xian-qian-tan
 ---
 
-# 骨骼动画原理与前端实现浅谈
 
 人的运动——走，跑，跳，是由骨骼带动躯干和四肢完成的。「骨骼动画」，顾名思义，就是模拟骨骼运动的机制而制作的动画。比如下面这条奔跑的小龙。参考 [Demo](http://jsbin.com/seyita/1/edit?html,output)。
 

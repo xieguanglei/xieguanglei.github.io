@@ -1,12 +1,11 @@
 ---
-path: oddmar-game
+path: ao-de-ma-quan-jiang-bei-tong-guan-xin-de
 keywords:
   - 奥德玛
 tags:
   - 游戏
 ---
 
-# 《奥德玛》全奖杯通关心得
 
 ![](CC.jpg)
 

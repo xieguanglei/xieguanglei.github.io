@@ -4,10 +4,9 @@ keywords:
 tags:
   - 编程
   - 精选
-path: red-black-tree
+path: hong-hei-shu-xiang-jie
 ---
 
-# 红黑树详解
 
 红黑树是一种相当复杂的数据结构，我仔细研究并亲手实现了它，这是一个多月来阅读「算法导论」给我带来成就感最大的一次。
 

@@ -5,10 +5,9 @@ keywords:
   - dart
 tags:
   - 编程
-path: typescript-mixin-pratice
+path: typescriptmixin-shi-jian
 ---
 
-# TypeScript Mixin 实践
 类和类的继承（基类与派生类），是面向对象编程领域中的概念。有时，我们可能会希望一个类继承自多个基类，这种行为又称「多重继承」。但是由于多重继承使编程语言和语义表达变得更加复杂和易出错（如同名成员函数冲突和继承顺序的问题），并不是所有编程语言都支持多重继承机制。
 
 > 多重继承必要性的例子（参考[这篇文章](https://medium.com/flutter-community/dart-what-are-mixins-3a72344011f3)）：

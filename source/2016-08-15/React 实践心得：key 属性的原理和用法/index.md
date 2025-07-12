@@ -4,10 +4,9 @@ keywords:
   - key
 tags:
   - 编程
-path: react-tips-key
+path: react-shi-jian-xin-de-key-shu-xing-de-yuan-li-he-yong-fa
 ---
 
-# React 实践心得：key 属性的原理和用法
 
 我们知道，React 元素可以具有一个特殊的属性 key，这个属性不是给用户自己用的，而是给 React 自己用的。如果我们动态地创建 React 元素，而且 React 元素内包含数量或顺序不确定的子元素时，我们就需要提供 key 这个特殊的属性。
 

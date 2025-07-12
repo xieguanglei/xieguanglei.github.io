@@ -5,10 +5,9 @@ keywords:
 tags:
   - 编程
   - 精选
-path: ray-tracing-99-lines-code
+path: smallpt-99-hang-dai-ma-guang-xian-zhui-zong-jie-xi
 ---
 
-# SmallPT —— 99 行代码光线追踪解析
 
 光线追踪（Ray tracing）是三维计算机图形学中的特殊渲染算法：根据光路可逆原理，对每一个像素，沿着入射光线逆向追踪若干次反射、折射，进而计算此光线的颜色，把场景渲染出来。
 

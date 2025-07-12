@@ -4,10 +4,9 @@ keywords:
   - redux
 tags:
   - 编程
-path: react-tips-connect
+path: react-shi-jian-xin-de-react-redux-zhi-connect-fang-fa-xiang-jie
 ---
 
-# React 实践心得：react-redux 之 connect 方法详解
 
 Redux 是「React 全家桶」中极为重要的一员，它试图为 React 应用提供「可预测化的状态管理」机制。Redux 本身足够简单，除了 React，它还能够支持其他界面框架。所以如果要将 Redux 和 React 结合起来使用，就还需要一些额外的工具，其中最重要的莫过于 react-redux 了。
 

@@ -255,7 +255,6 @@ function convertImageUrls(content: string, post: Post): string {
 async function generateRssFeed(posts: Post[]): Promise<void> {
     const feed = new RSS({
         title: '一叶斋',
-        description: '一叶障目 一叶知秋',
         feed_url: 'https://xieguanglei.github.io/blog/feed.xml',
         site_url: 'https://xieguanglei.github.io',
         language: 'zh-cn',

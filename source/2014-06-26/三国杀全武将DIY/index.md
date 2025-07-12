@@ -3,10 +3,9 @@ keywords:
   - 三国杀DIY
 tags:
   - 游戏
-path: sgs-diy
+path: san-guo-sha-quan-wu-jiang-diy
 ---
 
-# 三国杀全武将DIY
 
 我很喜欢三国杀标准版中，对武将**朴素而传神**的设计，因此我按照这样的思路重新YY了三国杀全武将。
 

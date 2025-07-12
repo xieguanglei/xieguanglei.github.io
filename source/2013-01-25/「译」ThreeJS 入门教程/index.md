@@ -3,10 +3,9 @@ keywords:
   - threejs
 tags:
   - 编程
-path: threejs-guide-translation
+path: yi-threejs-ru-men-jiao-cheng
 ---
 
-# 「译」ThreeJS 入门教程
 
 ---
 

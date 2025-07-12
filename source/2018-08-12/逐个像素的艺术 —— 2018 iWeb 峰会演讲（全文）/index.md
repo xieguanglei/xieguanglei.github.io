@@ -4,10 +4,9 @@ keywords:
   - 2018 iWeb
 tags:
   - 演讲
-path: 2018-iweb-speech
+path: zhu-ge-xiang-su-de-yi-shu-2018-iweb-feng-hui-yan-jiang-quan-wen
 ---
 
-# 逐个像素的艺术 —— 2018 iWeb 峰会演讲（全文）
 
 ![][001]
 

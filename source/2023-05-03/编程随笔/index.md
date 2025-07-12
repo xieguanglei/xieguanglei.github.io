@@ -9,10 +9,9 @@ keywords:
 tags:
   - 编程
   - 精选
-path: programming-thoughts-2023
+path: bian-cheng-sui-bi
 ---
 
-# 编程随笔
 
 ## 命名
 

@@ -1,12 +1,11 @@
 ---
-path: flutter-code-chapter-01
 keywords:
   - flutter
 tags:
   - 编程
+path: flutterframework-yuan-ma-jie-xi-1-kai-pian-he-hui-tu-yin-qing-de-yong-fa
 ---
 
-# Flutter Framework 源码解析（ 1 ）—— 开篇和绘图引擎的用法
 
 Flutter 是 Google 主导的跨平台 UI 开发解决方案，也是 2019 年前端界最热的名词（再加个「没有之一」，应该也不算过分吧）。因为工作的原因，我曾「被迫」完整地阅读了 Flutter Framework 的几乎所有代码，并使用另一种语言 TypeScript 重新实现了 Flutter Framework 的核心功能。这是一段痛苦的经历——至少在彼时，Flutter 的实现还远远称不上优雅。但是如今回望，这段经历也使我有机会得以一窥「世界级」UI 渲染框架的内部运行原理，令我「大开眼界」。正所谓念念不忘，必有回响，我准备开一个系列博文，讲一讲那段时间我阅读和实践 Flutter 的所见所闻。
 

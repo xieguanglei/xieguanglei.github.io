@@ -1,10 +1,9 @@
 ---
 tags:
   - 编程
-path: model-view-projection-matrix
+path: mo-xing-shi-tu-tou-ying-ju-zhen
 ---
 
-# 模型视图投影矩阵
 
 最近在学习 WebGL 技术的过程中，我补充了一些原本了解甚少的计算机图形学知识，模型视图投影矩阵就是其中之一。
 

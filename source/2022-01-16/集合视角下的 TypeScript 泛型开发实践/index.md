@@ -9,10 +9,9 @@ keywords:
 tags:
   - 编程
   - 精选
-path: typescript-generic-perspect-of-set-thoery
+path: ji-he-shi-jiao-xia-de-typescript-fan-xing-kai-fa-shi-jian
 ---
 
-# 集合视角下的 TypeScript 泛型开发实践
 
 前段时间我钻研了 [《How to master advanced TypeScript patterns》](https://www.freecodecamp.org/news/typescript-curry-ramda-types-f747e99744ab/) 这篇文章，这是 [ts-toolbelt](https://github.com/millsp/ts-toolbelt) 的作者 [Pierre-Antoine Mills](https://github.com/millsp) 的一篇早期博客文章。文章提出了一个很有挑战的题目：**TS 如何为柯里化函数编写类型支持？**
 

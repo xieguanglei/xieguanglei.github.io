@@ -4,10 +4,9 @@ keywords:
   - 2020 D2
 tags:
   - 演讲
-path: 2020-d2-speech
+path: ding-ding-biao-ge-cong-ling-dao-yi-zai-xian-excel-2020-d2-lun-tan-yan-jiang-quan-wen
 ---
 
-# 钉钉表格，从零到一在线 Excel —— 2020 D2 论坛演讲（全文）
 
 > 以下是 2020 年 12 月 19 日在 D2 前端技术论坛上的分享全文。
 

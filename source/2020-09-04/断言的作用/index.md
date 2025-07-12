@@ -1,12 +1,11 @@
 ---
 keywords:
   - 断言
-keywords:
+tags:
   - 编程
-path: assertion
+path: duan-yan-de-zuo-yong
 ---
 
-# 断言的作用
 
 断言，即「十分肯定地说」。程序运行至某处，断言一个条件 —— 如果该条件不成立，立刻抛出异常。
 

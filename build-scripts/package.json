@@ -5,7 +5,8 @@
   "main": "build.js",
   "scripts": {
     "build": "ts-node build.ts",
-    "build:prod": "tsc && node build.js"
+    "build:prod": "tsc && node build.js",
+    "convert": "ts-node convert.ts"
   },
   "dependencies": {
     "ejs": "^3.1.9",
