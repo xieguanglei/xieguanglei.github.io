@@ -4,8 +4,7 @@ keywords:
   - 2020 D2
 tags:
   - 演讲
-path: >-
-  ding-ding-biao-ge-cong-ling-dao-yi-zai-xian-excel-2020-d2-lun-tan-yan-jiang-quan-wen
+path: ding-ding-biao-ge-cong-ling-dao-yi-zai-xian-excel-2020-d2-lun-tan-yan-jiang-quan-wen
 ---
 
 
