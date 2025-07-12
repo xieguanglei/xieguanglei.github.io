@@ -1,5 +1,5 @@
 ---
-path: using-shader-to-optimize-page
+path: huo-yong-shader-rang-ni-de-ye-mian-geng-xiao--geng-xuan--geng-kuai
 tags:
   - 编程
 ---

@@ -1,5 +1,5 @@
 ---
-path: fenglingdu
+path: feng-ling-du-you-ji
 keywords:
   - 风陵渡
   - 山西

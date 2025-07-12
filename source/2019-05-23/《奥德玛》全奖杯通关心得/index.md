@@ -1,5 +1,5 @@
 ---
-path: oddmar-game
+path: ao-de-ma-quan-jiang-bei-tong-guan-xin-de
 keywords:
   - 奥德玛
 tags:

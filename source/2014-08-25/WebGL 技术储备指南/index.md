@@ -3,7 +3,7 @@ keywords:
   - webgl
 tags:
   - 编程
-path: webgl-handbook
+path: webgl-ji-shu-chu-bei-zhi-nan
 ---
 
 

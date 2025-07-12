@@ -4,7 +4,7 @@ keywords:
   - 编程随想
 tags:
   - 编程
-path: programming-thoughts-2020
+path: bian-cheng-sui-bi
 ---
 
 

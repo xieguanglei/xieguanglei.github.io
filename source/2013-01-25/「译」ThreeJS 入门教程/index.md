@@ -3,7 +3,7 @@ keywords:
   - threejs
 tags:
   - 编程
-path: threejs-guide-translation
+path: yi-threejs-ru-men-jiao-cheng
 ---
 
 

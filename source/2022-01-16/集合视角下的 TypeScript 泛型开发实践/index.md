@@ -9,7 +9,7 @@ keywords:
 tags:
   - 编程
   - 精选
-path: typescript-generic-perspect-of-set-thoery
+path: ji-he-shi-jiao-xia-de-typescript-fan-xing-kai-fa-shi-jian
 ---
 
 

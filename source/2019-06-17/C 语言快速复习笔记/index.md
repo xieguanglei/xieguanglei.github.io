@@ -1,5 +1,5 @@
 ---
-path: c-language-review-notes
+path: c-yu-yan-kuai-su-fu-xi-bi-ji
 tags:
   - 编程
 ---

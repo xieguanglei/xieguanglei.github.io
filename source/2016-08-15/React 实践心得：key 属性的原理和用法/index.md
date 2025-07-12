@@ -4,7 +4,7 @@ keywords:
   - key
 tags:
   - 编程
-path: react-tips-key
+path: react-shi-jian-xin-de-key-shu-xing-de-yuan-li-he-yong-fa
 ---
 
 

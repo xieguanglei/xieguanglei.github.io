@@ -3,7 +3,7 @@ keywords:
   - 三国杀DIY
 tags:
   - 游戏
-path: sgs-diy
+path: san-guo-sha-quan-wu-jiang-diy
 ---
 
 

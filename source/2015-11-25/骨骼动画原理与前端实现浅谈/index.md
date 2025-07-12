@@ -3,7 +3,7 @@ keywords:
   - 骨骼动画
 tags:
   - 编程
-path: skeleton
+path: gu-ge-dong-hua-yuan-li-yu-qian-duan-shi-xian-qian-tan
 ---
 
 

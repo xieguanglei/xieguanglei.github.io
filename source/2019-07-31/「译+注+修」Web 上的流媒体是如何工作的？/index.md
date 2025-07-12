@@ -1,5 +1,5 @@
 ---
-path: how-stream-video-works-on-web
+path: yi-zhu-xiu-web-shang-de-liu-mei-ti-shi-ru-he-gong-zuo-de
 keywords:
   - 流媒体
   - video

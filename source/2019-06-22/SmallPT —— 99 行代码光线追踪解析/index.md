@@ -5,7 +5,7 @@ keywords:
 tags:
   - 编程
   - 精选
-path: ray-tracing-99-lines-code
+path: smallpt-99-hang-dai-ma-guang-xian-zhui-zong-jie-xi
 ---
 
 

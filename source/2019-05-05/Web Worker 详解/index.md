@@ -4,7 +4,7 @@ keywords:
   - OffScreen Canvas
 tags:
   - 编程
-path: web-worker
+path: webworker-xiang-jie
 ---
 
 

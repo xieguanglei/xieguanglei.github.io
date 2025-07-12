@@ -4,7 +4,7 @@ keywords:
   - webgl
 tags:
   - 编程
-path: about-g3d
+path: g3d-hybrid-huan-jing-xia-de-webgl3d-xuan-ran-yin-qing
 ---
 
 

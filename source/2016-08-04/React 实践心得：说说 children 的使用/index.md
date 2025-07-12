@@ -4,7 +4,7 @@ keywords:
   - children
 tags:
   - 编程
-path: react-tips-children
+path: react-shi-jian-xin-de-shuo-shuo-children-de-shi-yong
 ---
 
 

@@ -1,7 +1,7 @@
 ---
-path: blog-history
 tags:
   - 编程
+path: zhe-teng-bo-ke-zhi-li-cheng
 ---
 
 

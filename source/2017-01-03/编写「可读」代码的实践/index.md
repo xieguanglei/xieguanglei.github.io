@@ -1,5 +1,5 @@
 ---
-path: write-readable-code-practice
+path: bian-xie-ke-du-dai-ma-de-shi-jian
 tags:
   - 编程
   - 精选

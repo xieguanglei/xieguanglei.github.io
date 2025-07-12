@@ -1,7 +1,7 @@
 ---
-path: use-browserify-in-fed
 tags:
   - 编程
+path: shi-yong-browserify-zu-zhi-qian-duan-dai-ma
 ---
 
 

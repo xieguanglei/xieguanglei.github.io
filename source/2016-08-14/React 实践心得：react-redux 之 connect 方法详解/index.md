@@ -4,7 +4,7 @@ keywords:
   - redux
 tags:
   - 编程
-path: react-tips-connect
+path: react-shi-jian-xin-de-react-redux-zhi-connect-fang-fa-xiang-jie
 ---
 
 

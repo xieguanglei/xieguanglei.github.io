@@ -4,7 +4,7 @@ keywords:
 tags:
   - 编程
   - 精选
-path: webgl-texture
+path: webgl-wen-li-xiang-jie
 ---
 
 

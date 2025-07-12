@@ -4,7 +4,7 @@ keywords:
 tags:
   - 编程
   - 精选
-path: quaternion-rotation
+path: si-yuan-shu-xuan-zhuan-gong-shi-zheng-ming
 ---
 
 

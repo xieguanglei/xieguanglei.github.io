@@ -3,7 +3,7 @@ keywords:
   - 射雕英雄传
 tags:
   - 读书
-path: the-legend-of-the-condor-heroes
+path: chong-du-she-diao-xiao-gan
 ---
 
 

@@ -3,7 +3,7 @@ keywords:
   - HTML5游戏开发进阶指南
 tags:
   - 出版
-path: about-pro-html5-games
+path: guan-yu-html5-you-xi-kai-fa-jin-jie-zhi-nan
 ---
 
 

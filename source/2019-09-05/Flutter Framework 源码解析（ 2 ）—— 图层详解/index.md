@@ -1,5 +1,5 @@
 ---
-path: flutter-code-chapter-02
+path: flutterframework-yuan-ma-jie-xi-2-tu-ceng-xiang-jie
 keywords:
   - flutter
 tags:

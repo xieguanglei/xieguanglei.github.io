@@ -1,9 +1,9 @@
 ---
 keywords:
   - 断言
-keywords:
+tags:
   - 编程
-path: assertion
+path: duan-yan-de-zuo-yong
 ---
 
 

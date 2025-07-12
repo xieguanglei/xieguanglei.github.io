@@ -1,5 +1,5 @@
 ---
-path: okinawa-naha-story
+path: chong-sheng-na-ba-bu-hang-guan-guang-yi-ri-you-ji
 keywords:
   - 冲绳
 tags:

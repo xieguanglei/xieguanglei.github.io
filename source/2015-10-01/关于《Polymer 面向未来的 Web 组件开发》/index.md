@@ -3,7 +3,7 @@ keywords:
   - Polymer面向未来的Web组件开发
 tags:
   - 出版
-path: about-polymer-book
+path: guan-yu-polymer-mian-xiang-wei-lai-de-web-zu-jian-kai-fa
 ---
 
 
