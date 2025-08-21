@@ -6,6 +6,8 @@ path: xie-zai-xiao-chou-pai-quan-ka-zu-jin-zhu-zhi-hou
 
 经过半年多断断续续的努力，终于为 [《小丑牌》](https://en.wikipedia.org/wiki/Balatro) 画上句号。获得了「完美主义者+」称号：使用所有卡组在金注难度下获得胜利。
 
+![|440x100](wan-mei-zhu-yi-zhe-jia.png)
+
 一共有 15 个卡组，每个卡组，从白注到金注共 8 个难度，一共赢了 120 局。
 
 赢下第一个白注花了一周，赢下第一个金注很激动，赢下最后一个金注如释重负。

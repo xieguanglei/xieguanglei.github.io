@@ -97,9 +97,21 @@ export class PostRenderer {
         const renderer = new Renderer();
 
         const renderImage = renderer.image;
-        renderer.image = function(image): string {
-            const { text } = image;
-            const origin: string = renderImage.call(this, image);
+        renderer.image = function (image): string {
+            let { text } = image;
+            let origin: string = renderImage.call(this, image);
+
+            const sizeMatch = text.match(/\|(\d+)x(\d+)$/);
+            if (sizeMatch) {
+                text = text.replace(/\|(\d+)x(\d+)$/, '');
+                const [width, height] =
+                    [
+                        parseInt(sizeMatch[1]),
+                        parseInt(sizeMatch[2])
+                    ];
+                origin = origin.replace('<img ', `<img style="width:${width}px; height:${height}px;" `);
+            }
+
             if (text) {
                 return `<figure>${origin}<figurecaption>${text}</figcaption></figure>`;
             } else {
@@ -115,7 +127,7 @@ export class PostRenderer {
 
         const content = await fs.readFile(indexMd, 'utf-8');
         const { data: frontMatter, content: markdown } = matter(content);
-        
+
         if (!post.postPath) {
             throw new Error(`文章 ${post.date}/${post.title} 缺少 path 字段`);
         }
